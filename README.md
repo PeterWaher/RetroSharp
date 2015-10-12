@@ -104,3 +104,9 @@ projects in the [Sprites](Examples/Sprites) category display different uses for 
 ### Games
 
 Finally, the [Games](Examples/Games) category contain more complete applications using the retro-environment to create a retro-game.
+
+| Screen Shot | Project description |
+|-------------|---------------------|
+|![Asteroids](Images/Asteroids_20.png)| The [Asteroids](Examples/Games/Asteroids) project implements a version of the classic *Asteroids* game. |
+|![Text Adventure](Images/TextAdventure_20.png)| The [Text Adventure](Examples/Games/TextAdventure) project implements the skeleton of a simple text adventure game. |
+|![Text Adventure 2](Images/TextAdventure2_20.png)| The [Text Adventure 2](Examples/Games/TextAdventure2) project generlizes the [Text Adventure](Examples/Games/TextAdventure) project by creating a text adventure engine that reads an XML file containing the information required to setup the game. |
