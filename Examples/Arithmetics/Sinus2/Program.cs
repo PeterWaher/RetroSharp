@@ -6,7 +6,7 @@ using RetroSharp;
 
 namespace Sinus2
 {
-	[RasterGraphics(1280, 720)]
+	[RasterGraphics(1280, 720, KnownColor.White)]
 	[ScreenBorder(30, 20)]
 	class Program : RetroApplication
 	{
@@ -18,8 +18,8 @@ namespace Sinus2
 
 			double x1, x2, y1, y2;
 
-			DrawLine(60, 10, 60, 710, Color.White);
-			DrawLine(60, 360, 1220, 360, Color.White);
+			DrawLine(60, 10, 60, 710, Color.Black);
+			DrawLine(60, 360, 1220, 360, Color.Black);
 
 			x1 = 60;
 			y1 = 360;
