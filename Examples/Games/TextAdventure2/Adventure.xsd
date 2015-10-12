@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Adventure"
+		   targetNamespace="http://tempuri.org/Adventure.xsd"
+		   elementFormDefault="qualified"
+		   xmlns="http://tempuri.org/Adventure.xsd"
+		   xmlns:adv="http://tempuri.org/Adventure.xsd"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="Game">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Introduction" type="xs:string"/>
+				<xs:element name="Locations">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Location" minOccurs="1" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ShortDescription" type="xs:string"/>
+										<xs:element name="LongDescription" type="xs:string"/>
+										<xs:element name="Object" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="ref" type="xs:string" use="required"/>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Action" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:group ref="Conditions"/>
+													<xs:group ref="Actions"/>
+												</xs:choice>
+												<xs:attribute name="verb" type="Word" use="required"/>
+												<xs:attribute name="noun" type="Word" use="optional"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="id" type="xs:string" use="required"/>
+									<xs:attribute name="north" type="xs:string" use="optional"/>
+									<xs:attribute name="east" type="xs:string" use="optional"/>
+									<xs:attribute name="south" type="xs:string" use="optional"/>
+									<xs:attribute name="west" type="xs:string" use="optional"/>
+									<xs:attribute name="up" type="xs:string" use="optional"/>
+									<xs:attribute name="down" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="GlobalActions">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="Action" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:group ref="Conditions"/>
+										<xs:group ref="Actions"/>
+									</xs:choice>
+									<xs:attribute name="verb" type="Word" use="required"/>
+									<xs:attribute name="noun" type="Word" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Objects">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Object" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ShortDescription" type="xs:string"/>
+										<xs:element name="LongDescription" type="xs:string"/>
+									</xs:sequence>
+									<xs:attribute name="id" type="xs:string" use="required"/>
+									<xs:attribute name="noun" type="Word" use="required"/>
+									<xs:attribute name="canBeCarried" type="xs:boolean" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Flags">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Flag" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="startLocation" type="xs:string" use="required"/>
+		</xs:complexType>
+
+		<xs:unique name="LocationIdUnique">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@id"/>
+		</xs:unique>
+
+		<xs:unique name="ObjectIdUnique">
+			<xs:selector xpath="adv:Objects/adv:Object"/>
+			<xs:field xpath="@id"/>
+		</xs:unique>
+
+		<xs:key name="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="StartLocationExists" refer="LocationId">
+			<xs:selector xpath="."/>
+			<xs:field xpath="@startLocation"/>
+		</xs:keyref>
+		<xs:keyref name="LocationNorthExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@north"/>
+		</xs:keyref>
+		<xs:keyref name="LocationEastExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@east"/>
+		</xs:keyref>
+		<xs:keyref name="LocationSouthExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@south"/>
+		</xs:keyref>
+		<xs:keyref name="LocationWestExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@west"/>
+		</xs:keyref>
+		<xs:keyref name="LocationUpExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@up"/>
+		</xs:keyref>
+		<xs:keyref name="LocationDownExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location"/>
+			<xs:field xpath="@down"/>
+		</xs:keyref>
+		<xs:keyref name="NewLocationExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:ChangeLocation"/>
+			<xs:field xpath="@newLocation"/>
+		</xs:keyref>
+		<xs:keyref name="AddObjectToLocationLocationRefExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:AddObjectToLocation"/>
+			<xs:field xpath="@location"/>
+		</xs:keyref>
+		<xs:keyref name="AddExitToRefExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:AddExit"/>
+			<xs:field xpath="@to"/>
+		</xs:keyref>
+		<xs:keyref name="AddExitFromRefExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:AddExit"/>
+			<xs:field xpath="@from"/>
+		</xs:keyref>
+		<xs:keyref name="RemoveExitFromRefExists" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:RemoveExit"/>
+			<xs:field xpath="@from"/>
+		</xs:keyref>
+		<xs:keyref name="NewLocationExists2" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:ChangeLocation"/>
+			<xs:field xpath="@newLocation"/>
+		</xs:keyref>
+		<xs:keyref name="AddObjectToLocationLocationRefExists2" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:AddObjectToLocation"/>
+			<xs:field xpath="@location"/>
+		</xs:keyref>
+		<xs:keyref name="AddExitToRefExists2" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:AddExit"/>
+			<xs:field xpath="@to"/>
+		</xs:keyref>
+		<xs:keyref name="AddExitFromRefExists2" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:AddExit"/>
+			<xs:field xpath="@from"/>
+		</xs:keyref>
+		<xs:keyref name="RemoveExitFromRefExists2" refer="LocationId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:RemoveExit"/>
+			<xs:field xpath="@from"/>
+		</xs:keyref>
+
+		<xs:key name="ObjectId">
+			<xs:selector xpath="adv:Objects/adv:Object"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="ObjectRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Object"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="TakeObjectRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:TakeObject"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="DropObjectRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:DropObject"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="AddObjectToInventoryRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:AddObjectToInventory"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="AddObjectToLocationRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:AddObjectToLocation"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="RemoveObjectFromInventoryRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:RemoveObjectFromInventory"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="RemoveObjectFromLocationRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:RemoveObjectFromLocation"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="TakeObjectRefExists2" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:TakeObject"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="DropObjectRefExists2" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:DropObject"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="AddObjectToInventoryRefExists2" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:AddObjectToInventory"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="AddObjectToLocationRefExists2" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:AddObjectToLocation"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="RemoveObjectFromInventoryRefExists2" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:RemoveObjectFromInventory"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="RemoveObjectFromLocationRefExists2" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:*/adv:RemoveObjectFromLocation"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="IfObjectInInventoryRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:IfObjectInInventory"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+		<xs:keyref name="IfObjectNotInInventoryRefExists" refer="ObjectId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:IfObjectNotInInventory"/>
+			<xs:field xpath="@ref"/>
+		</xs:keyref>
+
+		<xs:key name="FlagId">
+			<xs:selector xpath="adv:Flags/adv:Flag"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="IfFlagRefExists" refer="FlagId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:IfFlag"/>
+			<xs:field xpath="@name"/>
+		</xs:keyref>
+		<xs:keyref name="IfNotFlagRefExists" refer="FlagId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:IfNotFlag"/>
+			<xs:field xpath="@name"/>
+		</xs:keyref>
+		<xs:keyref name="SetFlagRefExists" refer="FlagId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:SetFlag"/>
+			<xs:field xpath="@name"/>
+		</xs:keyref>
+		<xs:keyref name="ClearFlagRefExists" refer="FlagId">
+			<xs:selector xpath="adv:Locations/adv:Location/adv:Action/adv:ClearFlag"/>
+			<xs:field xpath="@name"/>
+		</xs:keyref>
+
+	</xs:element>
+
+	<xs:simpleType name="Word">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="^[A-Z]+$"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="Direction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="north"/>
+			<xs:enumeration value="east"/>
+			<xs:enumeration value="south"/>
+			<xs:enumeration value="west"/>
+			<xs:enumeration value="up"/>
+			<xs:enumeration value="down"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:group name="Actions">
+		<xs:choice>
+			<xs:element name="Text" type="xs:string"/>
+			<xs:element name="ChangeLocation">
+				<xs:complexType>
+					<xs:attribute name="newLocation" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TakeObject">
+				<xs:annotation>
+					<xs:documentation>The object will only be taken, if visible in the current location.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DropObject">
+				<xs:annotation>
+					<xs:documentation>The object will only be dropped, if available in the inventory.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddObjectToInventory">
+				<xs:annotation>
+					<xs:documentation>Will add an object to the inventory, regardless of current location.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddObjectToLocation">
+				<xs:annotation>
+					<xs:documentation>Will add an object to a location, regardless of current location.</xs:documentation>
+					<xs:documentation>If no location is provided, the current location will be assumed.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:string" use="required"/>
+					<xs:attribute name="location" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RemoveObjectFromInventory">
+				<xs:annotation>
+					<xs:documentation>Removes an object from the inventory, possible removing the object from the game for the time being.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RemoveObjectFromLocation">
+				<xs:annotation>
+					<xs:documentation>Removes an object from its current location, possible removing the object from the game for the time being.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="ref" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SetFlag">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ClearFlag">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddExit">
+				<xs:complexType>
+					<xs:attribute name="direction" type="Direction" use="required"/>
+					<xs:attribute name="to" type="xs:string" use="required"/>
+					<xs:attribute name="from" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RemoveExit">
+				<xs:complexType>
+					<xs:attribute name="direction" type="Direction" use="required"/>
+					<xs:attribute name="from" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GameOver">
+				<xs:complexType/>
+			</xs:element>
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="Conditions">
+		<xs:choice>
+			<xs:element name="IfFlag">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="Conditions"/>
+						<xs:group ref="Actions"/>
+					</xs:choice>
+					<xs:attribute name="name"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="IfNotFlag">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="Conditions"/>
+						<xs:group ref="Actions"/>
+					</xs:choice>
+					<xs:attribute name="name"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="IfObjectInInventory">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="Conditions"/>
+						<xs:group ref="Actions"/>
+					</xs:choice>
+					<xs:attribute name="ref"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="IfObjectNotInInventory">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="Conditions"/>
+						<xs:group ref="Actions"/>
+					</xs:choice>
+					<xs:attribute name="ref"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:group>
+
+</xs:schema>

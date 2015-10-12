@@ -1,0 +1,549 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Game xmlns="http://tempuri.org/Adventure.xsd" startLocation="Closet 1">
+	<Introduction>
+		Welcome to this text adventure game.
+
+		The game is played by typing in commands at the prompt.
+		Commands can be one or two word phrases of the form VERB or VERB NOUN.
+		You walk around in the world by writing the direction you want to go.
+		Example: N, S, E, W, U, D, NORTH, SOUTH, EAST, WEST, UP, DOWN
+		Write INVENTORY, INV or I to list items you are carrying.
+		Write LOOK or L to view the full location description again.
+		Write EXITS or E to view available exists from the current location.
+		Type HELP if you need help.
+	</Introduction>
+	<Locations>
+		
+		<Location id="Closet 1">
+			<ShortDescription>You're sitting in a very tight place.</ShortDescription>
+			<LongDescription>
+				It's all dark. You wake up and your entire body hurts. You're crouching in what appears to be a 
+				very tight place. Feeling around with your hands you can feel that you lie ontop of what appears 
+				to be clothes. You can also feel what appears to be a door on your left. The door is closed.
+			</LongDescription>
+			<Action verb="OPEN" noun="DOOR">
+				<Text>
+					You open the door you felt and light filters in. You now see that you're crouching in the closet 
+					in your own room. If you want you can go down from the closet.
+				</Text>
+				<ChangeLocation newLocation="Closet 2"/>
+			</Action>
+			<Action verb="CLOSE" noun="DOOR">
+				<Text>The door is already closed.</Text>
+			</Action>
+		</Location>
+		
+		<Location id="Closet 2" down="Dormitory">
+			<ShortDescription>You're sitting in your closet.</ShortDescription>
+			<LongDescription>
+				You're crouching on a shelf in the closet. The door to the closet is open and light filters in from your dormitory.
+			</LongDescription>
+			<Action verb="OPEN" noun="DOOR">
+				<Text>The door is already open.</Text>
+			</Action>
+			<Action verb="CLOSE" noun="DOOR">
+				<Text>You close the door to the closet, shutting out all light.</Text>
+				<ChangeLocation newLocation="Closet 1"/>
+			</Action>
+		</Location>
+		
+		<Location id="Dormitory" east="Stairway" up="Closet 2">
+			<ShortDescription>You're in your dormitory.</ShortDescription>
+			<LongDescription>
+				You're standing in your dormitory. You have no idea why you woke up in the closet or how you ended up there. 
+				There's no sound coming from the rest of the house. The hallway to the east is quiet.
+			</LongDescription>
+		</Location>
+		
+		<Location id="Stairway" north="Dormitory Parents" west="Dormitory" down="Livingroom">
+			<ShortDescription>You're in the stairway.</ShortDescription>
+			<LongDescription>
+				You're standing in the stairway. Your dormitory is to the west and your parents dormitory is to the north. 
+				A stairway is leading down to the floor below. The house is awfully quiet.
+			</LongDescription>
+		</Location>
+		
+		<Location id="Dormitory Parents" south="Stairway">
+			<ShortDescription>You're in your parents dormitory.</ShortDescription>
+			<LongDescription>
+				You're standing in your parents dormitory. Nobody is there. It seems your parents left in a hurry. 
+				Everything is a complete mess.
+			</LongDescription>
+		</Location>
+		
+		<Location id="Livingroom" north="Hallway" west="Kitchen" up="Stairway">
+			<ShortDescription>You're in the livingroom.</ShortDescription>
+			<LongDescription>
+				You're below the stairs in the livingroom. The house seems completely empty. Where are everybody? 
+				The kitchen lies to the west and the hallway to the north.
+			</LongDescription>
+		</Location>
+		
+		<Location id="Kitchen" east="Livingroom">
+			<ShortDescription>You're in the kitchen.</ShortDescription>
+			<LongDescription>
+				You're in the kitchen. The dishes are left unwashed. Nobody is here.
+			</LongDescription>
+			<Object ref="Bread"/>
+			<Object ref="Matches"/>
+		</Location>
+		
+		<Location id="Hallway" south="Livingroom" east="Street">
+			<ShortDescription>You're in the hallway.</ShortDescription>
+			<LongDescription>
+				You're in the hallway of your house. Somebody has left the door open. That is unusual. You wonder where 
+				your parents are and why the door was left open. To the east, through the door, lies an empty street.
+			</LongDescription>
+		</Location>
+		
+		<Location id="Street" north="Village square" east="Butcher shop" west="Hallway">
+			<ShortDescription>You're standing in a street</ShortDescription>
+			<LongDescription>
+				You're standing in the middle of a small street that passes through your village from south to north. On the side of the street an old man 
+				sits crouched as if with pain. He has a big gush in his forehead and some blood trickles down his cheek. He looks at your. Perhaps he knows
+				what has happened? Your house lies to the west and a butcher's shop lies to the east.
+			</LongDescription>
+			<Object ref="Old man"/>
+			<Action verb="TALK" noun="MAN">
+				<Text>
+					You talk to the man, wondering what has happened. He responds: "They came early in the morning. Could have been demons for all I know.
+					They entered from the north and went into all houses and brought out all young and healthy individuals and brought them back to where
+					they came from. Us elderly, they just killed. I was left for dead here in the street. Please help them!"
+				</Text>
+			</Action>
+			<Action verb="KILL" noun="MAN">
+				<Text>
+					What a dastardly deed. The gods are angered and you're hit by lightning. You're incinirated to a crisp.
+				</Text>
+				<GameOver/>
+			</Action>
+			<Action verb="GO" noun="SOUTH">
+				<Text>
+					The person lying in the street calls for you saying "They went to the north! Please help them!".
+				</Text>
+			</Action>
+		</Location>
+
+		<Location id="Butcher shop" west="Street">
+			<ShortDescription>You're in the butcher's shop</ShortDescription>
+			<LongDescription>
+				You enter the butcher's shop. Nobody is here. There seems to have been a lot of fighting going on here.
+			</LongDescription>
+			<Object ref="Meat"/>
+		</Location>
+
+		<Location id="Village square" north="Path" west="Smithy" south="Street">
+			<ShortDescription>You're in the village square</ShortDescription>
+			<LongDescription>
+				You've come to the village square. Normally the square is buzzling with life, as the market takes place here.
+				Now, nobody is here. The carts normally used to sell goods in the market have been overturnet and set ablaze.
+				The street continues to the north of the square. To the west, there's a smithy.
+			</LongDescription>
+		</Location>
+
+		<Location id="Smithy" east="Village square">
+			<ShortDescription>You're in the village smithy</ShortDescription>
+			<LongDescription>
+				You're standing in the smithy. Everything is in disorder. It seems a lot of fighting took place here. As you
+				feared, the smithy is empty too. In the corner of the shop, you see a closed chest, that has not been broken.
+			</LongDescription>
+			<Object ref="Closed chest"/>
+			<Action verb="OPEN" noun="CHEST">
+				<IfNotFlag name="Chest opened">
+					<RemoveObjectFromLocation ref="Closed chest"/>
+					<AddObjectToLocation ref="Open chest"/>
+					<Text>
+						The chest is not locked, and you open it with ease.
+					</Text>
+					<SetFlag name="Chest opened"/>
+					<IfNotFlag name="Sword found">
+						<AddObjectToLocation ref="Sword"/>
+						<Text>
+							Inside the chest you find a sword.
+						</Text>
+						<SetFlag name="Sword found"/>
+					</IfNotFlag>
+				</IfNotFlag>
+				<IfFlag name="Chest opened">
+					<Text>
+						The chest is already open.
+					</Text>
+				</IfFlag>
+			</Action>
+			<Action verb="CLOSE" noun="CHEST">
+				<IfFlag name="Chest opened">
+					<RemoveObjectFromLocation ref="Open chest"/>
+					<AddObjectToLocation ref="Closed chest"/>
+					<Text>
+						You close the chest again.
+					</Text>
+					<ClearFlag name="Chest opened"/>
+				</IfFlag>
+				<IfNotFlag name="Chest opened">
+					<Text>
+						The chest is not open.
+					</Text>
+				</IfNotFlag>
+			</Action>
+		</Location>
+
+		<Location id="Path" south="Village square" north="Forest1">
+			<ShortDescription>You're on a path north of the village.</ShortDescription>
+			<LongDescription>
+				You're on a path north of the village. It leads to a large forest in the north. There's evidence here that a larger group of
+				people where traveling here recently. There are fresh tracks in the mud.
+			</LongDescription>
+		</Location>
+
+		<Location id="Forest1" north="Forest2" south="Path" east="Forest1" west="Forest1">
+			<ShortDescription>You're in a large forest.</ShortDescription>
+			<LongDescription>
+				You're in a large dark forest that lies north of the village. It's very easy to get lost here.
+			</LongDescription>
+			<Action verb="CLIMB" noun="TREE">
+				<Text>The branches are too high to reach.</Text>
+			</Action>
+		</Location>
+
+		<Location id="Forest2" west="Forest3" north="Forest1" east="Forest1" south="Forest1">
+			<ShortDescription>You're in a large forest.</ShortDescription>
+			<LongDescription>
+				You're in a large dark forest that lies north of the village. It's very easy to get lost here.
+			</LongDescription>
+			<Action verb="CLIMB" noun="TREE">
+				<Text>The branches are too high to reach.</Text>
+			</Action>
+		</Location>
+
+		<Location id="Forest3" north="Clearing" east="Forest1" west="RiverBank2" south="Forest4">
+			<ShortDescription>You're in a large forest.</ShortDescription>
+			<LongDescription>
+				You're in a large dark forest that lies north of the village. It's very easy to get lost here.
+			</LongDescription>
+			<Action verb="CLIMB" noun="TREE">
+				<Text>The branches are too high to reach.</Text>
+			</Action>
+		</Location>
+
+		<Location id="Forest4" east="Forest1" north="Forest1" south="Forest1" west="RiverBank1">
+			<ShortDescription>You're in a large forest.</ShortDescription>
+			<LongDescription>
+				You're in a large dark forest that lies north of the village. It's very easy to get lost here.
+			</LongDescription>
+			<Action verb="CLIMB" noun="TREE">
+				<Text>The branches are too high to reach.</Text>
+			</Action>
+		</Location>
+
+		<Location id="RiverBank1" east="Forest4" north="RiverBank2">
+			<ShortDescription>You're at a riverbank</ShortDescription>
+			<LongDescription>
+				You're at a riverbank. The river runs north and south through the dark forest. The way south is blocked by 
+				thick vegetation.
+			</LongDescription>
+			<Object ref="Key"/>
+			<Action verb="SWIM">
+				<Text>You don't know how to swim.</Text>
+			</Action>
+		</Location>
+
+		<Location id="RiverBank2" south="RiverBank1" east="Forest3">
+			<ShortDescription>You're at a riverbank</ShortDescription>
+			<LongDescription>
+				You're at a riverbank. The river runs north and south through the dark forest. The way north is blocked by
+				thick vegetation.
+			</LongDescription>
+			<Action verb="SWIM">
+				<Text>You don't know how to swim.</Text>
+			</Action>
+		</Location>
+
+		<Location id="Clearing" south="Forest3" east="Forest1" west="Forest1" north="CaveEntrance">
+			<ShortDescription>Clearing in the forest</ShortDescription>
+			<LongDescription>
+				You come to a clearing in the dark forest. You thankfully enter the clearing after the ordeal in the forest.
+				But as soon as you enter, you stop. In the north side of the clearing you see a small hill with a cave entrance.
+				As far as you can make out from this distance, you see that the cave entrance is being guarded by a guard and
+				what appears to be a dog. At least you assume it is a dog, you can hear it barking.
+			</LongDescription>
+			<Action verb="GO" noun="NORTH">
+				<Text>
+					The guard sees you approach and quickly set his enormous dog on you. The ferocious dog jumps on you without you being
+					able to defend yourself. He locks his jaws around your throat. As you lie dying you wonder if you couldn't have waited
+					for a better opportunity to approach the cave.
+				</Text>
+				<GameOver/>
+			</Action>
+			<Action verb="WAIT">
+				<Text>
+					You wait for a better opportunity to approach the cave. You hide in the border of the clearing watching the cave for
+					something to happen. As you wait, the sun sets. Everything does dark. You see the guard light a fire. But the guard
+					seems bored and quickly goes to sleep. The dog seems still awake, but chained.
+				</Text>
+				<ChangeLocation newLocation="ClearingNight"/>
+			</Action>
+		</Location>
+
+		<Location id="ClearingNight" south="Forest3" east="Forest1" west="Forest1" north="CaveEntrance">
+			<ShortDescription>Clearing in the forest</ShortDescription>
+			<LongDescription>
+				You're in the clearing in the middle of the dark forest. Now, at night, the forest is completely black. You don't dare
+				to go into the forest. To the north you see the cave entrance. The guard has lit a fire, but lies beside the fire asleep.
+				You assume the dog is still awake, but he is still chained.
+			</LongDescription>
+			<Action verb="GO" noun="SOUTH">
+				<Text>
+					You don't dare go into the forest at night.
+				</Text>
+			</Action>
+			<Action verb="GO" noun="WEST">
+				<Text>
+					You don't dare go into the forest at night.
+				</Text>
+			</Action>
+			<Action verb="GO" noun="EAST">
+				<Text>
+					You don't dare go into the forest at night.
+				</Text>
+			</Action>
+			<Action verb="WAIT">
+				<Text>
+					You wait for a better opportunity to approach the cave. But, as you wait, you fall asleep. You wake up hours later, when the sun rises.
+				</Text>
+				<ChangeLocation newLocation="Clearing"/>
+			</Action>
+		</Location>
+
+		<Location id="CaveEntrance" south="Clearing" north="Cave">
+			<ShortDescription>Cave entrance</ShortDescription>
+			<LongDescription>
+				You quietly approach the cave. You see the guard asleep beside a fire. The dog is chained to a pole stuck into the ground close to the cave entrance.
+				The dog doesn't seem to be keen to let you pass. He barks and tugs his chain. Luckily, the guard doesn't seem to wake up.
+			</LongDescription>
+			<Object ref="Lantern"/>
+			<Object ref="Dog"/>
+			<Action verb="GIVE" noun="MEAT">
+				<IfObjectInInventory ref="Meat">
+					<Text>
+						The dog greedily accepts the piece of read meat offered by you. He seems to have changed his attitude towards you.
+					</Text>
+					<SetFlag name="Dog pacified"/>
+					<RemoveObjectFromInventory ref="Meat"/>
+				</IfObjectInInventory>
+				<IfObjectNotInInventory ref="Meat">
+					<Text>
+						What meat?
+					</Text>
+				</IfObjectNotInInventory>
+			</Action>
+			<Action verb="GIVE" noun="BREAD">
+				<IfObjectInInventory ref="Bread">
+					<Text>
+						It doesn't seem interested in the bread and refuses it.
+					</Text>
+				</IfObjectInInventory>
+				<IfObjectNotInInventory ref="Bread">
+					<Text>
+						What bread?
+					</Text>
+				</IfObjectNotInInventory>
+			</Action>
+			<Action verb="KILL" noun="DOG">
+				<Text>
+					The dog is too agile and easily avoids your attack. He jumps on you without you being
+					able to defend yourself. He locks his jaws around your throat. As you lie dying you wonder
+					if a more constructive solution to the problem exists.
+				</Text>
+				<GameOver/>
+			</Action>
+			<Action verb="KILL" noun="GUARD">
+				<Text>
+					What a dastardly deed. The gods are angered and you're hit by lightning. You're incinirated to a crisp.
+				</Text>
+				<GameOver/>
+			</Action>
+			<Action verb="GO" noun="NORTH">
+				<IfNotFlag name="Dog pacified">
+					<Text>
+						As you try to enter the cave, the dog attacks you. He locks his jaws around your throat. As you lie dying you wonder
+						if there's a way to become friends with the dog.
+					</Text>
+				</IfNotFlag>
+			</Action>
+		</Location>
+
+		<Location id="Cave" south="CaveEntrance">
+			<ShortDescription>Entrance to mine</ShortDescription>
+			<LongDescription>
+				You enter the cave and notice it seems to be an abandoned mine. There's a door here that blocks the entrance to the mine.
+			</LongDescription>
+			<Action verb="OPEN" noun="DOOR">
+				<IfFlag name="Mine door unlocked">
+					<IfFlag name="Mine door opened">
+						<Text>
+							The door is already opened.
+						</Text>
+					</IfFlag>
+					<IfNotFlag name="Mine door opened">
+						<Text>
+							You open the mine entrance door.
+						</Text>
+						<AddExit direction="north" to="Staircase"/>
+						<SetFlag name="Mine door opened"/>
+					</IfNotFlag>
+				</IfFlag>
+				<IfNotFlag name="Mine door unlocked">
+					<Text>
+						The door seems to be locked. It does not open.
+					</Text>
+				</IfNotFlag>
+			</Action>
+			<Action verb="CLOSE" noun="DOOR">
+				<IfFlag name="Mine door opened">
+					<Text>
+						You close the mine entrance door again.
+					</Text>
+					<RemoveExit direction="north"/>
+					<ClearFlag name="Mine door opened"/>
+				</IfFlag>
+				<IfNotFlag name="Mine door opened">
+					<Text>
+						The door is already closed.
+					</Text>
+				</IfNotFlag>
+			</Action>
+			<Action verb="UNLOCK" noun="DOOR">
+				<IfFlag name="Mine door unlocked">
+					<Text>
+						The door is already unlocked.
+					</Text>
+				</IfFlag>
+				<IfNotFlag name="Mine door unlocked">
+					<IfObjectInInventory ref="Key">
+						<Text>
+							You unlock the door with the key.
+						</Text>
+						<SetFlag name="Mine door unlocked"/>
+					</IfObjectInInventory>
+					<IfObjectNotInInventory ref="Key">
+						<Text>
+							With what do you want to unlock the door?
+						</Text>
+					</IfObjectNotInInventory>
+				</IfNotFlag>
+			</Action>
+			<Action verb="LOCK" noun="DOOR">
+				<IfNotFlag name="Mine door unlocked">
+					<Text>
+						The door is already locked.
+					</Text>
+				</IfNotFlag>
+				<IfFlag name="Mine door opened">
+					<Text>
+						You cannot lock the door while it is opened.
+					</Text>
+				</IfFlag>
+				<IfNotFlag name="Mine door opened">
+					<IfFlag name="Mine door unlocked">
+						<IfObjectInInventory ref="Key">
+							<Text>
+								You lock the door again.
+							</Text>
+							<ClearFlag name="Mine door unlocked"/>
+							<RemoveExit direction="north"/>
+						</IfObjectInInventory>
+						<IfObjectNotInInventory ref="Key">
+							<Text>
+								With what do you want to lock the door?
+							</Text>
+						</IfObjectNotInInventory>
+					</IfFlag>
+				</IfNotFlag>
+			</Action>
+		</Location>
+
+		<Location id="Staircase" south="Cave">
+			<ShortDescription>Staircase</ShortDescription>
+			<LongDescription>
+				Entering the mine you come to a stop. In the floor, there's a large hole with a staircase leading down.
+			</LongDescription>
+		</Location>
+
+	</Locations>
+	<GlobalActions>
+		<Action verb="LIGHT" noun="LANTERN">
+			<IfObjectInInventory ref="Lantern">
+				<IfObjectInInventory ref="Matches">
+					<Text>
+						You use the matches to light the lantern. A bright light emanates from the lantern.
+					</Text>
+					<RemoveObjectFromInventory ref="Lantern"/>
+					<AddObjectToInventory ref="LitLantern"/>
+				</IfObjectInInventory>
+				<IfObjectNotInInventory ref="Matches">
+					<Text>
+						Light the lantern with what?
+					</Text>
+				</IfObjectNotInInventory>
+			</IfObjectInInventory>
+			<IfObjectNotInInventory ref="Lantern">
+				<Text>
+					What lantern?
+				</Text>
+			</IfObjectNotInInventory>
+		</Action>
+	</GlobalActions>
+	<Objects>
+		<Object id="Bread" noun="BREAD" canBeCarried="true">
+			<ShortDescription>Bread</ShortDescription>
+			<LongDescription>Some leftover bread.</LongDescription>
+		</Object>
+		<Object id="Matches" noun="MATCHES" canBeCarried="true">
+			<ShortDescription>Matches</ShortDescription>
+			<LongDescription>A box of matches.</LongDescription>
+		</Object>
+		<Object id="Old man" noun="MAN" canBeCarried="false">
+			<ShortDescription>Old man</ShortDescription>
+			<LongDescription>An old man sitting in the street.</LongDescription>
+		</Object>
+		<Object id="Meat" noun="MEAT" canBeCarried="true">
+			<ShortDescription>Meat</ShortDescription>
+			<LongDescription>A big chunk of red meat from the butcher's shop.</LongDescription>
+		</Object>
+		<Object id="Closed chest" noun="CHEST" canBeCarried="false">
+			<ShortDescription>Closed chest</ShortDescription>
+			<LongDescription>A closed chest that has escaped the mayhem.</LongDescription>
+		</Object>
+		<Object id="Open chest" noun="CHEST" canBeCarried="false">
+			<ShortDescription>Open chest</ShortDescription>
+			<LongDescription>An open chest.</LongDescription>
+		</Object>
+		<Object id="Sword" noun="SWORD" canBeCarried="true">
+			<ShortDescription>Sword</ShortDescription>
+			<LongDescription>A shiny sword.</LongDescription>
+		</Object>
+		<Object id="Key" noun="KEY" canBeCarried="true">
+			<ShortDescription>Key</ShortDescription>
+			<LongDescription>A small key.</LongDescription>
+		</Object>
+		<Object id="Lantern" noun="LANTERN" canBeCarried="true">
+			<ShortDescription>Lantern</ShortDescription>
+			<LongDescription>An unlit lantern</LongDescription>
+		</Object>
+		<Object id="LitLantern" noun="LANTERN" canBeCarried="true">
+			<ShortDescription>Lantern</ShortDescription>
+			<LongDescription>A lit lantern</LongDescription>
+		</Object>
+		<Object id="Dog" noun="DOG" canBeCarried="false">
+			<ShortDescription>Dog</ShortDescription>
+			<LongDescription>A black hairy dog</LongDescription>
+		</Object>
+	</Objects>
+	<Flags>
+		<Flag id="Chest opened"/>
+		<Flag id="Sword found"/>
+		<Flag id="Dog pacified"/>
+		<Flag id="Mine door unlocked"/>
+		<Flag id="Mine door opened"/>
+	</Flags>
+</Game>
