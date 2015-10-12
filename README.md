@@ -77,6 +77,20 @@ screen directly and modify character sets to create interesting applications.
 Applications introducing raster graphics are available in the [Raster Graphics](Examples/Raster Graphics) category. The applications show how
 to perform different simple graphics operations.
 
+| Screen Shot | Project description |
+|-------------|---------------------|
+|![Clip Lines](Images/ClipLines_20.png)| The [Clip Lines](Examples/Raster Graphics/ClipLines) project experiments with line clipping to draw inside a subsection of the screen. |
+|![Gradients](Images/Gradients_20.png)| The [Gradients](Examples/Raster Graphics/Gradients) project shows how different procedural fill methods can be used. |
+|![Moiré Lines](Images/MoireLines_20.png)| The [Moiré Lines](Examples/Raster Graphics/MoireLines) project shows an interesting visual effect when drawing lines on a raster display with limited resolution. |
+|![Random Boxes](Images/RandomBoxes_20.png)| The [Random Boxes](Examples/Raster Graphics/RandomBoxes) project randomly draws boxes on the raster display as quickly as possible. |
+|![Random Ellipses](Images/RandomEllipses_20.png)| The [Random Ellipses](Examples/Raster Graphics/RandomEllipses) project randomly draws ellipses on the raster display as quickly as possible. |
+|![Random Filled Ellipses](Images/RandomFilledEllipses_20.png)| The [Random FilledEllipses](Examples/Raster Graphics/RandomFilledEllipses) project randomly draws filled ellipses on the raster display as quickly as possible. |
+|![Random Lines](Images/RandomLines_20.png)| The [Random Lines](Examples/Raster Graphics/RandomLines) project randomly draws lines on the raster display as quickly as possible. |
+|![Random Plots](Images/RandomPlots_20.png)| The [Random Plots](Examples/Raster Graphics/RandomPlots) project randomly draws pixels on the raster display as quickly as possible. |
+|![Random Rectangles](Images/RandomRectangles_20.png)| The [Random Rectangles](Examples/Raster Graphics/RandomRectangles) project randomly draws rectangles on the raster display as quickly as possible. |
+|![Random Rounded Boxes](Images/RandomRoundedBoxes_20.png)| The [Random Rounded Boxes](Examples/Raster Graphics/RandomRoundedBoxes) project randomly draws rounded boxes on the raster display as quickly as possible. |
+|![Random Rounded Rectangles](Images/RandomRoundedRectangles_20.png)| The [Random Rounded Rectangles](Examples/Raster Graphics/RandomRoundedRectangles) project randomly draws rectangles on the raster display as quickly as possible. |
+
 ### Sprites
 
 Sprites are available in all screen modes, and provide a mechanism to display movable objects, possibly animated, on top of the screen. The
