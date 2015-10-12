@@ -60,8 +60,17 @@ The examples available in the [Arithmetics](Examples/Arithmetics) category show 
 
 ### Text Screen Manipulation
 
-The [Text Screen Manipulation](Examples/Text Screen Manipulation) category contains a list of projects showing how you can manipulate the screen directly
-and modify character sets to create interesting applications.
+The [Text Screen Manipulation](Examples/Text Screen Manipulation) category contains a list of projects showing how you can manipulate the text 
+screen directly and modify character sets to create interesting applications.
+
+| Screen Shot | Project description |
+|-------------|---------------------|
+|![Bouncing Character 1](Images/BouncingCharacter1_20.png)| The [Bouncing Character 1](Examples/Text Screen Manipulation/BouncingCharacter1) project shows how you can use direct screen manipulation to make a character bounce around the screen. |
+|![Bouncing Character 2](Images/BouncingCharacter2_20.png)| The [Bouncing Character 2](Examples/Text Screen Manipulation/BouncingCharacter2) project adds objects on the screen to the [Bouncing Character 1](Examples/Text Screen Manipulation/BouncingCharacter1) project with which the character can interact by bouncing against them. |
+|![Bouncing Character 3](Images/BouncingCharacter3_20.png)| The [Bouncing Character 3](Examples/Text Screen Manipulation/BouncingCharacter3) project adds simple user interaction though the keyboard to the [Bouncing Character 2](Examples/Text Screen Manipulation/BouncingCharacter2) project. |
+|![Bouncing Character 4](Images/BouncingCharacter4_20.png)| The [Bouncing Character 4](Examples/Text Screen Manipulation/BouncingCharacter4) project customizes the characters in [Bouncing Character 3](Examples/Text Screen Manipulation/BouncingCharacter3) project and shows how this technique can be used to create more interesting character-based user interfaces. |
+|![Bouncing Character 5](Images/BouncingCharacter5_20.png)| The [Bouncing Character 5](Examples/Text Screen Manipulation/BouncingCharacter5) project adds sound to the [Bouncing Character 4](Examples/Text Screen Manipulation/BouncingCharacter4) project, and plays a sound effect when the character bounces. |
+|![Create Labyrinth](Images/CreateLabyrinth_20.png)| The [Create Labyrinth](Examples/Text Screen Manipulation/CreateLabyrinth) project creates a random labyrinth on the screen and lets a small entity randomly walk around in the labyrinth. |
 
 ### Raster Graphics
 
