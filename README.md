@@ -45,8 +45,8 @@ console applications.
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Hello World](Images/HelloWorld_25.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. |
-|![Guess a number](Images/GuessANumber_25.png)| The [Guess a number](Examples/Text and Strings/GuessANumber) project lets the user guess a random number between 1 and 100. The application terminates when the user guesses the number correctly. |
+|![[Hello World](Images/HelloWorld.png)](Images/HelloWorld_20.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. |
+|![Guess a number](Images/GuessANumber_20.png)| The [Guess a number](Examples/Text and Strings/GuessANumber) project lets the user guess a random number between 1 and 100. The application terminates when the user guesses the number correctly. |
 
 ### Arithmetics
 
