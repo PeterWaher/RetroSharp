@@ -36,7 +36,7 @@ create a new project, in the list of available templates.
 
 The solution includes a series of [examples](Examples) demonstrating how **RetroSharp** can be used. These [examples](Examples) 
 are simple and aim to present a topic in a short and simple manner that is easy to read, understand, and reutilize. The 
-[examples](Examples) are sorted into various categories, as shown below.
+[examples](Examples) are sorted into various categories, from very simple to more advanced, as shown below.
 
 ### Text and Strings
 
@@ -45,12 +45,18 @@ console applications.
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![[Hello World](Images/HelloWorld.png)](Images/HelloWorld_20.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. |
+|![Hello World](Images/HelloWorld_20.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. |
 |![Guess a number](Images/GuessANumber_20.png)| The [Guess a number](Examples/Text and Strings/GuessANumber) project lets the user guess a random number between 1 and 100. The application terminates when the user guesses the number correctly. |
 
 ### Arithmetics
 
 The examples available in the [Arithmetics](Examples/Arithmetics) category show how to perform simple numerical calculations.
+
+| Screen Shot | Project description |
+|-------------|---------------------|
+|![Simple Arithmetics](Images/SimpleArithmetics_20.png)| The [Simple Arithmetics](Examples/Arithmetics/SimpleArithmetics) project shows how to perform simple computations with some basic console input/output. |
+|![Sinus1](Images/Sinus1_20.png)| The [Sinus1](Examples/Arithmetics/Sinus1) project outputs a simple sinus graf in console mode. |
+|![Sinus2](Images/Sinus2_20.png)| The [Sinus2](Examples/Arithmetics/Sinus2) project outputs a simple sinus graf in raster graphics mode. |
 
 ### Screen Manipulation
 
