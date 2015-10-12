@@ -79,7 +79,7 @@ to perform different simple graphics operations.
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Clip Lines](Images/ClipLines_20.png)| The [Clip Lines](Examples/Raster Graphics/ClipLines) project experiments with line clipping to draw inside a subsection of the screen. |
+|![Clip Lines](Images/ClipLines_20.png)| The [Clip Lines](Examples/Raster Graphics/ClipLines) project modifies the [Moiré Lines](Examples/Raster Graphics/MoireLines) project, experimenting with line clipping to draw inside subsections of the screen. |
 |![Gradients](Images/Gradients_20.png)| The [Gradients](Examples/Raster Graphics/Gradients) project shows how different procedural fill methods can be used. |
 |![Moiré Lines](Images/MoireLines_20.png)| The [Moiré Lines](Examples/Raster Graphics/MoireLines) project shows an interesting visual effect when drawing lines on a raster display with limited resolution. |
 |![Random Boxes](Images/RandomBoxes_20.png)| The [Random Boxes](Examples/Raster Graphics/RandomBoxes) project randomly draws boxes on the raster display as quickly as possible. |
@@ -95,6 +95,11 @@ to perform different simple graphics operations.
 
 Sprites are available in all screen modes, and provide a mechanism to display movable objects, possibly animated, on top of the screen. The
 projects in the [Sprites](Examples/Sprites) category display different uses for sprites.
+
+| Screen Shot | Project description |
+|-------------|---------------------|
+|![Bouncing Balls](Images/BouncingBalls_20.png)| The [Bouncing Balls](Examples/Raster Graphics/BouncingBalls) project animates a set of bouncing balls over a console screen, with some sound effects. |
+|![Mouse Pointer](Images/MousePointer_20.png)| The [Mouse Pointer](Examples/Raster Graphics/MousePointer) allows the user to interact with the application using the mouse and draw on the raster screen. The project also shows how sprites can be rotated. |
 
 ### Games
 
