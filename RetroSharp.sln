@@ -13,21 +13,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuessANumber", "Examples\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "Examples\Text and Strings\HelloWorld\HelloWorld.csproj", "{B14101CE-7AFB-4431-B69B-B724CAF1B0B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter1", "Examples\Screen Manipulation\BouncingCharacter1\BouncingCharacter1.csproj", "{3115F933-A20F-4B78-A043-CCF7F5DA1D5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter1", "Examples\Text Screen Manipulation\BouncingCharacter1\BouncingCharacter1.csproj", "{3115F933-A20F-4B78-A043-CCF7F5DA1D5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter2", "Examples\Screen Manipulation\BouncingCharacter2\BouncingCharacter2.csproj", "{564316DC-1F41-43C3-BB83-6BB083C89812}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter2", "Examples\Text Screen Manipulation\BouncingCharacter2\BouncingCharacter2.csproj", "{564316DC-1F41-43C3-BB83-6BB083C89812}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter3", "Examples\Screen Manipulation\BouncingCharacter3\BouncingCharacter3.csproj", "{3B9EECF4-AB5B-4ED9-A843-ED4E18D39F5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter3", "Examples\Text Screen Manipulation\BouncingCharacter3\BouncingCharacter3.csproj", "{3B9EECF4-AB5B-4ED9-A843-ED4E18D39F5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter4", "Examples\Screen Manipulation\BouncingCharacter4\BouncingCharacter4.csproj", "{431C98F4-7994-4E5B-9F93-765D6695FDBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter4", "Examples\Text Screen Manipulation\BouncingCharacter4\BouncingCharacter4.csproj", "{431C98F4-7994-4E5B-9F93-765D6695FDBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter5", "Examples\Screen Manipulation\BouncingCharacter5\BouncingCharacter5.csproj", "{ABB8068B-C289-4DCE-B301-F91ECF1A833A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingCharacter5", "Examples\Text Screen Manipulation\BouncingCharacter5\BouncingCharacter5.csproj", "{ABB8068B-C289-4DCE-B301-F91ECF1A833A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text and Strings", "Text and Strings", "{26085E3B-2D0B-4F16-8E4C-B012BFE3FCA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text Screen Manipulation", "Text Screen Manipulation", "{17792373-7BC5-49D8-9C3B-01E1CD14B344}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bitmapped Graphics", "Bitmapped Graphics", "{74E86C34-4EE3-4FF7-9CDE-991EE1AB07F0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Raster Graphics", "Raster Graphics", "{74E86C34-4EE3-4FF7-9CDE-991EE1AB07F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tiled Graphics", "Tiled Graphics", "{D218A746-9976-40F2-86FD-B88E1E358A70}"
 EndProject
@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arithmetics", "Arithmetics"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleArithmetics", "Examples\Arithmetics\SimpleArithmetics\SimpleArithmetics.csproj", "{F770B31B-B0EB-4E70-9D7D-33E6D78C5BD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateLabyrinth", "Examples\Screen Manipulation\CreateLabyrinth\CreateLabyrinth.csproj", "{71FEC95A-A400-461F-A371-081F64E1A85D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateLabyrinth", "Examples\Text Screen Manipulation\CreateLabyrinth\CreateLabyrinth.csproj", "{71FEC95A-A400-461F-A371-081F64E1A85D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharacterTemplate", "Examples\CharacterTemplate\CharacterTemplate.csproj", "{B307B220-FB5F-4A1D-9F09-18AD41180DE6}"
 EndProject

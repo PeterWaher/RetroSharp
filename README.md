@@ -58,9 +58,9 @@ The examples available in the [Arithmetics](Examples/Arithmetics) category show 
 |![Sinus1](Images/Sinus1_20.png)| The [Sinus1](Examples/Arithmetics/Sinus1) project outputs a simple sinus graf in console mode. |
 |![Sinus2](Images/Sinus2_20.png)| The [Sinus2](Examples/Arithmetics/Sinus2) project outputs a simple sinus graf in raster graphics mode. |
 
-### Screen Manipulation
+### Text Screen Manipulation
 
-The [Screen Manipulation](Examples/Screen Manipulation) category contains a list of projects showing how you can manipulate the screen directly
+The [Text Screen Manipulation](Examples/Text Screen Manipulation) category contains a list of projects showing how you can manipulate the screen directly
 and modify character sets to create interesting applications.
 
 ### Raster Graphics
