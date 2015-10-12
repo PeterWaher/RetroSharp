@@ -15,14 +15,17 @@ To create a retro-application using **RetroSharp**, you only need to reference t
 derive your application from the [RetroApplication](RetroSharp/RetroApplication.cs) class. This class manages the retro environment,
 including execution, character sets, sprites, rendering, console input/output, keyboard & mouse input, events, resources, audio,
 hit-tests, drawing, file handling, etc., and it also manages the *OpenTK*, *OpenGL* and *OpenAL* libraries. Your application does 
-not need to link to these libraries also. The point of *RetroSharp* is to remove as much complexity of underlying libraries as 
-possible, to make development quick, fun and easy and suitable for use for a first-time learner of programming. To make it easier 
-to create a new project, there are two template projects available for you from the start:
+not need to link to these libraries. The point of *RetroSharp* is to remove as much complexity of underlying libraries as 
+possible, to make development quick, fun and easy and suitable for use for a first-time learner of programming.
+
+## Templates
+
+To make it easier to create a new project, there are two template projects available for you from the start:
 
 | Template | Description |
 |----------|-------------|
 | [Character Template](Examples/CharacterTemplate) | The character template project sets up a retro console application for you. It's suitable for text-type applications. |
-| [Raster Graphics Template](Examples/RasterGraphicsTemplate) | The raster graphics template project sets up a retro raster graphics application for you. It's suitable for applications where you need to need to draw on the screen. |
+| [Raster Graphics Template](Examples/RasterGraphicsTemplate) | The raster graphics template project sets up a retro raster graphics application for you. It's suitable for applications where you need to need to draw on the screen. In raster graphics mode, you can still use console input/output if you choose to. |
 
 To be able to use these templates from *Visual Studio*, you might have to export them first, once the solution has loaded.
 Just select the template project in the *solution explorer* and select *Export Template...* from the *File* menu to export a
@@ -39,6 +42,10 @@ are simple and aim to present a topic in a short and simple manner that is easy 
 
 The examples sorted into the [Text and Strings](Examples/Text and Strings) category show how to input, process and output text in simple
 console applications.
+
+| Screen Shot | Project description |
+|![Hello World](Images/HelloWorld_25.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. |
+|![Guess a number](Images/GuessANumber_25.png)| The [Guess a number](Examples/Text and Strings/GuessANumber) project lets the user guess a random number between 1 and 100. The application terminates when the user guesses the number correctly. |
 
 ### Arithmetics
 
