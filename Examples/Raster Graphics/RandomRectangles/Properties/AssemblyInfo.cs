@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Peter Waher")]
 [assembly: AssemblyProduct("RandomRectangles")]
-[assembly: AssemblyCopyright("Copyright © Peter Waher 2013")]
+[assembly: AssemblyCopyright("Copyright © Peter Waher 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

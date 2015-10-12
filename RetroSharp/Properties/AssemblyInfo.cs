@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Peter Waher")]
 [assembly: AssemblyProduct("RetroSharp")]
-[assembly: AssemblyCopyright("Copyright © Peter Waher 2013-2015")]
+[assembly: AssemblyCopyright("Copyright © Peter Waher 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(true)]
