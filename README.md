@@ -45,8 +45,8 @@ console applications.
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Hello World](Images/HelloWorld_20.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. |
-|![Guess a number](Images/GuessANumber_20.png)| The [Guess a number](Examples/Text and Strings/GuessANumber) project lets the user guess a random number between 1 and 100. The application terminates when the user guesses the number correctly. |
+|![Hello World](Images/HelloWorld_20.png)| The [Hello World](Examples/Text and Strings/HelloWorld) project is probably the first project for many. It displays a "Hello World" message in a console application, just to show basic console output. [Full Screen Shot](Images/HelloWorld.png) |
+|![Guess a number](Images/GuessANumber_20.png)| The [Guess a number](Examples/Text and Strings/GuessANumber) project lets the user guess a random number between 1 and 100. The application terminates when the user guesses the number correctly. [Full Screen Shot](Images/GuessANumber.png) |
 
 ### Arithmetics
 
@@ -54,9 +54,9 @@ The examples available in the [Arithmetics](Examples/Arithmetics) category show 
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Simple Arithmetics](Images/SimpleArithmetics_20.png)| The [Simple Arithmetics](Examples/Arithmetics/SimpleArithmetics) project shows how to perform simple computations with some basic console input/output. |
-|![Sinus1](Images/Sinus1_20.png)| The [Sinus1](Examples/Arithmetics/Sinus1) project outputs a simple sinus graf in console mode. |
-|![Sinus2](Images/Sinus2_20.png)| The [Sinus2](Examples/Arithmetics/Sinus2) project outputs a simple sinus graf in raster graphics mode. |
+|![Simple Arithmetics](Images/SimpleArithmetics_20.png)| The [Simple Arithmetics](Examples/Arithmetics/SimpleArithmetics) project shows how to perform simple computations with some basic console input/output. [Full Screen Shot](Images/SimpleArithmetics.png) |
+|![Sinus1](Images/Sinus1_20.png)| The [Sinus1](Examples/Arithmetics/Sinus1) project outputs a simple sinus graf in console mode. [Full Screen Shot](Images/Sinus1.png) |
+|![Sinus2](Images/Sinus2_20.png)| The [Sinus2](Examples/Arithmetics/Sinus2) project outputs a simple sinus graf in raster graphics mode. [Full Screen Shot](Images/Sinus2.png) |
 
 ### Text Screen Manipulation
 
@@ -65,12 +65,12 @@ screen directly and modify character sets to create interesting applications.
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Bouncing Character 1](Images/BouncingCharacter1_20.png)| The [Bouncing Character 1](Examples/Text Screen Manipulation/BouncingCharacter1) project shows how you can use direct screen manipulation to make a character bounce around the screen. |
-|![Bouncing Character 2](Images/BouncingCharacter2_20.png)| The [Bouncing Character 2](Examples/Text Screen Manipulation/BouncingCharacter2) project adds objects on the screen to the [Bouncing Character 1](Examples/Text Screen Manipulation/BouncingCharacter1) project with which the character can interact by bouncing against them. |
-|![Bouncing Character 3](Images/BouncingCharacter3_20.png)| The [Bouncing Character 3](Examples/Text Screen Manipulation/BouncingCharacter3) project adds simple user interaction though the keyboard to the [Bouncing Character 2](Examples/Text Screen Manipulation/BouncingCharacter2) project. |
-|![Bouncing Character 4](Images/BouncingCharacter4_20.png)| The [Bouncing Character 4](Examples/Text Screen Manipulation/BouncingCharacter4) project customizes the characters in [Bouncing Character 3](Examples/Text Screen Manipulation/BouncingCharacter3) project and shows how this technique can be used to create more interesting character-based user interfaces. |
-|![Bouncing Character 5](Images/BouncingCharacter5_20.png)| The [Bouncing Character 5](Examples/Text Screen Manipulation/BouncingCharacter5) project adds sound to the [Bouncing Character 4](Examples/Text Screen Manipulation/BouncingCharacter4) project, and plays a sound effect when the character bounces. |
-|![Create Labyrinth](Images/CreateLabyrinth_20.png)| The [Create Labyrinth](Examples/Text Screen Manipulation/CreateLabyrinth) project creates a random labyrinth on the screen and lets a small entity randomly walk around in the labyrinth. |
+|![Bouncing Character 1](Images/BouncingCharacter1_20.png)| The [Bouncing Character 1](Examples/Text Screen Manipulation/BouncingCharacter1) project shows how you can use direct screen manipulation to make a character bounce around the screen. [Full Screen Shot](Images/BouncingCharacter1.png) |
+|![Bouncing Character 2](Images/BouncingCharacter2_20.png)| The [Bouncing Character 2](Examples/Text Screen Manipulation/BouncingCharacter2) project adds objects on the screen to the [Bouncing Character 1](Examples/Text Screen Manipulation/BouncingCharacter1) project with which the character can interact by bouncing against them. [Full Screen Shot](Images/BouncingCharacter2.png) |
+|![Bouncing Character 3](Images/BouncingCharacter3_20.png)| The [Bouncing Character 3](Examples/Text Screen Manipulation/BouncingCharacter3) project adds simple user interaction though the keyboard to the [Bouncing Character 2](Examples/Text Screen Manipulation/BouncingCharacter2) project. [Full Screen Shot](Images/BouncingCharacter3.png) |
+|![Bouncing Character 4](Images/BouncingCharacter4_20.png)| The [Bouncing Character 4](Examples/Text Screen Manipulation/BouncingCharacter4) project customizes the characters in [Bouncing Character 3](Examples/Text Screen Manipulation/BouncingCharacter3) project and shows how this technique can be used to create more interesting character-based user interfaces. [Full Screen Shot](Images/BouncingCharacter4.png) |
+|![Bouncing Character 5](Images/BouncingCharacter5_20.png)| The [Bouncing Character 5](Examples/Text Screen Manipulation/BouncingCharacter5) project adds sound to the [Bouncing Character 4](Examples/Text Screen Manipulation/BouncingCharacter4) project, and plays a sound effect when the character bounces. [Full Screen Shot](Images/BouncingCharacter5.png) |
+|![Create Labyrinth](Images/CreateLabyrinth_20.png)| The [Create Labyrinth](Examples/Text Screen Manipulation/CreateLabyrinth) project creates a random labyrinth on the screen and lets a small entity randomly walk around in the labyrinth. [Full Screen Shot](Images/CreateLabyrinth.png) |
 
 ### Raster Graphics
 
@@ -79,17 +79,17 @@ to perform different simple graphics operations.
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Clip Lines](Images/ClipLines_20.png)| The [Clip Lines](Examples/Raster Graphics/ClipLines) project modifies the [Moiré Lines](Examples/Raster Graphics/MoireLines) project, experimenting with line clipping to draw inside subsections of the screen. |
-|![Gradients](Images/Gradients_20.png)| The [Gradients](Examples/Raster Graphics/Gradients) project shows how different procedural fill methods can be used. |
-|![Moiré Lines](Images/MoireLines_20.png)| The [Moiré Lines](Examples/Raster Graphics/MoireLines) project shows an interesting visual effect when drawing lines on a raster display with limited resolution. |
-|![Random Boxes](Images/RandomBoxes_20.png)| The [Random Boxes](Examples/Raster Graphics/RandomBoxes) project randomly draws boxes on the raster display as quickly as possible. |
-|![Random Ellipses](Images/RandomEllipses_20.png)| The [Random Ellipses](Examples/Raster Graphics/RandomEllipses) project randomly draws ellipses on the raster display as quickly as possible. |
-|![Random Filled Ellipses](Images/RandomFilledEllipses_20.png)| The [Random FilledEllipses](Examples/Raster Graphics/RandomFilledEllipses) project randomly draws filled ellipses on the raster display as quickly as possible. |
-|![Random Lines](Images/RandomLines_20.png)| The [Random Lines](Examples/Raster Graphics/RandomLines) project randomly draws lines on the raster display as quickly as possible. |
-|![Random Plots](Images/RandomPlots_20.png)| The [Random Plots](Examples/Raster Graphics/RandomPlots) project randomly draws pixels on the raster display as quickly as possible. |
-|![Random Rectangles](Images/RandomRectangles_20.png)| The [Random Rectangles](Examples/Raster Graphics/RandomRectangles) project randomly draws rectangles on the raster display as quickly as possible. |
-|![Random Rounded Boxes](Images/RandomRoundedBoxes_20.png)| The [Random Rounded Boxes](Examples/Raster Graphics/RandomRoundedBoxes) project randomly draws rounded boxes on the raster display as quickly as possible. |
-|![Random Rounded Rectangles](Images/RandomRoundedRectangles_20.png)| The [Random Rounded Rectangles](Examples/Raster Graphics/RandomRoundedRectangles) project randomly draws rectangles on the raster display as quickly as possible. |
+|![Clip Lines](Images/ClipLines_20.png)| The [Clip Lines](Examples/Raster Graphics/ClipLines) project modifies the [Moiré Lines](Examples/Raster Graphics/MoireLines) project, experimenting with line clipping to draw inside subsections of the screen. [Full Screen Shot](Images/ClipLines.png) |
+|![Gradients](Images/Gradients_20.png)| The [Gradients](Examples/Raster Graphics/Gradients) project shows how different procedural fill methods can be used. [Full Screen Shot](Images/Gradients.png) |
+|![Moiré Lines](Images/MoireLines_20.png)| The [Moiré Lines](Examples/Raster Graphics/MoireLines) project shows an interesting visual effect when drawing lines on a raster display with limited resolution. [Full Screen Shot](Images/MoireLines.png) |
+|![Random Boxes](Images/RandomBoxes_20.png)| The [Random Boxes](Examples/Raster Graphics/RandomBoxes) project randomly draws boxes on the raster display as quickly as possible. [Full Screen Shot](Images/RandomBoxes.png) |
+|![Random Ellipses](Images/RandomEllipses_20.png)| The [Random Ellipses](Examples/Raster Graphics/RandomEllipses) project randomly draws ellipses on the raster display as quickly as possible. [Full Screen Shot](Images/RandomEllipses.png) |
+|![Random Filled Ellipses](Images/RandomFilledEllipses_20.png)| The [Random FilledEllipses](Examples/Raster Graphics/RandomFilledEllipses) project randomly draws filled ellipses on the raster display as quickly as possible. [Full Screen Shot](Images/RandomFilledEllipses.png) |
+|![Random Lines](Images/RandomLines_20.png)| The [Random Lines](Examples/Raster Graphics/RandomLines) project randomly draws lines on the raster display as quickly as possible. [Full Screen Shot](Images/RandomLines.png) |
+|![Random Plots](Images/RandomPlots_20.png)| The [Random Plots](Examples/Raster Graphics/RandomPlots) project randomly draws pixels on the raster display as quickly as possible. [Full Screen Shot](Images/RandomPlots.png) |
+|![Random Rectangles](Images/RandomRectangles_20.png)| The [Random Rectangles](Examples/Raster Graphics/RandomRectangles) project randomly draws rectangles on the raster display as quickly as possible. [Full Screen Shot](Images/RandomRectangles.png) |
+|![Random Rounded Boxes](Images/RandomRoundedBoxes_20.png)| The [Random Rounded Boxes](Examples/Raster Graphics/RandomRoundedBoxes) project randomly draws rounded boxes on the raster display as quickly as possible. [Full Screen Shot](Images/RandomRoundedBoxes.png) |
+|![Random Rounded Rectangles](Images/RandomRoundedRectangles_20.png)| The [Random Rounded Rectangles](Examples/Raster Graphics/RandomRoundedRectangles) project randomly draws rectangles on the raster display as quickly as possible. [Full Screen Shot](Images/RandomRoundedRectangles.png) |
 
 ### Sprites
 
@@ -98,8 +98,8 @@ projects in the [Sprites](Examples/Sprites) category display different uses for 
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Bouncing Balls](Images/BouncingBalls_20.png)| The [Bouncing Balls](Examples/Sprites/BouncingBalls) project animates a set of bouncing balls over a console screen, with some sound effects. |
-|![Mouse Pointer](Images/MousePointer_20.png)| The [Mouse Pointer](Examples/Sprites/MousePointer) allows the user to interact with the application using the mouse and draw on the raster screen. The project also shows how sprites can be rotated. |
+|![Bouncing Balls](Images/BouncingBalls_20.png)| The [Bouncing Balls](Examples/Sprites/BouncingBalls) project animates a set of bouncing balls over a console screen, with some sound effects. [Full Screen Shot](Images/BouncingBalls.png) |
+|![Mouse Pointer](Images/MousePointer_20.png)| The [Mouse Pointer](Examples/Sprites/MousePointer) allows the user to interact with the application using the mouse and draw on the raster screen. The project also shows how sprites can be rotated. [Full Screen Shot](Images/MousePointer.png) |
 
 ### Games
 
@@ -107,6 +107,6 @@ Finally, the [Games](Examples/Games) category contain more complete applications
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Asteroids](Images/Asteroids_20.png)| The [Asteroids](Examples/Games/Asteroids) project implements a version of the classic *Asteroids* game. |
-|![Text Adventure](Images/TextAdventure_20.png)| The [Text Adventure](Examples/Games/TextAdventure) project implements the skeleton of a simple text adventure game. |
-|![Text Adventure 2](Images/TextAdventure2_20.png)| The [Text Adventure 2](Examples/Games/TextAdventure2) project generlizes the [Text Adventure](Examples/Games/TextAdventure) project by creating a text adventure engine that reads an XML file containing the information required to setup the game. |
+|![Asteroids](Images/Asteroids_20.png)| The [Asteroids](Examples/Games/Asteroids) project implements a version of the classic *Asteroids* game. [Full Screen Shot](Images/Asteroids.png) |
+|![Text Adventure](Images/TextAdventure_20.png)| The [Text Adventure](Examples/Games/TextAdventure) project implements the skeleton of a simple text adventure game. [Full Screen Shot](Images/TextAdventure.png) |
+|![Text Adventure 2](Images/TextAdventure2_20.png)| The [Text Adventure 2](Examples/Games/TextAdventure2) project generlizes the [Text Adventure](Examples/Games/TextAdventure) project by creating a text adventure engine that reads an XML file containing the information required to setup the game. [Full Screen Shot](Images/TextAdventure2.png) |
