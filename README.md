@@ -98,8 +98,8 @@ projects in the [Sprites](Examples/Sprites) category display different uses for 
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Bouncing Balls](Images/BouncingBalls_20.png)| The [Bouncing Balls](Examples/Raster Graphics/BouncingBalls) project animates a set of bouncing balls over a console screen, with some sound effects. |
-|![Mouse Pointer](Images/MousePointer_20.png)| The [Mouse Pointer](Examples/Raster Graphics/MousePointer) allows the user to interact with the application using the mouse and draw on the raster screen. The project also shows how sprites can be rotated. |
+|![Bouncing Balls](Images/BouncingBalls_20.png)| The [Bouncing Balls](Examples/Sprites/BouncingBalls) project animates a set of bouncing balls over a console screen, with some sound effects. |
+|![Mouse Pointer](Images/MousePointer_20.png)| The [Mouse Pointer](Examples/Sprites/MousePointer) allows the user to interact with the application using the mouse and draw on the raster screen. The project also shows how sprites can be rotated. |
 
 ### Games
 
