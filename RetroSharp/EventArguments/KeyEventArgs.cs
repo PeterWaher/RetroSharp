@@ -82,7 +82,7 @@ namespace RetroSharp
 		/// </summary>
 		public bool IsRepeat
 		{
-			get { return this.IsRepeat; }
+			get { return this.isRepeat; }
 		}
 	}
 }

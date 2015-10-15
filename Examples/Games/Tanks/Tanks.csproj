@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F61678A6-8822-46C7-878E-66390DD8B2C7}</ProjectGuid>
+    <ProjectGuid>{1904AE64-0E41-4627-882A-9608CCD4FC98}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Asteroids</RootNamespace>
-    <AssemblyName>Asteroids</AssemblyName>
+    <RootNamespace>Tanks</RootNamespace>
+    <AssemblyName>Tanks</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,9 +39,11 @@
   <ItemGroup>
     <Compile Include="MovingObject.cs" />
     <Compile Include="Particle.cs" />
+    <Compile Include="Tank2.cs" />
+    <Compile Include="Tank.cs" />
+    <Compile Include="Tank1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RotatingObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\RetroSharp\RetroSharp.csproj">
@@ -50,20 +52,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="35686__jobro__laser9.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="80938__tony-b-kksm__soft-explosion.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="35643__sandyrb__usat-bomb.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="172207__fins__teleport.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="133283__fins__game-over.wav" />
-    <EmbeddedResource Include="133284__fins__level-completed.wav" />
+    <EmbeddedResource Include="Graphics\jagtpanther.png" />
+    <EmbeddedResource Include="Graphics\SU-85.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

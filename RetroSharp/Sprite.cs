@@ -24,7 +24,7 @@ namespace RetroSharp
 		/// <param name="SpriteTexture">Sprite texture to display.</param>
 		internal Sprite(int X, int Y, double Angle, int SpriteTexture)
 		{
-			this.angle = 0;
+			this.angle = Angle;
 			this.x = X;
 			this.y = Y;
 			this.spriteTexture = SpriteTexture;
