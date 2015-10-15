@@ -45,6 +45,10 @@ The solution includes a series of [examples](Examples) demonstrating how **Retro
 are simple and aim to present a topic in a short and simple manner that is easy to read, understand, and reutilize. The 
 [examples](Examples) are sorted into various categories, from very simple to more advanced, as shown below.
 
+For each project a small screen shot is presented, with a link to a full screen shot in the description. An executable file in 
+a zip folder is also available if you want to try the program without compiling it. If you follow the *Full Screen Shot* and 
+*Executable* links, make sure to click the *Raw* button on the page to view or download the entire file.
+
 ### Text and Strings
 
 The examples sorted into the [Text and Strings](Examples/Text and Strings) category show how to input, process and output text in simple
