@@ -17,10 +17,14 @@ namespace Mines
 		private static Random rnd = new System.Random();
 		private static int i, x, y;
 		private static bool Dead = false;
+		private static int NrLeft;
+		private static int NrIncorrect;
 
 		public static void Main(string[] args)
 		{
 			ManualResetEvent Terminated = new ManualResetEvent(false);
+			DateTime StartTime;
+			string s;
 
 			Initialize();
 
@@ -65,29 +69,6 @@ namespace Mines
 				"x       x",
 				"xxxxxxxxx");
 
-			for (y = 0; y < ScreenHeight; y++)
-			{
-				for (x = 0; x < ScreenWidth; x++)
-				{
-					Screen[x, y] = 'x';
-					Foreground[x, y] = Color.LightGray;
-					Background[x, y] = Color.Gray;
-				}
-			}
-
-			Mines = new bool[ScreenWidth, ScreenHeight];
-
-			for (i = 0; i < 200; i++)
-			{
-				do
-				{
-					x = rnd.Next(0, ConsoleWidth);
-					y = rnd.Next(0, ConsoleHeight);
-				}
-				while (Mines[x, y]);
-
-				Mines[x, y] = true;
-			}
 
 			int PointerTexture = AddSpriteTexture(GetResourceBitmap("Pointer.png"), System.Drawing.Color.FromArgb(0, 0, 255), true);
 			Point P = GetMousePointer();
@@ -106,22 +87,41 @@ namespace Mines
 
 			OnMouseDown += (sender, e) =>
 			{
-				if (!Dead)
+				if (!Dead && NrLeft > 0)
 				{
 					if (e.LeftButton)
 					{
 						x = (e.X * ConsoleWidth) / RasterWidth;
 						y = (e.Y * ConsoleHeight) / RasterHeight;
 
-						Reveal(x, y);
+						if (Screen[x, y] == 'x')
+							Reveal(x, y);
 					}
 					else if (e.RightButton)
 					{
 						x = (e.X * ConsoleWidth) / RasterWidth;
 						y = (e.Y * ConsoleHeight) / RasterHeight;
 
-						if (Screen[x, y] == 'x')
-							Screen[x, y] = 'M';
+						switch (Screen[x, y])
+						{
+							case 'x':
+								Screen[x, y] = 'M';
+
+								if (Mines[x, y])
+									NrLeft--;
+								else
+									NrIncorrect++;
+								break;
+
+							case 'M':
+								Screen[x, y] = 'x';
+
+								if (Mines[x, y])
+									NrLeft++;
+								else
+									NrIncorrect--;
+								break;
+						}
 					}
 
 				}
@@ -129,15 +129,73 @@ namespace Mines
 
 			do
 			{
-				x = rnd.Next(0, ConsoleWidth);
-				y = rnd.Next(0, ConsoleHeight);
+				for (y = 0; y < ScreenHeight; y++)
+				{
+					for (x = 0; x < ScreenWidth; x++)
+					{
+						Screen[x, y] = 'x';
+						Foreground[x, y] = Color.LightGray;
+						Background[x, y] = Color.Gray;
+					}
+				}
+
+				Mines = new bool[ScreenWidth, ScreenHeight];
+
+				NrLeft = 200;
+				NrIncorrect = 0;
+				Dead = false;
+				Terminated.Reset();
+
+				for (i = 0; i < NrLeft; i++)
+				{
+					do
+					{
+						x = rnd.Next(0, ConsoleWidth);
+						y = rnd.Next(0, ConsoleHeight);
+					}
+					while (Mines[x, y]);
+
+					Mines[x, y] = true;
+				}
+
+				do
+				{
+					x = rnd.Next(0, ConsoleWidth);
+					y = rnd.Next(0, ConsoleHeight);
+				}
+				while (Mines[x, y] || NrMinesAround(x, y) > 0);
+
+				Reveal(x, y);
+
+				StartTime = DateTime.Now;
+
+				while (!Terminated.WaitOne(1000) && NrLeft > 0)
+					;
+
+				int NrSeconds = (int)Math.Round((DateTime.Now - StartTime).TotalSeconds);
+				Clear();
+
+				if (Dead)
+					Console.Out.WriteLine("Kaboom!");
+				else if (NrLeft == 0)
+				{
+					Console.Out.WriteLine("Congratulations.");
+					Console.Out.WriteLine("You found all mines in " + NrSeconds.ToString() + " seconds.");
+				}
+
+				do
+				{
+					Console.Out.WriteLine();
+					Console.Out.Write("Do you want to play again? (y/n)");
+
+					s = Console.In.ReadLine().ToLower();
+
+					if (!string.IsNullOrEmpty(s))
+						s = s.Substring(0, 1);
+				}
+				while (s != "y" && s != "n");
 			}
-			while (Mines[x, y] || NrMinesAround(x, y) > 0);
-
-			Reveal(x, y);
-
-			while (!Terminated.WaitOne(60000))
-				;
+			while (s == "y");
 
 			Terminate();
 		}
