@@ -18,7 +18,7 @@ namespace MousePointer
 
 			Initialize();
 
-			Console.Out.WriteLine("Mouse the mouse to move the pointer on the screen.");
+			Console.Out.WriteLine("Move the mouse to move the pointer on the screen.");
 			Console.Out.WriteLine("Press left mouse button while moving to draw.");
 			Console.Out.WriteLine("Press the ESC key to close the application.");
 

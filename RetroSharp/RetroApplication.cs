@@ -10235,8 +10235,6 @@ namespace RetroSharp
          * 
          * 
          * Examples:
-         * Mandelbrot (iteration)
-         * Julia (iteration)
          * Koch (recursion)
          * 
          * Games:
