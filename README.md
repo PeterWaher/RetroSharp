@@ -65,7 +65,8 @@ The examples available in the [Arithmetics](Examples/Arithmetics) category show 
 
 | Screen Shot | Project description |
 |-------------|---------------------|
-|![Mandelbrot](Images/Mandelbrot_20.png)| The [Mandelbrot](Examples/Raster Graphics/Mandelbrot) project is a homage to Mandelbrot and Julia, and the fractals that bear their names. This project also illustrates the power of iterative processes. You can navigate the fractals and smooth them out to create beautiful images. [Full Screen Shot.](Images/Mandelbrot.png) [Executable.](Executables/Mandelbrot.zip) |
+|![Koch](Images/Koch_20.png)| The [Koch](Examples/Arithmetics/Koch) project displays the famous Koch snowflake. This project also illustrates the power of recursive computation. [Full Screen Shot.](Images/Koch.png) [Executable.](Executables/Koch.zip) |
+|![Mandelbrot](Images/Mandelbrot_20.png)| The [Mandelbrot](Examples/Arithmetics/Mandelbrot) project is a homage to Mandelbrot and Julia, and the fractals that bear their names. This project also illustrates the power of iterative processes. You can navigate the fractals and smooth them out to create beautiful images. [Full Screen Shot.](Images/Mandelbrot.png) [Executable.](Executables/Mandelbrot.zip) |
 |![Simple Arithmetics](Images/SimpleArithmetics_20.png)| The [Simple Arithmetics](Examples/Arithmetics/SimpleArithmetics) project shows how to perform simple computations with some basic console input/output. [Full Screen Shot.](Images/SimpleArithmetics.png) [Executable.](Executables/SimpleArithmetics.zip) |
 |![Sinus1](Images/Sinus1_20.png)| The [Sinus1](Examples/Arithmetics/Sinus1) project outputs a simple sinus graf in console mode. [Full Screen Shot.](Images/Sinus1.png) [Executable.](Executables/Sinus1.zip) |
 |![Sinus2](Images/Sinus2_20.png)| The [Sinus2](Examples/Arithmetics/Sinus2) project outputs a simple sinus graf in raster graphics mode. [Full Screen Shot.](Images/Sinus2.png) [Executable.](Executables/Sinus2.zip) |

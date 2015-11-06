@@ -10234,9 +10234,6 @@ namespace RetroSharp
          * DrawText(x,y,String,Font)
          * 
          * 
-         * Examples:
-         * Koch (recursion)
-         * 
          * Games:
          * Text adventue
          * Arcanoid
