@@ -114,6 +114,15 @@ projects in the [Sprites](Examples/Sprites) category display different uses for 
 |![Bouncing Balls](Images/BouncingBalls_20.png)| The [Bouncing Balls](Examples/Sprites/BouncingBalls) project animates a set of bouncing balls over a console screen, with some sound effects. [Full Screen Shot.](Images/BouncingBalls.png) [Executable.](Executables/BouncingBalls.zip) |
 |![Mouse Pointer](Images/MousePointer_20.png)| The [Mouse Pointer](Examples/Sprites/MousePointer) allows the user to interact with the application using the mouse and draw on the raster screen. The project also shows how sprites can be rotated. [Full Screen Shot.](Images/MousePointer.png) [Executable.](Executables/MousePointer.zip) |
 
+### Networking
+
+Networking makes it possible to create multi-user experiences over the local area network or the Internet. The
+projects in the [Networking](Examples/Networking) category show how network technologies can be used in retro applications.
+
+| Screen Shot | Project description |
+|-------------|---------------------|
+|![MultiUserChat](Images/MultiUserChat_20.png)| The [Multi User Chat](Examples/Networking/MultiUserChat) project creates a multi-user chat room and allows people running the same application to chat with each other. Communication is done using MQTT and the public MQTT server [iot.eclipse.org](http://iot.eclipse.org/getting-started#mqtt). [Full Screen Shot.](Images/MultiUserChat.png) [Executable.](Executables/MultiUserChat.zip) |
+
 ### Games
 
 Finally, the [Games](Examples/Games) category contain more complete applications using the retro-environment to create a retro-game.

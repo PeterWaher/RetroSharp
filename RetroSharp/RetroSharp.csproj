@@ -51,6 +51,14 @@
     <Compile Include="Enumerations\Key.cs" />
     <Compile Include="EventArguments\MouseEventArgs.cs" />
     <Compile Include="EventArguments\KeyEventArgs.cs" />
+    <Compile Include="Networking\BinaryInput.cs" />
+    <Compile Include="Networking\BinaryOutput.cs" />
+    <Compile Include="Networking\MqttContent.cs" />
+    <Compile Include="Networking\MqttState.cs" />
+    <Compile Include="Networking\MqttQualityOfService.cs" />
+    <Compile Include="Networking\MqttConnection.cs" />
+    <Compile Include="Networking\MqttControlPacketType.cs" />
+    <Compile Include="Networking\MqttHeader.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="EventArguments\ElapsedTimeEventArgs.cs" />

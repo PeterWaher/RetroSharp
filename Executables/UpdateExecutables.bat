@@ -1,3 +1,11 @@
+del ..\Examples\Arithmetics\Koch\bin\Release\*.pdb
+del ..\Examples\Arithmetics\Koch\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a Koch.zip ..\Examples\Arithmetics\Koch\bin\Release\*.*
+
+del ..\Examples\Arithmetics\Mandelbrot\bin\Release\*.pdb
+del ..\Examples\Arithmetics\Mandelbrot\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a Mandelbrot.zip ..\Examples\Arithmetics\Mandelbrot\bin\Release\*.*
+
 del ..\Examples\Arithmetics\SimpleArithmetics\bin\Release\*.pdb
 del ..\Examples\Arithmetics\SimpleArithmetics\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a SimpleArithmetics.zip ..\Examples\Arithmetics\SimpleArithmetics\bin\Release\*.*
@@ -16,6 +24,10 @@ del ..\Examples\Games\Asteroids\bin\Release\*.pdb
 del ..\Examples\Games\Asteroids\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a Asteroids.zip ..\Examples\Games\Asteroids\bin\Release\*.*
 
+del ..\Examples\Games\Mines\bin\Release\*.pdb
+del ..\Examples\Games\Mines\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a Mines.zip ..\Examples\Games\Mines\bin\Release\*.*
+
 del ..\Examples\Games\Tanks\bin\Release\*.pdb
 del ..\Examples\Games\Tanks\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a Tanks.zip ..\Examples\Games\Tanks\bin\Release\*.*
@@ -27,6 +39,12 @@ c:\Program\7-Zip\7z.exe a TextAdventure.zip ..\Examples\Games\TextAdventure\bin\
 del ..\Examples\Games\TextAdventure2\bin\Release\*.pdb
 del ..\Examples\Games\TextAdventure2\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a TextAdventure2.zip ..\Examples\Games\TextAdventure2\bin\Release\*.*
+
+
+
+del ..\Examples\Networking\MultiUserChat\bin\Release\*.pdb
+del ..\Examples\Networking\MultiUserChat\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a MultiUserChat.zip ..\Examples\Networking\MultiUserChat\bin\Release\*.*
 
 
 

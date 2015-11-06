@@ -18,6 +18,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 using RetroSharp.Gradients;
+using RetroSharp.Networking;
 
 namespace RetroSharp
 {
@@ -10212,6 +10213,54 @@ namespace RetroSharp
 					Debug.WriteLine(ex.StackTrace.ToString());
 				}
 			}
+		}
+
+		#endregion
+
+		#region Networking
+
+		/// <summary>
+		/// Starts a connection with an MQTT server.
+		/// </summary>
+		/// <param name="Host">Host name or IP address of MQTT server.</param>
+		/// <returns>Connection object.</returns>
+		public static MqttConnection ConnectToMqttServer(string Host, string UserName, string Password)
+		{
+			return ConnectToMqttServer(Host, 1883, false, UserName, Password);
+		}
+
+		/// <summary>
+		/// Starts a connection with an MQTT server.
+		/// </summary>
+		/// <param name="Host">Host name or IP address of MQTT server.</param>
+		/// <param name="Tls">If TLS is used to encrypt communication.</param>
+		/// <returns>Connection object.</returns>
+		public static MqttConnection ConnectToMqttServer(string Host, bool Tls, string UserName, string Password)
+		{
+			return ConnectToMqttServer(Host, Tls ? 8883 : 1883, Tls, UserName, Password);
+		}
+
+		/// <summary>
+		/// Starts a connection with an MQTT server.
+		/// </summary>
+		/// <param name="Host">Host name or IP address of MQTT server.</param>
+		/// <param name="Port">Port to connect to.</param>
+		/// <returns>Connection object.</returns>
+		public static MqttConnection ConnectToMqttServer(string Host, int Port, string UserName, string Password)
+		{
+			return ConnectToMqttServer(Host, Port, Port == 8883, UserName, Password);
+		}
+
+		/// <summary>
+		/// Starts a connection with an MQTT server.
+		/// </summary>
+		/// <param name="Host">Host name or IP address of MQTT server.</param>
+		/// <param name="Port">Port to connect to.</param>
+		/// <param name="Tls">If TLS is used to encrypt communication.</param>
+		/// <returns>Connection object.</returns>
+		public static MqttConnection ConnectToMqttServer(string Host, int Port, bool Tls, string UserName, string Password)
+		{
+			return new MqttConnection(Host, Port, Tls, UserName, Password);
 		}
 
 		#endregion
