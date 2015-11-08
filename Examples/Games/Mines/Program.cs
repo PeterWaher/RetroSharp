@@ -3,8 +3,6 @@ using System.Threading;
 using System.Drawing;
 using RetroSharp;
 
-// This is a template for retro applications using a character-based screen by default.
-
 namespace Mines
 {
 	[CharacterSet("Consolas", 256)]

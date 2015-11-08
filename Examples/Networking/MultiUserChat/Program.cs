@@ -4,8 +4,6 @@ using System.Threading;
 using RetroSharp;
 using RetroSharp.Networking;
 
-// This is a template for retro applications using a character-based screen by default.
-
 namespace MultiUserChat
 {
 	[CharacterSet("Consolas", 256)]

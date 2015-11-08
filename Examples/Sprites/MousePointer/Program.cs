@@ -3,8 +3,6 @@ using System.Threading;
 using System.Drawing;
 using RetroSharp;
 
-// This is a template for retro applications using a raster graphics-based screen by default.
-
 namespace MousePointer
 {
 	[RasterGraphics(320, 200)]

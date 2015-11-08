@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
@@ -91,7 +92,7 @@ namespace RetroSharp.Networking
 		/// </summary>
 		/// <param name="Value">Value to write.</param>
 #pragma warning disable
-		public void WriteUInt(uint Value)
+		public void WriteUInt(ulong Value)
 #pragma warning enable
 		{
 			while (Value >= 128)
@@ -101,6 +102,18 @@ namespace RetroSharp.Networking
 			}
 
 			this.ms.WriteByte((byte)Value);
+		}
+
+		/// <summary>
+		/// Writes a variable-length signed integer.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteInt(long Value)
+		{
+			if (Value >= 0)
+				this.WriteUInt((uint)Value << 1);
+			else
+				this.WriteUInt(((uint)(-Value) << 1) | 1);
 		}
 
 		/// <summary>
@@ -173,6 +186,15 @@ namespace RetroSharp.Networking
 		public void WriteDateTime(DateTime Value)
 		{
 			this.WriteDouble(Value.ToOADate());
+		}
+
+		/// <summary>
+		/// Writes a Color to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteColor(Color Color)
+		{
+			this.WriteUInt32((uint)Color.ToArgb());
 		}
 
 	}

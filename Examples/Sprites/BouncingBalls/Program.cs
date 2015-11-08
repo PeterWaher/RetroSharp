@@ -1,8 +1,6 @@
 using System.Threading;
 using RetroSharp;
 
-// This is a template for retro applications using a character-based screen by default.
-
 namespace BouncingBalls
 {
 	[CharacterSet("Consolas", 256)]

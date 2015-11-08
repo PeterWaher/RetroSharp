@@ -50,6 +50,10 @@ del ..\Examples\Networking\MultiUserChat\bin\Release\*.pdb
 del ..\Examples\Networking\MultiUserChat\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a MultiUserChat.zip ..\Examples\Networking\MultiUserChat\bin\Release\*.*
 
+del ..\Examples\Networking\MultiUserDraw\bin\Release\*.pdb
+del ..\Examples\Networking\MultiUserDraw\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a MultiUserDraw.zip ..\Examples\Networking\MultiUserDraw\bin\Release\*.*
+
 
 
 del "..\Examples\Raster Graphics\ClipLines\bin\Release\*.pdb"

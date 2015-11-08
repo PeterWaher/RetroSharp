@@ -105,6 +105,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiUserChat", "Examples\N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latency", "Examples\Networking\Latency\Latency.csproj", "{CDE6176F-494E-466A-B1E5-607505176C22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiUserDraw", "Examples\Networking\MultiUserDraw\MultiUserDraw.csproj", "{482BB0AB-FDEE-4C57-BB62-6222579E60CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -495,6 +497,16 @@ Global
 		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|Mixed Platforms.Build.0 = Release|x86
 		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|x86.ActiveCfg = Release|x86
 		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|x86.Build.0 = Release|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Debug|x86.ActiveCfg = Debug|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Debug|x86.Build.0 = Debug|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Release|Any CPU.ActiveCfg = Release|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Release|Mixed Platforms.Build.0 = Release|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Release|x86.ActiveCfg = Release|x86
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -549,5 +561,6 @@ Global
 		{668E05ED-E7C3-4B49-BAAE-3F68B0F7B9CA} = {93C0FB36-2554-45E0-B771-FF1A9D93557D}
 		{753FE388-DFE3-48BD-B076-437339AA79C0} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
 		{CDE6176F-494E-466A-B1E5-607505176C22} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
+		{482BB0AB-FDEE-4C57-BB62-6222579E60CA} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
 	EndGlobalSection
 EndGlobal

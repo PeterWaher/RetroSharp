@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
@@ -85,7 +86,7 @@ namespace RetroSharp.Networking
 		/// </summary>
 		/// <returns>Unsigned integer.</returns>
 #pragma warning disable
-		public uint ReadUInt()
+		public ulong ReadUInt()
 #pragma warning enable
 		{
 			byte b = this.ReadByte();
@@ -100,6 +101,20 @@ namespace RetroSharp.Networking
 			}
 
 			return Result;
+		}
+
+		/// <summary>
+		/// Reads a variable-length signed integer from the stream.
+		/// </summary>
+		/// <returns>Signed integer.</returns>
+		public long ReadInt()
+		{
+			ulong l = this.ReadUInt();
+
+			if ((l & 1) == 0)
+				return (long)(l >> 1);
+			else
+				return -(long)(l >> 1);
 		}
 
 		/// <summary>
@@ -121,7 +136,7 @@ namespace RetroSharp.Networking
 		/// <returns>32-bit integer.</returns>
 		public uint ReadUInt32()
 		{
-			int Offset = 8;
+			int Offset = 0;
 			uint Result = 0;
 			int i;
 
@@ -140,7 +155,7 @@ namespace RetroSharp.Networking
 		/// <returns>64-bit integer.</returns>
 		public ulong ReadUInt64()
 		{
-			int Offset = 8;
+			int Offset = 0;
 			ulong Result = 0;
 			int i;
 
@@ -203,6 +218,15 @@ namespace RetroSharp.Networking
 		public int BytesLeft
 		{
 			get { return (int)(this.ms.Length - this.ms.Position); }
+		}
+
+		/// <summary>
+		/// Reads a Color value.
+		/// </summary>
+		/// <returns>Color.</returns>
+		public Color ReadColor()
+		{
+			return Color.FromArgb((int)this.ReadUInt32());
 		}
 
 	}

@@ -2,8 +2,6 @@ using System;
 using RetroSharp;
 using RetroSharp.Networking;
 
-// This is a template for retro applications using a character-based screen by default.
-
 namespace Latency
 {
 	[CharacterSet("Consolas", 256)]

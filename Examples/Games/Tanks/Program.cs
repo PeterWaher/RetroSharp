@@ -4,8 +4,6 @@ using System.Threading;
 using System.Collections.Generic;
 using RetroSharp;
 
-// This is a template for retro applications using a raster graphics-based screen by default.
-
 namespace Tanks
 {
 	[RasterGraphics(1280, 720)]
