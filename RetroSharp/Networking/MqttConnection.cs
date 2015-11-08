@@ -58,7 +58,8 @@ namespace RetroSharp.Networking
 		private string clientId = Guid.NewGuid().ToString().Substring(0, 23);
 		private TcpClient client = null;
 		private Stream stream = null;
-		private Timer keepAliveTimer = null;
+		private Timer secondTimer = null;
+		private DateTime nextPing = DateTime.MinValue;
 		private string host;
 		private string userName;
 		private string password;
@@ -166,6 +167,8 @@ namespace RetroSharp.Networking
 		{
 			this.State = MqttState.Authenticating;
 			this.keepAliveSeconds = KeepAliveSeconds;
+			this.nextPing = DateTime.Now.AddMilliseconds(KeepAliveSeconds * 500);
+			this.secondTimer = new Timer(this.secondTimer_Elapsed, null, 1000, 1000);
 
 			BinaryOutput Payload = new BinaryOutput();
 			Payload.WriteString("MQTT");
@@ -200,41 +203,113 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, false);
+			this.BeginWrite(PacketData, 0);
 			this.inputState = 0;
 			this.BeginRead();
 		}
 
-		private void BeginWrite(byte[] Packet, bool ResetKeepAliveTimer)
+		private void BeginWrite(byte[] Packet, int PacketIdentifier)
 		{
 			lock (this.outputQueue)
 			{
 				if (this.isWriting)
-					this.outputQueue.AddLast(new KeyValuePair<byte[], bool>(Packet, ResetKeepAliveTimer));
+					this.outputQueue.AddLast(new KeyValuePair<byte[], int>(Packet, PacketIdentifier));
 				else
-				{
+					this.DoBeginWriteLocked(Packet, PacketIdentifier);
+			}
+		}
+
+		private void DoBeginWriteLocked(byte[] Packet, int PacketIdentifier)
+		{
 #if LineListener
-					StringBuilder sb = null;
+			StringBuilder sb = null;
 
-					foreach (byte b in Packet)
-					{
-						if (sb == null)
-							sb = new StringBuilder();
-						else
-							sb.Append(' ');
+			foreach (byte b in Packet)
+			{
+				if (sb == null)
+					sb = new StringBuilder();
+				else
+					sb.Append(' ');
 
-						sb.Append(b.ToString("X2"));
-					}
+				sb.Append(b.ToString("X2"));
+			}
 
-					LLOut(sb.ToString(), Color.Black, Color.White);
+			LLOut(sb.ToString(), Color.Black, Color.White);
 #endif
-					this.stream.BeginWrite(Packet, 0, Packet.Length, this.EndWrite, ResetKeepAliveTimer);
-					this.isWriting = true;
+			this.stream.BeginWrite(Packet, 0, Packet.Length, this.EndWrite, null);
+			this.isWriting = true;
+
+			if (PacketIdentifier != 0 && ((Packet[0] >> 1) & 3) > 0)
+			{
+				DateTime Timeout = DateTime.Now.AddSeconds(2);
+				while (this.packetByTimeout.ContainsKey(Timeout))
+					Timeout = Timeout.AddTicks(rnd.Next(1, 10));
+
+				this.packetByTimeout[Timeout] = new KeyValuePair<byte[], int>(Packet, PacketIdentifier);
+				this.timeoutByPacketIdentifier[PacketIdentifier] = Timeout;
+			}
+		}
+
+		private void PacketDelivered(int PacketIdentifier)
+		{
+			lock (this.outputQueue)
+			{
+				DateTime TP;
+
+				if (this.timeoutByPacketIdentifier.TryGetValue(PacketIdentifier, out TP))
+				{
+					this.timeoutByPacketIdentifier.Remove(PacketIdentifier);
+					this.packetByTimeout.Remove(TP);
 				}
 			}
 		}
 
-		private LinkedList<KeyValuePair<byte[], bool>> outputQueue = new LinkedList<KeyValuePair<byte[], bool>>();
+		private void secondTimer_Elapsed(object State)
+		{
+			DateTime Now = DateTime.Now;
+
+			if (Now >= this.nextPing)
+			{
+				this.PING();
+				this.nextPing = Now.AddMilliseconds(this.keepAliveSeconds * 500);
+			}
+
+			LinkedList<KeyValuePair<DateTime, KeyValuePair<byte[], int>>> Resend = null;
+
+			lock (this.outputQueue)
+			{
+				foreach (KeyValuePair<DateTime, KeyValuePair<byte[], int>> P in this.packetByTimeout)
+				{
+					if (Now < P.Key)
+						break;
+
+					if (Resend == null)
+						Resend = new LinkedList<KeyValuePair<DateTime, KeyValuePair<byte[], int>>>();
+
+					Resend.AddLast(P);
+				}
+
+				if (Resend != null)
+				{
+					foreach (KeyValuePair<DateTime, KeyValuePair<byte[], int>> P in Resend)
+					{
+						this.packetByTimeout.Remove(P.Key);
+						this.timeoutByPacketIdentifier.Remove(P.Value.Value);
+					}
+				}
+			}
+
+			if (Resend != null)
+			{
+				foreach (KeyValuePair<DateTime, KeyValuePair<byte[], int>> P in Resend)
+					this.BeginWrite(P.Value.Key, P.Value.Value);
+			}
+		}
+
+		private LinkedList<KeyValuePair<byte[], int>> outputQueue = new LinkedList<KeyValuePair<byte[], int>>();
+		private SortedDictionary<DateTime, KeyValuePair<byte[], int>> packetByTimeout = new SortedDictionary<DateTime, KeyValuePair<byte[], int>>();
+		private SortedDictionary<int, DateTime> timeoutByPacketIdentifier = new SortedDictionary<int, DateTime>();
+		private Random rnd = new Random();
 		private bool isWriting = false;
 
 #if LineListener
@@ -255,8 +330,6 @@ namespace RetroSharp.Networking
 
 		private void EndWrite(IAsyncResult ar)
 		{
-			bool ResetTimer;
-
 			if (this.stream == null)
 				return;
 
@@ -264,35 +337,18 @@ namespace RetroSharp.Networking
 			{
 				this.stream.EndWrite(ar);
 
-				ResetTimer = (bool)ar.AsyncState;
-				if (ResetTimer)
-					this.ResetKeepAliveTimer();
+				this.nextPing = DateTime.Now.AddMilliseconds(this.keepAliveSeconds * 500);
 
 				lock (this.outputQueue)
 				{
-					LinkedListNode<KeyValuePair<byte[], bool>> Next = this.outputQueue.First;
+					LinkedListNode<KeyValuePair<byte[], int>> Next = this.outputQueue.First;
 
 					if (Next == null)
 						this.isWriting = false;
 					else
 					{
 						this.outputQueue.RemoveFirst();
-#if LineListener
-						StringBuilder sb = null;
-
-						foreach (byte b in Next.Value.Key)
-						{
-							if (sb == null)
-								sb = new StringBuilder();
-							else
-								sb.Append(' ');
-
-							sb.Append(b.ToString("X2"));
-						}
-
-						LLOut(sb.ToString(), Color.Black, Color.White);
-#endif
-						this.stream.BeginWrite(Next.Value.Key, 0, Next.Value.Key.Length, this.EndWrite, Next.Value.Value);
+						this.DoBeginWriteLocked(Next.Value.Key, Next.Value.Value);
 					}
 				}
 			}
@@ -480,7 +536,7 @@ namespace RetroSharp.Networking
 							{
 								case 0:
 									this.State = MqttState.Connected;
-									this.ResetKeepAliveTimer();
+									this.nextPing = DateTime.Now.AddMilliseconds(this.keepAliveSeconds * 500);
 									break;
 
 								case 1:
@@ -509,6 +565,10 @@ namespace RetroSharp.Networking
 							this.client.Close();
 							return false;
 						}
+						break;
+
+					case MqttControlPacketType.PINGREQ:
+						this.PINGRESP();
 						break;
 
 					case MqttControlPacketType.PINGRESP:
@@ -562,6 +622,7 @@ namespace RetroSharp.Networking
 						break;
 
 					case MqttControlPacketType.PUBACK:
+						this.PacketDelivered(Header.PacketIdentifier);
 						PacketAcknowledgedEventHandler h2 = this.OnPublished;
 						if (h2 != null)
 						{
@@ -579,6 +640,7 @@ namespace RetroSharp.Networking
 						break;
 
 					case MqttControlPacketType.PUBREC:
+						this.PacketDelivered(Header.PacketIdentifier);
 						this.PUBREL(Header.PacketIdentifier);
 						break;
 
@@ -597,6 +659,7 @@ namespace RetroSharp.Networking
 						break;
 
 					case MqttControlPacketType.PUBCOMP:
+						this.PacketDelivered(Header.PacketIdentifier);
 						h2 = this.OnPublished;
 						if (h2 != null)
 						{
@@ -614,6 +677,7 @@ namespace RetroSharp.Networking
 						break;
 
 					case MqttControlPacketType.SUBACK:
+						this.PacketDelivered(Header.PacketIdentifier);
 						h2 = this.OnSubscribed;
 						if (h2 != null)
 						{
@@ -631,6 +695,7 @@ namespace RetroSharp.Networking
 						break;
 
 					case MqttControlPacketType.UNSUBACK:
+						this.PacketDelivered(Header.PacketIdentifier);
 						h2 = this.OnUnsubscribed;
 						if (h2 != null)
 						{
@@ -681,23 +746,6 @@ namespace RetroSharp.Networking
 		private int inputRemainingLength;
 		private int inputOffset;
 
-		private void ResetKeepAliveTimer()
-		{
-			if (this.keepAliveTimer != null)
-			{
-				this.keepAliveTimer.Dispose();
-				this.keepAliveTimer = null;
-			}
-
-			int Interval = this.keepAliveSeconds * 500;
-			this.keepAliveTimer = new Timer(this.keepAliveTimer_Elapsed, null, Interval, Interval);
-		}
-
-		private void keepAliveTimer_Elapsed(object State)
-		{
-			this.PING();
-		}
-
 		/// <summary>
 		/// Sends a PING message to the server. This is automatically done to keep the connection alive. Only call this method
 		/// if you want to send additional PING messages, apart from the ones sent to keep the connection alive.
@@ -710,7 +758,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, 0);
 
 			EventHandler h = this.OnPing;
 			if (h != null)
@@ -726,6 +774,17 @@ namespace RetroSharp.Networking
 #endif
 				}
 			}
+		}
+
+		private void PINGRESP()
+		{
+			BinaryOutput Packet = new BinaryOutput();
+			Packet.WriteByte((byte)MqttControlPacketType.PINGRESP << 4);
+			Packet.WriteUInt(0);
+
+			byte[] PacketData = Packet.GetPacket();
+
+			this.BeginWrite(PacketData, 0);
 		}
 
 		/// <summary>
@@ -890,11 +949,9 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, PacketIdentifier);
 
 			return PacketIdentifier;
-
-			// TODO: Retries
 		}
 
 		/// <summary>
@@ -916,7 +973,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, 0);
 		}
 
 		private void PUBREC(ushort PacketIdentifier)
@@ -928,7 +985,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, 0);
 		}
 
 		private void PUBREL(ushort PacketIdentifier)
@@ -940,7 +997,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, PacketIdentifier);
 		}
 
 		private void PUBCOMP(ushort PacketIdentifier)
@@ -952,7 +1009,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, 0);
 		}
 
 		/// <summary>
@@ -1005,7 +1062,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, PacketIdentifier);
 
 			return PacketIdentifier;
 		}
@@ -1064,7 +1121,7 @@ namespace RetroSharp.Networking
 
 			byte[] PacketData = Packet.GetPacket();
 
-			this.BeginWrite(PacketData, true);
+			this.BeginWrite(PacketData, PacketIdentifier);
 
 			return PacketIdentifier;
 		}
@@ -1087,6 +1144,8 @@ namespace RetroSharp.Networking
 				lock (this.outputQueue)
 				{
 					this.outputQueue.Clear();
+					this.packetByTimeout.Clear();
+					this.timeoutByPacketIdentifier.Clear();
 				}
 			}
 
@@ -1098,10 +1157,10 @@ namespace RetroSharp.Networking
 				}
 			}
 
-			if (this.keepAliveTimer != null)
+			if (this.secondTimer != null)
 			{
-				this.keepAliveTimer.Dispose();
-				this.keepAliveTimer = null;
+				this.secondTimer.Dispose();
+				this.secondTimer = null;
 			}
 
 			if (this.stream != null)
