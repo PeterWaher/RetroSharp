@@ -126,9 +126,11 @@ namespace RetroSharp.Networking
 				{
 					h(this, ex);
 				}
-				catch (Exception)
+				catch (Exception ex2)
 				{
-					// Ignore.
+#if LineListener
+					LLOut(ex2.Message, Color.Yellow, Color.DarkRed);
+#endif
 				}
 			}
 
@@ -205,32 +207,51 @@ namespace RetroSharp.Networking
 
 		private void BeginWrite(byte[] Packet, bool ResetKeepAliveTimer)
 		{
-#if LineListener
-			StringBuilder sb = null;
-
-			foreach (byte b in Packet)
+			lock (this.outputQueue)
 			{
-				if (sb == null)
-					sb = new StringBuilder();
+				if (this.isWriting)
+					this.outputQueue.AddLast(new KeyValuePair<byte[], bool>(Packet, ResetKeepAliveTimer));
 				else
-					sb.Append(' ');
+				{
+#if LineListener
+					StringBuilder sb = null;
 
-				sb.Append(b.ToString("X2"));
+					foreach (byte b in Packet)
+					{
+						if (sb == null)
+							sb = new StringBuilder();
+						else
+							sb.Append(' ');
+
+						sb.Append(b.ToString("X2"));
+					}
+
+					LLOut(sb.ToString(), Color.Black, Color.White);
+#endif
+					this.stream.BeginWrite(Packet, 0, Packet.Length, this.EndWrite, ResetKeepAliveTimer);
+					this.isWriting = true;
+				}
 			}
+		}
 
+		private LinkedList<KeyValuePair<byte[], bool>> outputQueue = new LinkedList<KeyValuePair<byte[], bool>>();
+		private bool isWriting = false;
+
+#if LineListener
+		private void LLOut(string s, Color Fg, Color Bg)
+		{
 			Color FgBak = RetroApplication.ForegroundColor;
 			Color BgBak = RetroApplication.BackgroundColor;
 
-			RetroApplication.ForegroundColor = Color.Black;
-			RetroApplication.BackgroundColor = Color.White;
+			RetroApplication.ForegroundColor = Fg;
+			RetroApplication.BackgroundColor = Bg;
 
-			Console.Out.WriteLine(sb.ToString());
+			Console.Out.WriteLine(s);
 
 			RetroApplication.ForegroundColor = FgBak;
 			RetroApplication.BackgroundColor = BgBak;
-#endif
-			this.stream.BeginWrite(Packet, 0, Packet.Length, this.EndWrite, ResetKeepAliveTimer);
 		}
+#endif
 
 		private void EndWrite(IAsyncResult ar)
 		{
@@ -246,11 +267,44 @@ namespace RetroSharp.Networking
 				ResetTimer = (bool)ar.AsyncState;
 				if (ResetTimer)
 					this.ResetKeepAliveTimer();
+
+				lock (this.outputQueue)
+				{
+					LinkedListNode<KeyValuePair<byte[], bool>> Next = this.outputQueue.First;
+
+					if (Next == null)
+						this.isWriting = false;
+					else
+					{
+						this.outputQueue.RemoveFirst();
+#if LineListener
+						StringBuilder sb = null;
+
+						foreach (byte b in Next.Value.Key)
+						{
+							if (sb == null)
+								sb = new StringBuilder();
+							else
+								sb.Append(' ');
+
+							sb.Append(b.ToString("X2"));
+						}
+
+						LLOut(sb.ToString(), Color.Black, Color.White);
+#endif
+						this.stream.BeginWrite(Next.Value.Key, 0, Next.Value.Key.Length, this.EndWrite, Next.Value.Value);
+					}
+				}
 			}
 			catch (Exception ex)
 			{
 				this.ConnectionError(ex);
-				return;
+
+				lock (this.outputQueue)
+				{
+					this.outputQueue.Clear();
+					this.isWriting = false;
+				}
 			}
 		}
 
@@ -300,16 +354,7 @@ namespace RetroSharp.Networking
 						sb.Append(b.ToString("X2"));
 					}
 
-					Color FgBak = RetroApplication.ForegroundColor;
-					Color BgBak = RetroApplication.BackgroundColor;
-
-					RetroApplication.ForegroundColor = Color.White;
-					RetroApplication.BackgroundColor = Color.Navy;
-
-					Console.Out.WriteLine(sb.ToString());
-
-					RetroApplication.ForegroundColor = FgBak;
-					RetroApplication.BackgroundColor = BgBak;
+					LLOut(sb.ToString(), Color.White, Color.Navy);
 #endif
 
 					for (i = 0; i < NrRead; i++)
@@ -474,16 +519,23 @@ namespace RetroSharp.Networking
 							{
 								h(this, new EventArgs());
 							}
-							catch (Exception)
+							catch (Exception ex)
 							{
-								// Ignore.
+#if LineListener
+								LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 							}
 						}
 						break;
 
 					case MqttControlPacketType.PUBLISH:
 						string Topic = Packet.ReadString();
-						Header.PacketIdentifier = Packet.ReadUInt16();
+						
+						if (Header.QualityOfService > MqttQualityOfService.AtMostOne)
+							Header.PacketIdentifier = Packet.ReadUInt16();
+						else
+							Header.PacketIdentifier = 0;
+
 						int c = Packet.BytesLeft;
 						byte[] Data = Packet.ReadBytes(c);
 						MqttContent Content = new MqttContent(Header, Topic, Data);
@@ -517,9 +569,11 @@ namespace RetroSharp.Networking
 							{
 								h2(this, Header.PacketIdentifier);
 							}
-							catch (Exception)
+							catch (Exception ex)
 							{
-								// Ignore.
+#if LineListener
+								LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 							}
 						}
 						break;
@@ -550,9 +604,11 @@ namespace RetroSharp.Networking
 							{
 								h2(this, Header.PacketIdentifier);
 							}
-							catch (Exception)
+							catch (Exception ex)
 							{
-								// Ignore.
+#if LineListener
+								LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 							}
 						}
 						break;
@@ -565,9 +621,11 @@ namespace RetroSharp.Networking
 							{
 								h2(this, Header.PacketIdentifier);
 							}
-							catch (Exception)
+							catch (Exception ex)
 							{
-								// Ignore.
+#if LineListener
+								LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 							}
 						}
 						break;
@@ -580,9 +638,11 @@ namespace RetroSharp.Networking
 							{
 								h2(this, Header.PacketIdentifier);
 							}
-							catch (Exception)
+							catch (Exception ex)
 							{
-								// Ignore.
+#if LineListener
+								LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 							}
 						}
 						break;
@@ -605,9 +665,11 @@ namespace RetroSharp.Networking
 				{
 					h(this, ex);
 				}
-				catch (Exception)
+				catch (Exception ex2)
 				{
-					// Ignore
+#if LineListener
+					LLOut(ex2.Message, Color.Yellow, Color.DarkRed);
+#endif
 				}
 			}
 		}
@@ -657,9 +719,11 @@ namespace RetroSharp.Networking
 				{
 					h(this, new EventArgs());
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					// Ignore.					
+#if LineListener
+					LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 				}
 			}
 		}
@@ -744,9 +808,11 @@ namespace RetroSharp.Networking
 						{
 							h(this, value);
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-							// Ignore.
+#if LineListener
+							LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 						}
 					}
 				}
@@ -953,9 +1019,11 @@ namespace RetroSharp.Networking
 				{
 					h(this, Content);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					// Ignore.
+#if LineListener
+					LLOut(ex.Message, Color.Yellow, Color.DarkRed);
+#endif
 				}
 			}
 		}
@@ -1013,6 +1081,14 @@ namespace RetroSharp.Networking
 		{
 			if (this.state == MqttState.Connected)
 				this.DISCONNECT();
+
+			if (this.outputQueue != null)
+			{
+				lock (this.outputQueue)
+				{
+					this.outputQueue.Clear();
+				}
+			}
 
 			if (this.contentCache != null)
 			{

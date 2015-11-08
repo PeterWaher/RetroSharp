@@ -113,5 +113,67 @@ namespace RetroSharp.Networking
 			this.ms.WriteByte((byte)Value);
 		}
 
+		/// <summary>
+		/// Writes a 32-bit integer to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteUInt32(uint Value)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				this.ms.WriteByte((byte)Value);
+				Value >>= 8;
+			}
+		}
+
+		/// <summary>
+		/// Writes a 64-bit integer to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteUInt64(ulong Value)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				this.ms.WriteByte((byte)Value);
+				Value >>= 8;
+			}
+		}
+
+		/// <summary>
+		/// Writes a single-precision floating point to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteSingle(float f)
+		{
+			this.WriteBytes(BitConverter.GetBytes(f));
+		}
+
+		/// <summary>
+		/// Writes a double-precision floating point to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteDouble(double d)
+		{
+			this.WriteBytes(BitConverter.GetBytes(d));
+		}
+
+		/// <summary>
+		/// Writes a TimeSpan to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteTimeSpan(TimeSpan Value)
+		{
+			this.WriteDouble(Value.TotalMilliseconds);
+		}
+
+		/// <summary>
+		/// Writes a DateTime to the stream.
+		/// </summary>
+		/// <param name="Value">Value to write.</param>
+		public void WriteDateTime(DateTime Value)
+		{
+			this.WriteDouble(Value.ToOADate());
+		}
+
 	}
 }

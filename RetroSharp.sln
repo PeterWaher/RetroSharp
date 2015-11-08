@@ -103,6 +103,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Networking", "Networking", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiUserChat", "Examples\Networking\MultiUserChat\MultiUserChat.csproj", "{753FE388-DFE3-48BD-B076-437339AA79C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latency", "Examples\Networking\Latency\Latency.csproj", "{CDE6176F-494E-466A-B1E5-607505176C22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -483,6 +485,16 @@ Global
 		{753FE388-DFE3-48BD-B076-437339AA79C0}.Release|Mixed Platforms.Build.0 = Release|x86
 		{753FE388-DFE3-48BD-B076-437339AA79C0}.Release|x86.ActiveCfg = Release|x86
 		{753FE388-DFE3-48BD-B076-437339AA79C0}.Release|x86.Build.0 = Release|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Debug|x86.ActiveCfg = Debug|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Debug|x86.Build.0 = Debug|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|Any CPU.ActiveCfg = Release|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|Mixed Platforms.Build.0 = Release|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|x86.ActiveCfg = Release|x86
+		{CDE6176F-494E-466A-B1E5-607505176C22}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -536,5 +548,6 @@ Global
 		{30F10CAA-0A8B-48B4-BF02-5C63688D619A} = {93C0FB36-2554-45E0-B771-FF1A9D93557D}
 		{668E05ED-E7C3-4B49-BAAE-3F68B0F7B9CA} = {93C0FB36-2554-45E0-B771-FF1A9D93557D}
 		{753FE388-DFE3-48BD-B076-437339AA79C0} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
+		{CDE6176F-494E-466A-B1E5-607505176C22} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
 	EndGlobalSection
 EndGlobal

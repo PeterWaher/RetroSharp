@@ -116,6 +116,80 @@ namespace RetroSharp.Networking
 		}
 
 		/// <summary>
+		/// Reads an unsignd 16-bit integer.
+		/// </summary>
+		/// <returns>32-bit integer.</returns>
+		public uint ReadUInt32()
+		{
+			int Offset = 8;
+			uint Result = 0;
+			int i;
+
+			for (i = 0; i < 4; i++)
+			{
+				Result |= (uint)(this.ReadByte() << Offset);
+				Offset += 8;
+			}
+
+			return Result;
+		}
+
+		/// <summary>
+		/// Reads an unsignd 64-bit integer.
+		/// </summary>
+		/// <returns>64-bit integer.</returns>
+		public ulong ReadUInt64()
+		{
+			int Offset = 8;
+			ulong Result = 0;
+			int i;
+
+			for (i = 0; i < 8; i++)
+			{
+				Result |= (ulong)(this.ReadByte() << Offset);
+				Offset += 8;
+			}
+
+			return Result;
+		}
+
+		/// <summary>
+		/// Reads a single-precision floating point value.
+		/// </summary>
+		/// <returns>Single-precision floating point value</returns>
+		public float ReadSingle()
+		{
+			return BitConverter.ToSingle(this.ReadBytes(4), 0);
+		}
+
+		/// <summary>
+		/// Reads a double-precision floating point value.
+		/// </summary>
+		/// <returns>Double-precision floating point value</returns>
+		public double ReadDouble()
+		{
+			return BitConverter.ToDouble(this.ReadBytes(8), 0);
+		}
+
+		/// <summary>
+		/// Reads a TimeSpan value.
+		/// </summary>
+		/// <returns>TimeSpan.</returns>
+		public TimeSpan ReadTimeSpan()
+		{
+			return TimeSpan.FromMilliseconds(this.ReadDouble());
+		}
+
+		/// <summary>
+		/// Reads a DateTime value.
+		/// </summary>
+		/// <returns>DateTime.</returns>
+		public DateTime ReadDateTime()
+		{
+			return DateTime.FromOADate(this.ReadDouble());
+		}
+
+		/// <summary>
 		/// Current position in input stream.
 		/// </summary>
 		public int Position

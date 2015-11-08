@@ -42,6 +42,10 @@ c:\Program\7-Zip\7z.exe a TextAdventure2.zip ..\Examples\Games\TextAdventure2\bi
 
 
 
+del ..\Examples\Networking\Latency\bin\Release\*.pdb
+del ..\Examples\Networking\Latency\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a Latency.zip ..\Examples\Networking\Latency\bin\Release\*.*
+
 del ..\Examples\Networking\MultiUserChat\bin\Release\*.pdb
 del ..\Examples\Networking\MultiUserChat\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a MultiUserChat.zip ..\Examples\Networking\MultiUserChat\bin\Release\*.*
