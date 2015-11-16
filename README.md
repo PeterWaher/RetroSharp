@@ -103,6 +103,7 @@ to perform different simple graphics operations.
 |![Random Rectangles](Images/RandomRectangles_20.png)| The [Random Rectangles](Examples/Raster Graphics/RandomRectangles) project randomly draws rectangles on the raster display as quickly as possible. [Full Screen Shot.](Images/RandomRectangles.png) [Executable.](Executables/RandomRectangles.zip) |
 |![Random Rounded Boxes](Images/RandomRoundedBoxes_20.png)| The [Random Rounded Boxes](Examples/Raster Graphics/RandomRoundedBoxes) project randomly draws rounded boxes on the raster display as quickly as possible. [Full Screen Shot.](Images/RandomRoundedBoxes.png) [Executable.](Executables/RandomRoundedBoxes.zip) |
 |![Random Rounded Rectangles](Images/RandomRoundedRectangles_20.png)| The [Random Rounded Rectangles](Examples/Raster Graphics/RandomRoundedRectangles) project randomly draws rectangles on the raster display as quickly as possible. [Full Screen Shot.](Images/RandomRoundedRectangles.png) [Executable.](Executables/RandomRoundedRectangles.zip) |
+|![Stars](Images/Stars_20.png)| The [Stars](Examples/Raster Graphics/Stars) project animates points on the screen, making it look like flying through space. [Full Screen Shot.](Images/Stars.png) [Executable.](Executables/Stars.zip) |
 
 ### Sprites
 
