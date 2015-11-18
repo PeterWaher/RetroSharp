@@ -100,6 +100,14 @@ del "..\Examples\Raster Graphics\RandomRoundedRectangles\bin\Release\*.pdb"
 del "..\Examples\Raster Graphics\RandomRoundedRectangles\bin\Release\OpenTK.xml"
 c:\Program\7-Zip\7z.exe a RandomRoundedRectangles.zip "..\Examples\Raster Graphics\RandomRoundedRectangles\bin\Release\*.*"
 
+del "..\Examples\Raster GraphicsStars\bin\Release\*.pdb"
+del "..\Examples\Raster GraphicsStars\bin\Release\OpenTK.xml"
+c:\Program\7-Zip\7z.exe a RandomRoundedRectangles.zip "..\Examples\Raster GraphicsStars\bin\Release\*.*"
+
+del "..\Examples\Raster GraphicsVennDiagram\bin\Release\*.pdb"
+del "..\Examples\Raster GraphicsVennDiagram\bin\Release\OpenTK.xml"
+c:\Program\7-Zip\7z.exe a RandomRoundedRectangles.zip "..\Examples\Raster GraphicsVennDiagram\bin\Release\*.*"
+
 
 
 del ..\Examples\Sprites\BouncingBalls\bin\Release\*.pdb

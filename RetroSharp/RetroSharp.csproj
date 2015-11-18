@@ -51,6 +51,8 @@
     <Compile Include="Enumerations\Key.cs" />
     <Compile Include="EventArguments\MouseEventArgs.cs" />
     <Compile Include="EventArguments\KeyEventArgs.cs" />
+    <Compile Include="Gradients\Add.cs" />
+    <Compile Include="Gradients\Subtract.cs" />
     <Compile Include="Networking\BinaryInput.cs" />
     <Compile Include="Networking\BinaryOutput.cs" />
     <Compile Include="Networking\MqttContent.cs" />

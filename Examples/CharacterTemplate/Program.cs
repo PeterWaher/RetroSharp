@@ -1,3 +1,5 @@
+using System;
+using System.Drawing;
 using RetroSharp;
 
 // This is a template for retro applications using a character-based screen by default.

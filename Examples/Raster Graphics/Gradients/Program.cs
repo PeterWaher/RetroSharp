@@ -45,6 +45,16 @@ namespace Gradients
             FillRoundedRectangle(650, 250, 760, 360, 20, 20, Xor(Color.White));
             FillRoundedRectangle(660, 260, 750, 350, 20, 20, Xor(Color.White));
 
+			FillFlood(620, 220, Color.Blue);
+			FillFlood(630, 230, Color.LightBlue);
+			FillFlood(640, 240, Color.Blue);
+			FillFlood(650, 250, Color.LightBlue);
+			FillFlood(660, 260, Color.Blue);
+			FillFlood(670, 270, Color.LightBlue);
+
+			FillFlood(0, 0, RadialGradient(650, 600
+				, Color.Yellow, 1000, Color.Red));
+
             bool Done = false;
 
             OnKeyDown += (sender, e) => Done = true;

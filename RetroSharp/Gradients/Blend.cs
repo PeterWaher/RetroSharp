@@ -34,7 +34,7 @@ namespace RetroSharp.Gradients
         }
 
         /// <summary>
-        /// Gets the color for a given coordinate and the color of the pixel before coloration.
+        /// Gets the color for a given coordinate given the color of the pixel before coloration.
         /// </summary>
         /// <param name="X">X-coordinate.</param>
         /// <param name="Y">Y-coordinate.</param>

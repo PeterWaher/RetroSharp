@@ -3666,6 +3666,72 @@ namespace RetroSharp
 
 		#endregion
 
+		#region Add
+
+		/// <summary>
+		/// Adds a color to the destination background.
+		/// </summary>
+		/// <param name="Color">Color to add to the destination.</param>
+		public static ProceduralColorAlgorithm Add(Color Color)
+		{
+			return new Gradients.Add(Color).GetColor;
+		}
+
+		/// <summary>
+		/// Adds Color1 to Color2
+		/// </summary>
+		/// <param name="Color1">Color 1</param>
+		/// <param name="Color2">Color 2</param>
+		/// <returns>Sum of colors.</returns>
+		public static Color Add(Color Color1, Color Color2)
+		{
+			double p = Color1.A / 255.0;
+
+			int R = (int)(Color1.R * p + Color2.R + 0.5);
+			int G = (int)(Color1.G * p + Color2.G + 0.5);
+			int B = (int)(Color1.B * p + Color2.B + 0.5);
+
+			return Color.FromArgb(Color2.A,
+				R > 255 ? 255 : R,
+				G > 255 ? 255 : G,
+				B > 255 ? 255 : B);
+		}
+
+		#endregion
+
+		#region Subtract
+
+		/// <summary>
+		/// Subtracts a color from the destination background.
+		/// </summary>
+		/// <param name="Color">Color to add to the destination.</param>
+		public static ProceduralColorAlgorithm Subtract(Color Color)
+		{
+			return new Gradients.Subtract(Color).GetColor;
+		}
+
+		/// <summary>
+		/// Subtracts Color1 from Color2
+		/// </summary>
+		/// <param name="Color1">Color 1</param>
+		/// <param name="Color2">Color 2</param>
+		/// <returns>Difference of colors.</returns>
+		public static Color Subtract(Color Color1, Color Color2)
+		{
+			double p = Color1.A / 255.0;
+
+			int R = (int)(Color2.R - Color1.R * p + 0.5);
+			int G = (int)(Color2.G - Color1.G * p + 0.5);
+			int B = (int)(Color2.B - Color1.B * p + 0.5);
+
+			return Color.FromArgb(Color2.A,
+				R < 0 ? 0 : R,
+				G < 0 ? 0 : G,
+				B < 0 ? 0 : B);
+		}
+
+		#endregion
+
 		#region XOR
 
 		/// <summary>
@@ -5779,7 +5845,7 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="Color">Color to use.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			bool b;
@@ -5804,7 +5870,7 @@ namespace RetroSharp
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="Color">Color to use.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the rectangle.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, Color Color, BinaryWriter PreviousColors)
 		{
 			DrawLine(x1, y1, x2, y1, Color, PreviousColors);
@@ -5820,7 +5886,7 @@ namespace RetroSharp
 		/// <param name="y1">Y-coordinate of first corner.</param>
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
+		/// <param name="Colors">Colors to use when drawing the rectangle. Such a set of colors can be obtained by previously having called
 		/// <see cref="DrawRectangle(int, int, int, int, Color, BinaryWriter"/>.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors)
 		{
@@ -5837,10 +5903,10 @@ namespace RetroSharp
 		/// <param name="y1">Y-coordinate of first corner.</param>
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
+		/// <param name="Colors">Colors to use when drawing the rectangle. Such a set of colors can be obtained by previously having called
 		/// <see cref="DrawRectangle(int, int, int, int, Color, BinaryWriter"/>.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			bool b;
@@ -5864,9 +5930,9 @@ namespace RetroSharp
 		/// <param name="y1">Y-coordinate of first corner.</param>
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
+		/// <param name="Colors">Colors to use when drawing the rectangle. Such a set of colors can be obtained by previously having called
 		/// <see cref="DrawRectangle(int, int, int, int, Color, BinaryWriter"/>.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the rectangle.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			DrawLine(x1, y1, x2, y1, Colors, PreviousColors);
@@ -5900,7 +5966,7 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
 			bool b;
@@ -5925,7 +5991,7 @@ namespace RetroSharp
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the rectangle.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			DrawLine(x1, y1, x2, y1, ColorAlgorithm, PreviousColors);
@@ -5964,7 +6030,7 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="Color">Color to use.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -5991,7 +6057,7 @@ namespace RetroSharp
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="Color">Color to use.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the rectangle.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, Color Color, BinaryWriter PreviousColors)
 		{
 			if (!ClipBox(ref x1, ref y1, ref x2, ref y2, rasterClipLeft, rasterClipTop, rasterClipRight, rasterClipBottom))
@@ -6008,7 +6074,7 @@ namespace RetroSharp
 		/// <param name="y1">Y-coordinate of first corner.</param>
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
+		/// <param name="Colors">Colors to use when filling the rectangle. Such a set of colors can be obtained by previously having called
 		/// <see cref="FillRectangle(int, int, int, int, Color, BinaryWriter"/>.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors)
 		{
@@ -6026,10 +6092,10 @@ namespace RetroSharp
 		/// <param name="y1">Y-coordinate of first corner.</param>
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
+		/// <param name="Colors">Colors to use when filling the rectangle. Such a set of colors can be obtained by previously having called
 		/// <see cref="FillRectangle(int, int, int, int, Color, BinaryWriter"/>.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6053,9 +6119,9 @@ namespace RetroSharp
 		/// <param name="y1">Y-coordinate of first corner.</param>
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
+		/// <param name="Colors">Colors to use when filling the rectangle. Such a set of colors can be obtained by previously having called
 		/// <see cref="FillRectangle(int, int, int, int, Color, BinaryWriter"/>.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the rectangle.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			if (!ClipBox(ref x1, ref y1, ref x2, ref y2, rasterClipLeft, rasterClipTop, rasterClipRight, rasterClipBottom))
@@ -6091,7 +6157,7 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6116,7 +6182,7 @@ namespace RetroSharp
 		/// <param name="x2">X-coordinate of second corner.</param>
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the rectangle.</param>
 		public static void FillRectangle(int x1, int y1, int x2, int y2, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			if (!ClipBox(ref x1, ref y1, ref x2, ref y2, rasterClipLeft, rasterClipTop, rasterClipRight, rasterClipBottom))
@@ -6154,6 +6220,8 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the ellipse is NOT the background color.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6171,6 +6239,7 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the ellipse.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, Color Color, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6186,7 +6255,8 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when drawing the ellipse. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawEllipse(int, int, int, int, Color, BinaryWriter"/>.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, BinaryReader Colors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6202,7 +6272,10 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when drawing the ellipse. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawEllipse(int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the ellipse is NOT the background color.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6219,7 +6292,9 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when drawing the ellipse. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawEllipse(int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the ellipse.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6235,7 +6310,7 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6251,7 +6326,9 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the ellipse is NOT the background color.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6268,7 +6345,8 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the ellipse.</param>
 		public static void DrawEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6305,6 +6383,8 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the ellipse is NOT the background color.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6322,6 +6402,7 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the ellipse.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, Color Color, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6337,7 +6418,8 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when filling the ellipse. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillEllipse(int, int, int, int, Color, BinaryWriter"/>.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, BinaryReader Colors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6353,7 +6435,10 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when filling the ellipse. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillEllipse(int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the ellipse is NOT the background color.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6370,7 +6455,9 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when filling the ellipse. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillEllipse(int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the ellipse.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6386,7 +6473,7 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6402,7 +6489,9 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the ellipse is NOT the background color.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6419,7 +6508,8 @@ namespace RetroSharp
 		/// <param name="CenterY">Y-coordinate of the center of the ellipse.</param>
 		/// <param name="RadiusX">Radius of the ellipse, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the ellipse, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the ellipse.</param>
 		public static void FillEllipse(int CenterX, int CenterY, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6601,6 +6691,8 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rounded rectangle is NOT the background color.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -6804,6 +6896,7 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the rounded rectangle.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, Color Color, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -6982,7 +7075,8 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when drawing the rounded rectangle. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawRoundedRectangle(int, int, int, int, int, int, Color, BinaryWriter"/>.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, BinaryReader Colors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -7141,7 +7235,10 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when drawing the rounded rectangle. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawRoundedRectangle(int, int, int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rounded rectagle is NOT the background color.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -7344,7 +7441,9 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when drawing the rounded rectangle. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawRoundedRectangle(int, int, int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the rounded rectangle.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -7523,7 +7622,7 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -7726,7 +7825,9 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rounded rectangle is NOT the background color.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -7990,7 +8091,8 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the rounded rectangle.</param>
 		public static void DrawRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -8386,6 +8488,8 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rounded rectangle is NOT the background color.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -8581,6 +8685,7 @@ namespace RetroSharp
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
 		/// <param name="Color">Color to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the rounded rectangle.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, Color Color, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -8735,7 +8840,8 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when filling the rounded rectangle. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillRoundedRectangle(int, int, int, int, int, int, Color, BinaryWriter"/>.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, BinaryReader Colors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -8890,7 +8996,10 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when filling the rounded rectangle. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillRoundedRectangle(int, int, int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rounded rectangle is NOT the background color.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -9085,7 +9194,9 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="Colors">Colors to use when filling the rounded rectangle. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawRoundedRectangle(int, int, int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the rounded rectangle.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -9240,7 +9351,7 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -9395,7 +9506,9 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the rounded rectangle is NOT the background color.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -9590,7 +9703,8 @@ namespace RetroSharp
 		/// <param name="y2">Y-coordinate of second corner.</param>
 		/// <param name="RadiusX">Radius of the corners of the rounded rectangle, along the X-axis.</param>
 		/// <param name="RadiusY">Radius of the corners of the rounded rectangle, along the Y-axis.</param>
-		/// <param name="Color">Color to use.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the rounded rectangle.</param>
 		public static void FillRoundedRectangle(int x1, int y1, int x2, int y2, int RadiusX, int RadiusY, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			if (RadiusX < 0 || RadiusY < 0)
@@ -9766,7 +9880,7 @@ namespace RetroSharp
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Color">Color to use.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
 		public static void DrawPolygon(Point[] Points, Color Color, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -9809,7 +9923,7 @@ namespace RetroSharp
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Color">Color to use.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the polygon.</param>
 		public static void DrawPolygon(Point[] Points, Color Color, BinaryWriter PreviousColors)
 		{
 			int c = Points.Length;
@@ -9829,8 +9943,8 @@ namespace RetroSharp
 		/// Draws a polygon using coordinates of two opposing corners.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
-		/// <see cref="DrawPolygon(int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="Colors">Colors to use when drawing the polygon. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawPolygon(Point[], Color, BinaryWriter"/>.</param>
 		public static void DrawPolygon(Point[] Points, BinaryReader Colors)
 		{
 			int c = Points.Length;
@@ -9850,10 +9964,10 @@ namespace RetroSharp
 		/// Draws a polygon using coordinates of two opposing corners.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
-		/// <see cref="DrawPolygon(int, int, int, int, Color, BinaryWriter"/>.</param>
+		/// <param name="Colors">Colors to use when drawing the polygon. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawPolygon(Point[], Color, BinaryWriter"/>.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
 		public static void DrawPolygon(Point[] Points, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
 			Collision = false;
@@ -9902,9 +10016,9 @@ namespace RetroSharp
 		/// Draws a polygon using coordinates of two opposing corners.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
-		/// <param name="Colors">Colors to use when drawing the line. Such a set of colors can be obtained by previously having called
-		/// <see cref="DrawPolygon(int, int, int, int, Color, BinaryWriter"/>.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="Colors">Colors to use when drawing the polygon. Such a set of colors can be obtained by previously having called
+		/// <see cref="DrawPolygon(Point[], Color, BinaryWriter"/>.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the polygon.</param>
 		public static void DrawPolygon(Point[] Points, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
 			int c = Points.Length;
@@ -9940,25 +10054,37 @@ namespace RetroSharp
 			}
 		}
 
-		/*
 		/// <summary>
 		/// Draws a polygon using coordinates of two opposing corners.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		/// <param name="BackgroundColor">Expected background color</param>
-		/// <param name="Collision">If any of the pixels overwritten by the line is NOT the background color.</param>
+		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
 		public static void DrawPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
-			// TODO
-		}*/
+			Collision = false;
+			int c = Points.Length;
+			if (c <= 1)
+				return;
+
+			Point Prev = Points[c - 1];
+			bool Collision2;
+
+			foreach (Point P in Points)
+			{
+				DrawLine(Prev.X, Prev.Y, P.X, P.Y, ColorAlgorithm, BackgroundColor, out Collision2);
+				Collision |= Collision2;
+				Prev = P;
+			}
+		}
 
 		/// <summary>
 		/// Draws a polygon using coordinates of two opposing corners.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
-		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the line.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when drawing the polygon.</param>
 		public static void DrawPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
 			int c = Points.Length;
@@ -9971,6 +10097,110 @@ namespace RetroSharp
 			{
 				DrawLine(Prev.X, Prev.Y, P.X, P.Y, ColorAlgorithm, PreviousColors);
 				Prev = P;
+			}
+		}
+
+		#endregion
+
+		#region Flood Fill
+
+		/// <summary>
+		/// Fills an area limited by a boundary different in color from the current pixel.
+		/// </summary>
+		/// <param name="x">X-coordinate where to start.</param>
+		/// <param name="y">Y-coordinate where to start.</param>
+		/// <param name="Color">Color to use.</param>
+		public static void FillFlood(int x, int y, Color Color)
+		{
+			LinkedList<Point> Queue = new LinkedList<Point>();
+			Color Bg = Raster[x, y];
+			Point P;
+
+			Queue = new LinkedList<Point>();
+			Queue.AddLast(new Point(x, y));
+			Raster[x, y] = Color;
+
+			while (Queue.First != null)
+			{
+				P = Queue.First.Value;
+				Queue.RemoveFirst();
+
+				x = P.X;
+				y = P.Y;
+
+				if (x > rasterClipLeft && Raster[x - 1, y] == Bg)
+				{
+					Raster[x - 1, y] = Color;
+					Queue.AddLast(new Point(x - 1, y));
+				}
+
+				if (x < rasterClipRight && Raster[x + 1, y] == Bg)
+				{
+					Raster[x + 1, y] = Color;
+					Queue.AddLast(new Point(x + 1, y));
+				}
+
+				if (y > rasterClipTop && Raster[x, y - 1] == Bg)
+				{
+					Raster[x, y - 1] = Color;
+					Queue.AddLast(new Point(x, y - 1));
+				}
+
+				if (y < rasterClipBottom && Raster[x, y + 1] == Bg)
+				{
+					Raster[x, y + 1] = Color;
+					Queue.AddLast(new Point(x, y + 1));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills an area limited by a boundary different in color from the current pixel.
+		/// </summary>
+		/// <param name="x">X-coordinate where to start.</param>
+		/// <param name="y">Y-coordinate where to start.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		public static void FillFlood(int x, int y, ProceduralColorAlgorithm ColorAlgorithm)
+		{
+			LinkedList<Point> Queue = new LinkedList<Point>();
+			Color Bg = Raster[x, y];
+			Point P;
+
+			Queue = new LinkedList<Point>();
+			Queue.AddLast(new Point(x, y));
+			Raster[x, y] = ColorAlgorithm(x, y, Bg);
+
+			while (Queue.First != null)
+			{
+				P = Queue.First.Value;
+				Queue.RemoveFirst();
+
+				x = P.X;
+				y = P.Y;
+
+				if (x > rasterClipLeft && Raster[x - 1, y] == Bg)
+				{
+					Raster[x - 1, y] = ColorAlgorithm(x, y, Bg);
+					Queue.AddLast(new Point(x - 1, y));
+				}
+
+				if (x < rasterClipRight && Raster[x + 1, y] == Bg)
+				{
+					Raster[x + 1, y] = ColorAlgorithm(x, y, Bg);
+					Queue.AddLast(new Point(x + 1, y));
+				}
+
+				if (y > rasterClipTop && Raster[x, y - 1] == Bg)
+				{
+					Raster[x, y - 1] = ColorAlgorithm(x, y, Bg);
+					Queue.AddLast(new Point(x, y - 1));
+				}
+
+				if (y < rasterClipBottom && Raster[x, y + 1] == Bg)
+				{
+					Raster[x, y + 1] = ColorAlgorithm(x, y, Bg);
+					Queue.AddLast(new Point(x, y + 1));
+				}
 			}
 		}
 
@@ -10275,7 +10505,6 @@ namespace RetroSharp
          * split screen
          * 
          * Graphics:
-         * FillFlood(x,y,Color)
          * FillPolygon(IEnumerable<Point>, Color)
          * DrawImage(x,y,Image)
          * DrawImage(x1,y1,x2,y2,Image)
