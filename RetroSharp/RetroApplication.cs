@@ -9855,7 +9855,7 @@ namespace RetroSharp
 		#region Draw Polygon
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Color">Color to use.</param>
@@ -9875,7 +9875,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Color">Color to use.</param>
@@ -9919,7 +9919,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Color">Color to use.</param>
@@ -9940,7 +9940,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Colors">Colors to use when drawing the polygon. Such a set of colors can be obtained by previously having called
@@ -9961,7 +9961,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Colors">Colors to use when drawing the polygon. Such a set of colors can be obtained by previously having called
@@ -10013,7 +10013,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="Colors">Colors to use when drawing the polygon. Such a set of colors can be obtained by previously having called
@@ -10035,7 +10035,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
@@ -10055,7 +10055,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
@@ -10080,7 +10080,7 @@ namespace RetroSharp
 		}
 
 		/// <summary>
-		/// Draws a polygon using coordinates of two opposing corners.
+		/// Draws a polygon using an array of coordinates to its nodes.
 		/// </summary>
 		/// <param name="Points">Points in the polygon.</param>
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
@@ -10097,6 +10097,460 @@ namespace RetroSharp
 			{
 				DrawLine(Prev.X, Prev.Y, P.X, P.Y, ColorAlgorithm, PreviousColors);
 				Prev = P;
+			}
+		}
+
+		#endregion
+
+		#region Fill Polygon
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="Color">Color to use.</param>
+		public static void FillPolygon(Point[] Points, Color Color)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y - MinY];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, Color);
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		private static void FindEdges(Point[] Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges)
+		{
+			LinkedList<int> List;
+			Point Last;
+			Point Next;
+			int i, c;
+			int x1, y1, x2, y2, x, y, dx, dy, stepy;
+			int LastDir = 0;
+
+			c = Points.Length;
+			if (c < 3)
+				throw new ArgumentException("Polygons must contain at least 3 nodes.", "Points");
+
+			MinY = int.MaxValue;
+			MaxY = int.MinValue;
+			foreach (Point P in Points)
+			{
+				i = P.Y;
+				if (i < MinY)
+					MinY = i;
+
+				if (i > MaxY)
+					MaxY = i;
+			}
+
+			Edges = new LinkedList<int>[MaxY - MinY + 1];
+
+			Last = Points[c - 1];
+			for (i = 0; i < c; i++)
+			{
+				Next = Points[i];
+
+				x1 = Last.X;
+				y1 = Last.Y;
+				x2 = Next.X;
+				y2 = Next.Y;
+
+				Last = Next;
+
+				if (y1 == y2)
+					continue;
+
+				if (y2 < y1)
+					stepy = -1;
+				else
+					stepy = 1;
+
+				if (LastDir != stepy)
+				{
+					List = Edges[y1 - MinY];
+					if (List == null)
+					{
+						List = new LinkedList<int>();
+						Edges[y1 - MinY] = List;
+					}
+
+					AddEdge(List, x1);
+				}
+
+				dx = x2 - x1;
+				dy = y2 - y1;
+				y = y1;
+
+				while (y != y2)
+				{
+					y += stepy;
+
+					List = Edges[y - MinY];
+					if (List == null)
+					{
+						List = new LinkedList<int>();
+						Edges[y - MinY] = List;
+					}
+
+					x = (y - y1) * dx / dy + x1;
+					AddEdge(List, x);
+				}
+
+				LastDir = stepy;
+			}
+		}
+
+		private static void AddEdge(LinkedList<int> List, int x)
+		{
+			if (List.First == null)
+				List.AddLast(x);
+			else
+			{
+				LinkedListNode<int> Loop = List.First;
+
+				if (x < Loop.Value)
+					List.AddFirst(x);
+				else
+				{
+					while (Loop != null && x >= Loop.Value)
+						Loop = Loop.Next;
+
+					if (Loop == null)
+						List.AddLast(x);
+					else
+						List.AddBefore(Loop, x);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="Color">Color to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
+		public static void FillPolygon(Point[] Points, Color Color, Color BackgroundColor, out bool Collision)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+			bool Collision2;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			Collision = false;
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, Color, BackgroundColor, out Collision2);
+						Collision |= Collision2;
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="Color">Color to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the polygon.</param>
+		public static void FillPolygon(Point[] Points, Color Color, BinaryWriter PreviousColors)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, Color, PreviousColors);
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="Colors">Colors to use when filling the polygon. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillPolygon(Point[], Color, BinaryWriter"/>.</param>
+		public static void FillPolygon(Point[] Points, BinaryReader Colors)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, Colors);
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="Colors">Colors to use when filling the polygon. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillPolygon(Point[], Color, BinaryWriter"/>.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
+		public static void FillPolygon(Point[] Points, BinaryReader Colors, Color BackgroundColor, out bool Collision)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+			bool Collision2;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			Collision = false;
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, Colors, BackgroundColor, out Collision2);
+						Collision |= Collision2;
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="Colors">Colors to use when filling the polygon. Such a set of colors can be obtained by previously having called
+		/// <see cref="FillPolygon(Point[], Color, BinaryWriter"/>.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the polygon.</param>
+		public static void FillPolygon(Point[] Points, BinaryReader Colors, BinaryWriter PreviousColors)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, Colors, PreviousColors);
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		public static void FillPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, ColorAlgorithm);
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="BackgroundColor">Expected background color</param>
+		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
+		public static void FillPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+			bool Collision2;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			Collision = false;
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, ColorAlgorithm, BackgroundColor, out Collision2);
+						Collision |= Collision2;
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills a polygon using an array of coordinates to its nodes.
+		/// </summary>
+		/// <param name="Points">Points in the polygon.</param>
+		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
+		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the polygon.</param>
+		public static void FillPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
+		{
+			LinkedList<int>[] Edges;
+			LinkedList<int> List;
+			int MinY, MaxY;
+			int y;
+			int? PrevX;
+
+			FindEdges(Points, out MinY, out MaxY, out Edges);
+
+			for (y = MinY; y <= MaxY; y++)
+			{
+				List = Edges[y];
+				if (List == null)
+					continue;
+
+
+				PrevX = null;
+				foreach (int x in List)
+				{
+					if (PrevX.HasValue)
+					{
+						DrawScanLine(PrevX.Value, x, y, ColorAlgorithm, PreviousColors);
+						PrevX = null;
+					}
+					else
+						PrevX = x;
+				}
 			}
 		}
 
@@ -10505,7 +10959,6 @@ namespace RetroSharp
          * split screen
          * 
          * Graphics:
-         * FillPolygon(IEnumerable<Point>, Color)
          * DrawImage(x,y,Image)
          * DrawImage(x1,y1,x2,y2,Image)
          * DrawText(x,y,String)     Uses console font
@@ -10525,6 +10978,7 @@ namespace RetroSharp
          * Car race game.
          * Gorillaz
 		 * PacMan
+		 * Tic Tac Toe
         */
 	}
 }

@@ -11,7 +11,6 @@ namespace Stars
 	class Program : RetroApplication
 	{
 		private const int NrStars = 1000;
-		private static Random rnd = new Random();
 		private static int d2;
 		private static int xc;
 		private static int yc;
@@ -85,8 +84,8 @@ namespace Stars
 
 			public Star()
 			{
-				double a = rnd.NextDouble() * 2 * Math.PI;
-				double d = rnd.NextDouble() * xc;
+				double a = Random() * 2 * Math.PI;
+				double d = Random() * xc;
 				double c = Math.Cos(a);
 				double s = Math.Sin(a);
 
@@ -96,7 +95,7 @@ namespace Stars
 				this.x = d * c;
 				this.y = d * s;
 
-				d = rnd.NextDouble();
+				d = Random();
 				this.vx = c * 0.1;
 				this.vy = s * 0.1;
 

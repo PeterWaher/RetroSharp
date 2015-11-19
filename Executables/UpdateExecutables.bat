@@ -80,6 +80,10 @@ del "..\Examples\Raster Graphics\RandomFilledEllipses\bin\Release\*.pdb"
 del "..\Examples\Raster Graphics\RandomFilledEllipses\bin\Release\OpenTK.xml"
 c:\Program\7-Zip\7z.exe a RandomFilledEllipses.zip "..\Examples\Raster Graphics\RandomFilledEllipses\bin\Release\*.*"
 
+del "..\Examples\Raster Graphics\RandomFilledPolygons\bin\Release\*.pdb"
+del "..\Examples\Raster Graphics\RandomFilledPolygons\bin\Release\OpenTK.xml"
+c:\Program\7-Zip\7z.exe a RandomFilledPolygons.zip "..\Examples\Raster Graphics\RandomFilledPolygons\bin\Release\*.*"
+
 del "..\Examples\Raster Graphics\RandomLines\bin\Release\*.pdb"
 del "..\Examples\Raster Graphics\RandomLines\bin\Release\OpenTK.xml"
 c:\Program\7-Zip\7z.exe a RandomLines.zip "..\Examples\Raster Graphics\RandomLines\bin\Release\*.*"
@@ -87,6 +91,10 @@ c:\Program\7-Zip\7z.exe a RandomLines.zip "..\Examples\Raster Graphics\RandomLin
 del "..\Examples\Raster Graphics\RandomPlots\bin\Release\*.pdb"
 del "..\Examples\Raster Graphics\RandomPlots\bin\Release\OpenTK.xml"
 c:\Program\7-Zip\7z.exe a RandomPlots.zip "..\Examples\Raster Graphics\RandomPlots\bin\Release\*.*"
+
+del "..\Examples\Raster Graphics\RandomPolygons\bin\Release\*.pdb"
+del "..\Examples\Raster Graphics\RandomPolygons\bin\Release\OpenTK.xml"
+c:\Program\7-Zip\7z.exe a RandomPolygons.zip "..\Examples\Raster Graphics\RandomPolygons\bin\Release\*.*"
 
 del "..\Examples\Raster Graphics\RandomRectangles\bin\Release\*.pdb"
 del "..\Examples\Raster Graphics\RandomRectangles\bin\Release\OpenTK.xml"
