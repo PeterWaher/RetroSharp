@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RetroSharp.Networking
+namespace RetroSharp.Networking.MQTT
 {
 	/// <summary>
 	/// MQTT Quality of Service level.

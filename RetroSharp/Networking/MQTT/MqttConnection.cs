@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace RetroSharp.Networking
+namespace RetroSharp.Networking.MQTT
 {
 	/// <summary>
 	/// Connection error event handler.

@@ -1,6 +1,7 @@
 using System;
 using RetroSharp;
 using RetroSharp.Networking;
+using RetroSharp.Networking.MQTT;
 
 namespace Latency
 {

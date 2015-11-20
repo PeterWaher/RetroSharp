@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RetroSharp.Networking
+namespace RetroSharp.Networking.MQTT
 {
 	/// <summary>
 	/// Information about content received from the MQTT server.

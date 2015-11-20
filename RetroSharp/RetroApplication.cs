@@ -19,6 +19,7 @@ using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 using RetroSharp.Gradients;
 using RetroSharp.Networking;
+using RetroSharp.Networking.MQTT;
 
 namespace RetroSharp
 {
@@ -3516,6 +3517,91 @@ namespace RetroSharp
 			}
 
 			return false;
+		}
+
+		#endregion
+
+		#region Color models
+
+		/// <summary>
+		/// Converts a color in HSV space to the same color but in RGB space.
+		/// </summary>
+		/// <param name="H">Hue</param>
+		/// <param name="S">Saturation</param>
+		/// <param name="V">Value</param>
+		/// <param name="R">Red</param>
+		/// <param name="G">Green</param>
+		/// <param name="B">Blue</param>
+		public static void HsvToRgb(double H, double S, double V, out int R, out int G, out int B)
+		{
+			// http://en.wikipedia.org/wiki/HSL_and_HSV#Conversion_from_HSV_to_RGB
+
+			H = System.Math.IEEERemainder(H, 360);
+
+			if (H < 0)
+				H += 360;
+			else if (H >= 360)
+				H -= 360;
+
+			if (S < 0)
+				S = 0;
+			else if (S > 1)
+				S = 1;
+
+			if (V < 0)
+				V = 0;
+			else if (V > 1)
+				V = 1;
+
+			H /= 60;
+			int hi = (int)H;
+			double f = H - hi;
+			double p = V * (1 - S);
+			double q = V * (1 - f * S);
+			double t = V * (1 - (1 - f) * S);
+
+			switch (hi)
+			{
+				case 0:
+					R = (int)(V * 255 + 0.5);
+					G = (int)(t * 255 + 0.5);
+					B = (int)(p * 255 + 0.5);
+					break;
+
+				case 1:
+					R = (int)(q * 255 + 0.5);
+					G = (int)(V * 255 + 0.5);
+					B = (int)(p * 255 + 0.5);
+					break;
+
+				case 2:
+					R = (int)(p * 255 + 0.5);
+					G = (int)(V * 255 + 0.5);
+					B = (int)(t * 255 + 0.5);
+					break;
+
+				case 3:
+					R = (int)(p * 255 + 0.5);
+					G = (int)(q * 255 + 0.5);
+					B = (int)(V * 255 + 0.5);
+					break;
+
+				case 4:
+					R = (int)(t * 255 + 0.5);
+					G = (int)(p * 255 + 0.5);
+					B = (int)(V * 255 + 0.5);
+					break;
+
+				case 5:
+					R = (int)(V * 255 + 0.5);
+					G = (int)(p * 255 + 0.5);
+					B = (int)(q * 255 + 0.5);
+					break;
+
+				default:
+					R = G = B = 0;
+					break;
+			}
 		}
 
 		#endregion

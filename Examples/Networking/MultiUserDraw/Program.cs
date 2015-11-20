@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using RetroSharp;
 using RetroSharp.Networking;
+using RetroSharp.Networking.MQTT;
 
 namespace MultiUserDraw
 {
