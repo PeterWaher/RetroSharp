@@ -94,6 +94,37 @@ namespace RetroSharp.Networking.UPnP
 			return this.headers.GetEnumerator();
 		}
 
+		/// <summary>
+		/// Gets the device description document from a device in the network. 
+		/// This method is the synchronous version of <see cref="StartGetDevice"/>.
+		/// </summary>
+		/// <param name="Location">URL of the Device Description Document.</param>
+		/// <returns>Device Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public DeviceDescriptionDocument GetDevice()
+		{
+			return this.client.GetDevice(this.location);
+		}
+		
+		/// <summary>
+		/// Gets the device description document from a device in the network. 
+		/// This method is the synchronous version of <see cref="StartGetDevice"/>.
+		/// </summary>
+		/// <param name="Location">URL of the Device Description Document.</param>
+		/// <param name="Timeout">Timeout, in milliseconds.</param>
+		/// <returns>Device Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public DeviceDescriptionDocument GetDevice(int Timeout)
+		{
+			return this.client.GetDevice(this.location, Timeout);
+		}
+
+		/// <summary>
+		/// Starts the retrieval of a Device Description Document.
+		/// </summary>
+		/// <param name="Callback">Callback method. Will be called when the document has been downloaded, or an error has occurred.</param>
 		public void StartGetDevice(DeviceDescriptionEventHandler Callback)
 		{
 			this.client.StartGetDevice(this.location, Callback);

@@ -281,6 +281,48 @@ namespace RetroSharp.Networking.UPnP
 		}
 
 		/// <summary>
+		/// Gets the device description document from a device in the network. 
+		/// This method is the synchronous version of <see cref="StartGetDevice"/>.
+		/// </summary>
+		/// <param name="Location">URL of the Device Description Document.</param>
+		/// <returns>Device Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public DeviceDescriptionDocument GetDevice(string Location)
+		{
+			return this.GetDevice(Location, 10000);
+		}
+
+		/// <summary>
+		/// Gets the device description document from a device in the network. 
+		/// This method is the synchronous version of <see cref="StartGetDevice"/>.
+		/// </summary>
+		/// <param name="Location">URL of the Device Description Document.</param>
+		/// <param name="Timeout">Timeout, in milliseconds.</param>
+		/// <returns>Device Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public DeviceDescriptionDocument GetDevice(string Location, int Timeout)
+		{
+			ManualResetEvent Done = new ManualResetEvent(false);
+			DeviceDescriptionEventArgs e = null;
+
+			this.StartGetDevice(Location, (sender, e2) =>
+				{
+					e = e2;
+					Done.Set();
+				});
+
+			if (!Done.WaitOne(Timeout))
+				throw new TimeoutException("Timeout.");
+
+			if (e.Exception != null)
+				throw e.Exception;
+
+			return e.DeviceDescriptionDocument;
+		}
+
+		/// <summary>
 		/// Starts the retrieval of a Device Description Document.
 		/// </summary>
 		/// <param name="Location">URL of the Device Description Document.</param>
@@ -332,6 +374,48 @@ namespace RetroSharp.Networking.UPnP
 			{
 				this.RaiseOnError(ex);
 			}
+		}
+
+		/// <summary>
+		/// Gets the service description document from a service in the network. 
+		/// This method is the synchronous version of <see cref="StartGetService"/>.
+		/// </summary>
+		/// <param name="Service">Service to get.</param>
+		/// <returns>Service Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public ServiceDescriptionDocument GetService(UPnPService Service)
+		{
+			return this.GetService(Service, 10000);
+		}
+
+		/// <summary>
+		/// Gets the service description document from a service in the network. 
+		/// This method is the synchronous version of <see cref="StartGetService"/>.
+		/// </summary>
+		/// <param name="Service">Service to get.</param>
+		/// <param name="Timeout">Timeout, in milliseconds.</param>
+		/// <returns>Service Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public ServiceDescriptionDocument GetService(UPnPService Service, int Timeout)
+		{
+			ManualResetEvent Done = new ManualResetEvent(false);
+			ServiceDescriptionEventArgs e = null;
+
+			this.StartGetService(Service, (sender, e2) =>
+			{
+				e = e2;
+				Done.Set();
+			});
+
+			if (!Done.WaitOne(Timeout))
+				throw new TimeoutException("Timeout.");
+
+			if (e.Exception != null)
+				throw e.Exception;
+
+			return e.ServiceDescriptionDocument;
 		}
 
 		/// <summary>

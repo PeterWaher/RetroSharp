@@ -111,6 +111,31 @@ namespace RetroSharp.Networking.UPnP
 		{
 			return this.serviceType;
 		}
+		
+		/// <summary>
+		/// Gets the service description document from a service in the network. 
+		/// This method is the synchronous version of <see cref="StartGetService"/>.
+		/// </summary>
+		/// <returns>Service Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public ServiceDescriptionDocument GetService()
+		{
+			return this.client.GetService(this);
+		}
+
+		/// <summary>
+		/// Gets the service description document from a service in the network. 
+		/// This method is the synchronous version of <see cref="StartGetService"/>.
+		/// </summary>
+		/// <param name="Timeout">Timeout, in milliseconds.</param>
+		/// <returns>Service Description Document.</returns>
+		/// <exception cref="TimeoutException">If the document could not be retrieved within the timeout time.</exception>
+		/// <exception cref="Exception">If the document could not be retrieved, or could not be parsed.</exception>
+		public ServiceDescriptionDocument GetService(int Timeout)
+		{
+			return this.client.GetService(this, Timeout);
+		}
 
 		/// <summary>
 		/// Starts the retrieval of a Service Description Document.

@@ -27,6 +27,19 @@ namespace PeerToPeer
 						{
 							if (e.DeviceDescriptionDocument != null)
 							{
+								/*foreach (UPnPService Service in e.DeviceDescriptionDocument.ServicesRecursive)
+								{
+									ServiceDescriptionDocument Scpd = Service.GetService();
+									string Xml = Scpd.Xml.InnerXml;
+									string ServiceType = Scpd.Service.ServiceType;
+									string FileName = ServiceType.Replace(':', '\\') + ".scpd.xml";
+									string Dir = Path.GetDirectoryName(FileName);
+									if (!Directory.Exists(Dir))
+										Directory.CreateDirectory(Dir);
+									File.WriteAllText(FileName, Xml);
+									Console.Out.WriteLine(ServiceType);
+								}*/
+
 								UPnPService Service = e.DeviceDescriptionDocument.GetService("urn:schemas-upnp-org:service:WANIPConnection:1");
 								if (Service != null)
 								{
@@ -47,6 +60,7 @@ namespace PeerToPeer
 					};
 
 					UPnP.StartSearch("urn:schemas-upnp-org:device:WANConnectionDevice:1", 3);
+					//UPnP.StartSearch(10);
 					Console.In.ReadLine();
 				}
 			}

@@ -278,5 +278,40 @@ namespace RetroSharp.Networking.UPnP
 
 			return null;
 		}
+
+		/// <summary>
+		/// Returns all devices, including the device itself and its embedded devices, and their embedded devices, and so on.
+		/// </summary>
+		public UPnPDevice[] DevicesRecursive
+		{
+			get
+			{
+				List<UPnPDevice> Result = new List<UPnPDevice>();
+
+				Result.Add(this);
+				foreach (UPnPDevice Device in this.devices)
+					Result.AddRange(Device.DevicesRecursive);
+
+				return Result.ToArray();
+			}
+		}
+
+		/// <summary>
+		/// Returns all services, including the service of itself and services of its embedded devices, and their embedded devices, and so on.
+		/// </summary>
+		public UPnPService[] ServicesRecursive
+		{
+			get
+			{
+				List<UPnPService> Result = new List<UPnPService>();
+
+				Result.AddRange(this.services);
+				foreach (UPnPDevice Device in this.devices)
+					Result.AddRange(Device.ServicesRecursive);
+
+				return Result.ToArray();
+			}
+		}
+
 	}
 }

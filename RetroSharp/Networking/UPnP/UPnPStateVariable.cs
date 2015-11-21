@@ -445,7 +445,7 @@ namespace RetroSharp.Networking.UPnP
 					return Bin;
 
 				default:
-					return Value.ToString();
+					return Value;
 			}
 		}
 
