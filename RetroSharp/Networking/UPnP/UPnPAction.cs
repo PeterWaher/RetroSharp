@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.Net;
+using System.Web.Services.Protocols;
 
 namespace RetroSharp.Networking.UPnP
 {
@@ -151,9 +152,30 @@ namespace RetroSharp.Networking.UPnP
 				WebClient.Headers["CONTENT-TYPE"] = "text/xml; charset=\"utf-8\"";
 				WebClient.Headers["SOAPACTION"] = this.parent.Service.ServiceType + "#" + this.name;
 
-				byte[] Response = WebClient.UploadData(this.parent.Service.ControlURI, "POST", BodyBin);
-				XmlDocument ResponseXml = new XmlDocument();
-				ResponseXml.Load(new MemoryStream(Response));
+				byte[] Response;
+				XmlDocument ResponseXml;
+
+				try
+				{
+					Response = WebClient.UploadData(this.parent.Service.ControlURI, "POST", BodyBin);
+					ResponseXml = new XmlDocument();
+					ResponseXml.Load(new MemoryStream(Response));
+				}
+				catch (WebException ex)
+				{
+					ResponseXml = new XmlDocument();
+					try
+					{
+						ResponseXml.Load(ex.Response.GetResponseStream());
+					}
+					catch
+					{
+						ResponseXml = null;
+					}
+
+					if (ResponseXml == null)
+						throw;
+				}
 
 				if (ResponseXml.DocumentElement == null ||
 					ResponseXml.DocumentElement.LocalName != "Envelope" ||
@@ -168,9 +190,56 @@ namespace RetroSharp.Networking.UPnP
 
 				XmlElement ActionResponse = GetChildElement(ResponseBody, this.name + "Response", this.parent.Service.ServiceType);
 				if (ActionResponse == null)
-					throw new Exception("Action response body not found.");
+				{
+					XmlElement ResponseFault = GetChildElement(ResponseBody, "Fault", "http://schemas.xmlsoap.org/soap/envelope/");
+					if (ResponseFault == null)
+						throw new Exception("Unable to parse response.");
 
-				// TODO: Handle SOAP Errors.
+					string FaultCode = string.Empty;
+					string FaultString = string.Empty;
+					string UPnPErrorCode = string.Empty;
+					string UPnPErrorDescription = string.Empty;
+
+					foreach (XmlNode N in ResponseFault.ChildNodes)
+					{
+						switch (N.LocalName)
+						{
+							case "faultcode":
+								FaultCode = N.InnerText;
+								break;
+
+							case "faultstring":
+								FaultString = N.InnerText;
+								break;
+
+							case "detail":
+								foreach (XmlNode N2 in N.ChildNodes)
+								{
+									switch (N2.LocalName)
+									{
+										case "UPnPError":
+											foreach (XmlNode N3 in N2.ChildNodes)
+											{
+												switch (N3.LocalName)
+												{
+													case "errorCode":
+														UPnPErrorCode = N3.InnerText;
+														break;
+
+													case "errorDescription":
+														UPnPErrorDescription = N3.InnerText;
+														break;
+												}
+											}
+											break;
+									}
+								}
+								break;
+						}
+					}
+
+					throw new UPnPException(FaultCode, FaultString, UPnPErrorCode, UPnPErrorDescription);
+				}
 
 				OutputValues = new Dictionary<string, object>();
 
