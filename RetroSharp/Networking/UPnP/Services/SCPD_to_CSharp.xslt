@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 namespace RetroSharp.Networking.UPnP.Services
 {
+#pragma warning disable
 	public class UPnPServiceInterface
 	{
 		private ServiceDescriptionDocument service;</xsl:text>
@@ -76,7 +77,11 @@ namespace RetroSharp.Networking.UPnP.Services
 				<xsl:call-template name="VariableType">
 					<xsl:with-param name="VariableName" select="scpd:argumentList/scpd:argument/scpd:retval/../scpd:relatedStateVariable"/>
 				</xsl:call-template>
-				<xsl:text> Result = </xsl:text>
+				<xsl:text> Result = (</xsl:text>
+				<xsl:call-template name="VariableType">
+					<xsl:with-param name="VariableName" select="scpd:argumentList/scpd:argument/scpd:retval/../scpd:relatedStateVariable"/>
+				</xsl:call-template>
+				<xsl:text>)</xsl:text>
 			</xsl:if>
 			<xsl:text>this.action</xsl:text>
 			<xsl:value-of select="scpd:name"/>
@@ -116,6 +121,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		</xsl:for-each>
 		<xsl:text>
 	}
+#pragma warning enable
 }</xsl:text>
 	</xsl:template>
 

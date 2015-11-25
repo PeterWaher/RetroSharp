@@ -5,6 +5,11 @@ using System.Xml;
 
 namespace RetroSharp.Networking.UPnP
 {
+	/// <summary>
+	/// UPnP Device Description event handler.
+	/// </summary>
+	/// <param name="Sender">Sender of event.</param>
+	/// <param name="e">Event arguments.</param>
 	public delegate void DeviceDescriptionEventHandler(object Sender, DeviceDescriptionEventArgs e);
 
 	/// <summary>

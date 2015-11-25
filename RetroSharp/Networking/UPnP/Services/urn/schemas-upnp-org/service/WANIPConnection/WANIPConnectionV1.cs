@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace RetroSharp.Networking.UPnP.Services
 {
-	public class UPnPServiceInterface
+#pragma warning disable
+	public class WANIPConnectionV1
 	{
 		private ServiceDescriptionDocument service;
 		private UPnPAction actionAddPortMapping = null;
@@ -18,7 +19,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		private UPnPAction actionGetGenericPortMappingEntry = null;
 		private UPnPAction actionGetSpecificPortMappingEntry = null;
 
-		public UPnPServiceInterface(ServiceDescriptionDocument Service)
+		public WANIPConnectionV1(ServiceDescriptionDocument Service)
 		{
 			this.service = Service;
 		}
@@ -176,4 +177,5 @@ namespace RetroSharp.Networking.UPnP.Services
 			NewLeaseDuration = (uint)OutputValues["NewLeaseDuration"];
 		}
 	}
+#pragma warning enable
 }

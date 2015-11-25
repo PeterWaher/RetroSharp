@@ -18,13 +18,6 @@ namespace RetroSharp.Networking.UPnP
 	public delegate void UPnPExceptionEventHandler(UPnPClient Sender, Exception Exception);
 
 	/// <summary>
-	/// UPnP Device Location event handler.
-	/// </summary>
-	/// <param name="Sender">Sender of event.</param>
-	/// <param name="Location">Device location.</param>
-	public delegate void UPnPDeviceLocationEventHandler(UPnPClient Sender, DeviceLocation Location);
-
-	/// <summary>
 	/// Implements support for the UPnP protocol, as described in:
 	/// http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf
 	/// </summary>
@@ -151,9 +144,10 @@ namespace RetroSharp.Networking.UPnP
 						if (h != null)
 						{
 							DeviceLocation DeviceLocation = new DeviceLocation(this, SearchTarget, Server, Location, UniqueServiceName, Headers);
+							DeviceLocaionEventArgs e = new DeviceLocaionEventArgs(DeviceLocation, (IPEndPoint)UdpClient.Client.LocalEndPoint, RemoteIP);
 							try
 							{
-								h(this, DeviceLocation);
+								h(this, e);
 							}
 							catch (Exception ex)
 							{
@@ -342,7 +336,7 @@ namespace RetroSharp.Networking.UPnP
 
 			if (e.Error != null)
 				e2 = new DeviceDescriptionEventArgs(e.Error, this);
-			else 
+			else
 			{
 				try
 				{
@@ -427,7 +421,7 @@ namespace RetroSharp.Networking.UPnP
 		{
 			WebClient Client = new WebClient();
 			Client.DownloadDataCompleted += new DownloadDataCompletedEventHandler(DownloadServiceCompleted);
-			Client.DownloadDataAsync(Service.SCPDURI, new object[]{ Service, Callback });
+			Client.DownloadDataAsync(Service.SCPDURI, new object[] { Service, Callback });
 		}
 
 		private void DownloadServiceCompleted(object sender, DownloadDataCompletedEventArgs e)

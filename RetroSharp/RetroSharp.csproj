@@ -62,6 +62,7 @@
     <Compile Include="Networking\MQTT\MqttConnection.cs" />
     <Compile Include="Networking\MQTT\MqttControlPacketType.cs" />
     <Compile Include="Networking\MQTT\MqttHeader.cs" />
+    <Compile Include="Networking\UPnP\DeviceLocationEventArgs.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV1.cs" />
     <Compile Include="Networking\UPnP\UPnPException.cs" />
     <Compile Include="Networking\UPnP\UPnPStateVariable.cs" />
@@ -104,10 +105,14 @@
     <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\Layer3Forwarding\1.scpd.xml" />
     <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANCommonInterfaceConfig\1.scpd.xml" />
     <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANEthernetLinkConfig\1.scpd.xml" />
-    <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\1.scpd.xml" />
+    <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\1.scpd.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Networking\UPnP\Services\SCPD_to_CSharp.xslt" />
+    <None Include="Networking\UPnP\Services\SCPD_to_CSharp.xslt">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
