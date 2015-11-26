@@ -63,6 +63,9 @@
     <Compile Include="Networking\MQTT\MqttControlPacketType.cs" />
     <Compile Include="Networking\MQTT\MqttHeader.cs" />
     <Compile Include="Networking\UPnP\DeviceLocationEventArgs.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\Layer3Forwarding\Layer3ForwardingV1.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANCommonInterfaceConfig\WANCommonInterfaceConfigV1.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANEthernetLinkConfig\WANEthernetLinkConfigV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV1.cs" />
     <Compile Include="Networking\UPnP\UPnPException.cs" />
     <Compile Include="Networking\UPnP\UPnPStateVariable.cs" />
