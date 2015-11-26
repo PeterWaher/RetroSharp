@@ -67,6 +67,7 @@
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANCommonInterfaceConfig\WANCommonInterfaceConfigV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANEthernetLinkConfig\WANEthernetLinkConfigV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV1.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV2.cs" />
     <Compile Include="Networking\UPnP\UPnPException.cs" />
     <Compile Include="Networking\UPnP\UPnPStateVariable.cs" />
     <Compile Include="Networking\UPnP\UPnPArgument.cs" />
@@ -114,6 +115,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Networking\UPnP\Services\SCPD_to_CSharp.xslt">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\2.scpd.xml">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

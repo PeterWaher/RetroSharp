@@ -185,7 +185,8 @@ namespace PeerToPeer
 						});
 					};
 
-					UPnP.StartSearch("urn:schemas-upnp-org:device:WANConnectionDevice:1", 3);
+					UPnP.StartSearch("urn:schemas-upnp-org:service:WANIPConnection:1", 3);
+					UPnP.StartSearch("urn:schemas-upnp-org:service:WANIPConnection:2", 3);
 					//UPnP.StartSearch(10);
 					Console.In.ReadLine();
 				}

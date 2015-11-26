@@ -6,7 +6,7 @@ namespace RetroSharp.Networking.UPnP.Services
 #pragma warning disable
 	public class WANIPConnectionV1
 	{
-		private ServiceDescriptionDocument service;
+		protected ServiceDescriptionDocument service;
 		private UPnPAction actionAddPortMapping = null;
 		private UPnPAction actionGetExternalIPAddress = null;
 		private UPnPAction actionDeletePortMapping = null;
