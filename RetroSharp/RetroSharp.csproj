@@ -69,6 +69,7 @@
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV2.cs" />
     <Compile Include="Networking\UPnP\UPnPException.cs" />
+    <Compile Include="Networking\UPnP\UPnPHeaders.cs" />
     <Compile Include="Networking\UPnP\UPnPStateVariable.cs" />
     <Compile Include="Networking\UPnP\UPnPArgument.cs" />
     <Compile Include="Networking\UPnP\UPnPAction.cs" />

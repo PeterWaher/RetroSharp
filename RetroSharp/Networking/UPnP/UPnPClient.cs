@@ -27,6 +27,7 @@ namespace RetroSharp.Networking.UPnP
 		private const int defaultMaximumSearchTimeSeconds = 10;
 
 		private LinkedList<KeyValuePair<UdpClient, IPEndPoint>> ssdpOutgoing = new LinkedList<KeyValuePair<UdpClient, IPEndPoint>>();
+		private LinkedList<UdpClient> ssdpIncoming = new LinkedList<UdpClient>();
 
 		/// <summary>
 		/// Implements support for the UPnP protocol, as described in:
@@ -35,6 +36,7 @@ namespace RetroSharp.Networking.UPnP
 		public UPnPClient()
 		{
 			UdpClient Outgoing;
+			UdpClient Incoming;
 
 			foreach (NetworkInterface Interface in NetworkInterface.GetAllNetworkInterfaces())
 			{
@@ -42,7 +44,7 @@ namespace RetroSharp.Networking.UPnP
 					continue;
 
 				IPInterfaceProperties Properties = Interface.GetIPProperties();
-				string MulticastAddress;
+				IPAddress MulticastAddress;
 
 				foreach (UnicastIPAddressInformation UnicastAddress in Properties.UnicastAddresses)
 				{
@@ -51,8 +53,9 @@ namespace RetroSharp.Networking.UPnP
 						try
 						{
 							Outgoing = new UdpClient(AddressFamily.InterNetwork);
-							MulticastAddress = "239.255.255.250";
+							MulticastAddress = IPAddress.Parse("239.255.255.250");
 							Outgoing.DontFragment = true;
+							Outgoing.MulticastLoopback = false;
 						}
 						catch (Exception)
 						{
@@ -64,7 +67,8 @@ namespace RetroSharp.Networking.UPnP
 						try
 						{
 							Outgoing = new UdpClient(AddressFamily.InterNetworkV6);
-							MulticastAddress = "[FF02::C]";
+							Outgoing.MulticastLoopback = false;
+							MulticastAddress = IPAddress.Parse("[FF02::C]");
 						}
 						catch (Exception)
 						{
@@ -78,17 +82,47 @@ namespace RetroSharp.Networking.UPnP
 					Outgoing.MulticastLoopback = false;
 					Outgoing.Ttl = 30;
 					Outgoing.Client.Bind(new IPEndPoint(UnicastAddress.Address, 0));
-					Outgoing.JoinMulticastGroup(IPAddress.Parse(MulticastAddress));
+					Outgoing.JoinMulticastGroup(MulticastAddress);
 
-					IPEndPoint EP = new IPEndPoint(IPAddress.Parse(MulticastAddress), ssdpPort);
+					IPEndPoint EP = new IPEndPoint(MulticastAddress, ssdpPort);
 					this.ssdpOutgoing.AddLast(new KeyValuePair<UdpClient, IPEndPoint>(Outgoing, EP));
 
-					Outgoing.BeginReceive(this.EndReceive, Outgoing);
+					Outgoing.BeginReceive(this.EndReceiveOutgoing, Outgoing);
+
+					try
+					{
+						Incoming = new UdpClient(Outgoing.Client.AddressFamily);
+						Incoming.ExclusiveAddressUse = false;
+						Incoming.Client.Bind(new IPEndPoint(UnicastAddress.Address, ssdpPort));
+
+						Incoming.BeginReceive(this.EndReceiveIncoming, Incoming);
+
+						this.ssdpIncoming.AddLast(Incoming);
+					}
+					catch (Exception)
+					{
+						Incoming = null;
+					}
+
+					try
+					{
+						Incoming = new UdpClient(ssdpPort, Outgoing.Client.AddressFamily);
+						Incoming.MulticastLoopback = false;
+						Incoming.JoinMulticastGroup(MulticastAddress);
+
+						Incoming.BeginReceive(this.EndReceiveIncoming, Incoming);
+
+						this.ssdpIncoming.AddLast(Incoming);
+					}
+					catch (Exception)
+					{
+						Incoming = null;
+					}
 				}
 			}
 		}
 
-		private void EndReceive(IAsyncResult ar)
+		private void EndReceiveOutgoing(IAsyncResult ar)
 		{
 			try
 			{
@@ -96,54 +130,17 @@ namespace RetroSharp.Networking.UPnP
 				IPEndPoint RemoteIP = null;
 				byte[] Packet = UdpClient.EndReceive(ar, ref RemoteIP);
 				string Header = Encoding.ASCII.GetString(Packet);
-				string[] Rows = Header.Split(CRLF, StringSplitOptions.RemoveEmptyEntries);
-				int i, j, c;
+				UPnPHeaders Headers = new UPnPHeaders(Header);
 
-				if ((c = Rows.Length) > 0 && Rows[0] == "HTTP/1.1 200 OK")
+				if (Headers.Direction == HttpDirection.Response && Headers.HttpVersion >= 1.0 && Headers.ResponseCode == 200)
 				{
-					Dictionary<string, string> Headers = new Dictionary<string, string>();
-					string s, Key, Value;
-					string SearchTarget = string.Empty;
-					string Server = string.Empty;
-					string Location = string.Empty;
-					string UniqueServiceName = string.Empty;
-
-					for (i = 1; i < c; i++)
+					if (!string.IsNullOrEmpty(Headers.Location))
 					{
-						s = Rows[i];
-						j = s.IndexOf(':');
-
-						Key = s.Substring(0, j).ToUpper();
-						Value = s.Substring(j + 1).TrimStart();
-
-						Headers[Key] = Value;
-
-						switch (Key)
-						{
-							case "ST":
-								SearchTarget = Value;
-								break;
-
-							case "SERVER":
-								Server = Value;
-								break;
-
-							case "LOCATION":
-								Location = Value;
-								break;
-
-							case "USN":
-								UniqueServiceName = Value;
-								break;
-						}
-					}
-
-					if (!string.IsNullOrEmpty(Location))
-					{
-						UPnPDeviceLocationEventHandler h = this.OnDeviceLocation;
+						UPnPDeviceLocationEventHandler h = this.OnDeviceFound;
 						if (h != null)
 						{
-							DeviceLocation DeviceLocation = new DeviceLocation(this, SearchTarget, Server, Location, UniqueServiceName, Headers);
+							DeviceLocation DeviceLocation = new DeviceLocation(this, Headers.SearchTarget, Headers.Server, Headers.Location,
+								Headers.UniqueServiceName, Headers);
 							DeviceLocaionEventArgs e = new DeviceLocaionEventArgs(DeviceLocation, (IPEndPoint)UdpClient.Client.LocalEndPoint, RemoteIP);
 							try
 							{
@@ -156,8 +153,10 @@ namespace RetroSharp.Networking.UPnP
 						}
 					}
 				}
+				else if (Headers.Direction == HttpDirection.Request && Headers.HttpVersion >= 1.0)
+					this.HandleIncoming(UdpClient, RemoteIP, Headers);
 
-				UdpClient.BeginReceive(this.EndReceive, UdpClient);
+				UdpClient.BeginReceive(this.EndReceiveOutgoing, UdpClient);
 			}
 			catch (Exception ex)
 			{
@@ -165,9 +164,42 @@ namespace RetroSharp.Networking.UPnP
 			}
 		}
 
-		private static readonly char[] CRLF = new char[] { '\r', '\n' };
+		public event UPnPDeviceLocationEventHandler OnDeviceFound = null;
 
-		public event UPnPDeviceLocationEventHandler OnDeviceLocation = null;
+		private void HandleIncoming(UdpClient UdpClient, IPEndPoint RemoteIP, UPnPHeaders Headers)
+		{
+			Console.Out.WriteLine(RemoteIP.ToString() + "->" + UdpClient.Client.LocalEndPoint.ToString() + ": " + Headers.Verb + "(" + Headers.Parameter + ")");
+
+			switch (Headers.Verb)
+			{
+				case "M-SEARCH":
+					break;
+
+				case "NOTIFY":
+					break;
+			}
+		}
+
+		private void EndReceiveIncoming(IAsyncResult ar)
+		{
+			try
+			{
+				UdpClient UdpClient = (UdpClient)ar.AsyncState;
+				IPEndPoint RemoteIP = null;
+				byte[] Packet = UdpClient.EndReceive(ar, ref RemoteIP);
+				string Header = Encoding.ASCII.GetString(Packet);
+				UPnPHeaders Headers = new UPnPHeaders(Header);
+
+				if (Headers.Direction == HttpDirection.Request && Headers.HttpVersion >= 1.0)
+					this.HandleIncoming(UdpClient, RemoteIP, Headers);
+
+				UdpClient.BeginReceive(this.EndReceiveOutgoing, UdpClient);
+			}
+			catch (Exception ex)
+			{
+				this.RaiseOnError(ex);
+			}
+		}
 
 		/// <summary>
 		/// Starts a search for devices on the network.
@@ -272,6 +304,20 @@ namespace RetroSharp.Networking.UPnP
 			}
 
 			this.ssdpOutgoing.Clear();
+
+			foreach (UdpClient Client in this.ssdpIncoming)
+			{
+				try
+				{
+					Client.Close();
+				}
+				catch (Exception)
+				{
+					// Ignore
+				}
+			}
+
+			this.ssdpIncoming.Clear();
 		}
 
 		/// <summary>
