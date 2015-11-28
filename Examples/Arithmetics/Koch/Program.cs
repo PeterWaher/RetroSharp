@@ -18,6 +18,8 @@ namespace Koch
 			DrawKochFlakeLine(857, 485, 423, 485, Color.White);
 			DrawKochFlakeLine(423, 485, 640, 110, Color.White);
 
+			FillFlood(640, 360, Color.Gray);
+
 			Console.Out.WriteLine();
 			Console.Out.WriteLine("Press ENTER to continue.");
 			Console.In.ReadLine();

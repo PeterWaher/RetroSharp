@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimatedObject.cs" />
+    <Compile Include="HomingMisslie.cs" />
     <Compile Include="Present.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="Shot.cs" />

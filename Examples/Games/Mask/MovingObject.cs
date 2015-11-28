@@ -14,8 +14,8 @@ namespace Mask
 		protected int h;
 		protected bool wrap;
 
-		public MovingObject(int X, int Y, int VX, int VY, int FramesPerPixel, bool Wrap)
-			: base(FramesPerPixel)
+		public MovingObject(int X, int Y, int VX, int VY, int FramesPerPixel, int StepsPerFrame, bool Wrap)
+			: base(FramesPerPixel, StepsPerFrame)
 		{
 			this.x = X;
 			this.y = Y;
@@ -32,7 +32,7 @@ namespace Mask
 		public int VX { get { return this.vx; } }
 		public int VY{ get { return this.vy; } }
 
-		public override bool Move()
+		public override bool MoveStep()
 		{
 			if (this.dead)
 				return true;
@@ -58,10 +58,10 @@ namespace Mask
 					{
 						this.y += this.vy;
 
-						if (this.y < 0)
-							this.y += h;
+						if (this.y < 8)
+							this.y += (h - 8);
 						else if (this.y >= h)
-							this.y -= h;
+							this.y -= (h - 8);
 					}
 				}
 				else
@@ -75,7 +75,7 @@ namespace Mask
 						this.x = i;
 
 					i = this.y + this.vy;
-					if (i < 0 || i >= h)
+					if (i < 8 || i >= h)
 						this.Die();
 					else
 						this.y = i;

@@ -12,7 +12,7 @@ namespace Mask
 		private int p;
 
 		public Present(int X1, int Y1, int X2, int Y2)
-			: base(1)
+			: base(1, 1)
 		{
 			this.x1 = X1;
 			this.y1 = Y1;
@@ -40,7 +40,7 @@ namespace Mask
 			return true;
 		}
 
-		public override bool Move()
+		public override bool MoveStep()
 		{
 			if (this.dead)
 				return true;

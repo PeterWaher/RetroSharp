@@ -8,18 +8,33 @@ namespace Mask
 	{
 		protected int framesPerPixel;
 		protected int framesLeft;
+		protected int stepsPerFrame;
 		protected bool dead;
 
-		public AnimatedObject(int FramesPerPixel)
+		public AnimatedObject(int FramesPerPixel, int StepsPerFrame)
 		{
 			this.framesPerPixel = FramesPerPixel;
 			this.framesLeft = FramesPerPixel;
+			this.stepsPerFrame = StepsPerFrame;
 			this.dead = false;
 		}
 
 		public bool Dead { get { return this.dead; } }
 
-		public abstract bool Move();
+		public virtual bool Move()
+		{
+			int i;
+
+			for (i = 0; i < this.stepsPerFrame; i++)
+			{
+				if (this.MoveStep())
+					return true;
+			}
+
+			return false;
+		}
+
+		public abstract bool MoveStep();
 
 		public virtual void Die()
 		{

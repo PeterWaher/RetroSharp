@@ -13,7 +13,7 @@ namespace Mask
 		private int currentRadius;
 
 		public Explosion(int X, int Y, int Radius, Color Color)
-			: base(1)
+			: base(1, 1)
 		{
 			this.color = Color;
 			this.xc = X;
@@ -24,7 +24,7 @@ namespace Mask
 			RetroApplication.Raster[X, Y] = Color;
 		}
 
-		public override bool Move()
+		public override bool MoveStep()
 		{
 			if (this.dead)
 				return true;

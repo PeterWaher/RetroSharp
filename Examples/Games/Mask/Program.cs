@@ -4,13 +4,12 @@ using System.Threading;
 using System.Collections.Generic;
 using RetroSharp;
 
-// This is a template for retro applications using a raster graphics-based screen by default.
-
 namespace Mask
 {
 	[RasterGraphics(320, 200)]
+	[Characters(80, 25, KnownColor.White)]
 	[ScreenBorder(30, 20, KnownColor.DimGray)]
-	[AspectRatio(4,3)]
+	[AspectRatio(4, 3)]
 	class Program : RetroApplication
 	{
 		public static void Main(string[] args)
@@ -21,13 +20,21 @@ namespace Mask
 			LinkedList<Shot> Shots = new LinkedList<Shot>();
 			LinkedList<Explosion> Explosions = new LinkedList<Explosion>();
 			LinkedList<Present> Presents = new LinkedList<Present>();
-			Player Player1 = new Player(20, 20, 1, 0, 3, Color.Green, Color.LightGreen);
+			Player Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
+			Player Player2 = new Player(2, 280, 180, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
 			bool Player1Up = false;
 			bool Player1Down = false;
 			bool Player1Left = false;
 			bool Player1Right = false;
 			bool Player1Fire = false;
-			int Player1Power = 15;
+
+			Player1.Opponent = Player2;
+			Player2.Opponent = Player1;
+
+			FillRectangle(0, 0, 319, 7, Color.FromKnownColor(KnownColor.DimGray));
+			SetClipArea(0, 8, 319, 199);
+
+			Console.Out.Write("Player 1                                                                Player 2");
 
 			OnKeyDown += (sender, e) =>
 			{
@@ -66,19 +73,42 @@ namespace Mask
 						if (!Player1.Dead)
 							Player1Fire = true;
 						break;
+
+					case Key.Enter:
+						if (Player1.Dead)
+						{
+							Shots.Clear();
+							Explosions.Clear();
+							Presents.Clear();
+							Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
+							Player2 = new Player(2, 280, 180, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
+							Player1Up = false;
+							Player1Down = false;
+							Player1Left = false;
+							Player1Right = false;
+							Player1Fire = false;
+
+							Player1.Opponent = Player2;
+							Player2.Opponent = Player1;
+
+							FillRectangle(0, 8, 319, 199, Color.Black);
+							PlayerMsg(1, string.Empty);
+							PlayerMsg(2, string.Empty);
+						}
+						break;
 				}
 			};
 
 			OnUpdateModel += (sender, e) =>
 			{
-				if (Random() < 0.01)
+				if (Random() < 0.005)
 				{
 					int x1, y1;
 
 					do
 					{
 						x1 = Random(30, 285);
-						y1 = Random(30, 165);
+						y1 = Random(38, 165);
 					}
 					while (!Present.CanPlace(x1, y1, x1 + 5, y1 + 5));
 
@@ -121,9 +151,12 @@ namespace Mask
 				if (!Player1.Dead && Player1.Move())
 					Explosions.AddLast(new Explosion(Player1.X, Player1.Y, 30, Color.White));
 
+				if (!Player2.Dead && Player2.Move())
+					Explosions.AddLast(new Explosion(Player2.X, Player2.Y, 30, Color.White));
+
 				if (Player1Fire)
 				{
-					Shots.AddLast(new Shot(Player1.X + Player1.VX, Player1.Y + Player1.VY, Player1.VX, Player1.VY, 1, Color.White, Player1Power));
+					Player1.Fire(Shots);
 					Player1Fire = false;
 				}
 
@@ -161,5 +194,19 @@ namespace Mask
 
 			Terminate();
 		}
+
+		public static void PlayerMsg(int PlayerNr, string s)
+		{
+			int c = s.Length;
+			if (c > 30)
+				s = s.Substring(0, 30);
+			else if (c < 30)
+				s += new string(' ', 30 - c);
+
+			GotoXY(PlayerNr == 1 ? 10 : 40, 0);
+			ForegroundColor = Color.LightBlue;
+			Console.Out.Write(s);
+		}
+
 	}
 }
