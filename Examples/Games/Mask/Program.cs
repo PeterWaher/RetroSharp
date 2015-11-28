@@ -22,6 +22,7 @@ namespace Mask
 			LinkedList<Present> Presents = new LinkedList<Present>();
 			Player Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
 			Player Player2 = new Player(2, 280, 180, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
+			int NrPlayers = 1;
 			bool Player1Up = false;
 			bool Player1Down = false;
 			bool Player1Left = false;
@@ -131,21 +132,33 @@ namespace Mask
 				{
 					Player1.Up();
 					Player1Up = false;
+
+					if (NrPlayers == 1 && ! Player2.Dead)
+						Player2.Down();
 				}
 				else if (Player1Down)
 				{
 					Player1.Down();
 					Player1Down = false;
+
+					if (NrPlayers == 1 && !Player2.Dead)
+						Player2.Up();
 				}
 				else if (Player1Left)
 				{
 					Player1.Left();
 					Player1Left = false;
+
+					if (NrPlayers == 1 && !Player2.Dead)
+						Player2.Right();
 				}
 				else if (Player1Right)
 				{
 					Player1.Right();
 					Player1Right = false;
+
+					if (NrPlayers == 1 && !Player2.Dead)
+						Player2.Left();
 				}
 
 				if (!Player1.Dead && Player1.Move())
@@ -158,6 +171,9 @@ namespace Mask
 				{
 					Player1.Fire(Shots);
 					Player1Fire = false;
+
+					if (NrPlayers == 1 && !Player2.Dead)
+						Player2.Fire(Shots);
 				}
 
 				LinkedListNode<Shot> ShotObj, NextShotObj;
