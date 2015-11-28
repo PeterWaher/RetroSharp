@@ -108,6 +108,7 @@ namespace RetroSharp.Networking.UPnP
 			UPnPStateVariable Variable;
 			object Value;
 			object Result = null;
+			object First = null;
 
 			sb.AppendLine("<?xml version=\"1.0\"?>");
 			sb.AppendLine("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">");
@@ -259,16 +260,32 @@ namespace RetroSharp.Networking.UPnP
 							object Value2 = Variable.XmlStringToValue(E.InnerText);
 							OutputValues[E.LocalName] = Value2;
 
+							if (First == null)
+								First = Value2;
+
 							if (Argument2.ReturnValue && Result == null)
 								Result = Value2;
 						}
 						else
+						{
+							if (First == null)
+								First = E.InnerXml;
+
 							OutputValues[E.LocalName] = E.InnerXml;
+						}
 					}
 					else
+					{
+						if (First == null)
+							First = E.InnerXml;
+
 						OutputValues[E.LocalName] = E.InnerXml;
+					}
 				}
 			}
+
+			if (Result == null)
+				Result = First;
 
 			return Result;
 		}

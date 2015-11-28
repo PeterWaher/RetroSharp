@@ -97,9 +97,10 @@ namespace RetroSharp.Networking.UPnP
 		/// Starts the retrieval of a Device Description Document.
 		/// </summary>
 		/// <param name="Callback">Callback method. Will be called when the document has been downloaded, or an error has occurred.</param>
-		public void StartGetDevice(DeviceDescriptionEventHandler Callback)
+		/// <param name="State">State object propagated to the callback method.</param>
+		public void StartGetDevice(DeviceDescriptionEventHandler Callback, object State)
 		{
-			this.client.StartGetDevice(this.location, Callback);
+			this.client.StartGetDevice(this.location, Callback, State);
 		}
 
 		/// <summary>

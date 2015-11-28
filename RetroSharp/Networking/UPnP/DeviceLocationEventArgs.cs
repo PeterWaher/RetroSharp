@@ -10,18 +10,18 @@ namespace RetroSharp.Networking.UPnP
 	/// </summary>
 	/// <param name="Sender">Sender of event.</param>
 	/// <param name="e">Event arguments.</param>
-	public delegate void UPnPDeviceLocationEventHandler(UPnPClient Sender, DeviceLocaionEventArgs e);
+	public delegate void UPnPDeviceLocationEventHandler(UPnPClient Sender, DeviceLocationEventArgs e);
 
 	/// <summary>
 	/// Event arguments for completion events when downloading device description documents.
 	/// </summary>
-	public class DeviceLocaionEventArgs
+	public class DeviceLocationEventArgs
 	{
 		private DeviceLocation location;
 		private IPEndPoint localEndPoint;
 		private IPEndPoint remoteEndPoint;
 
-		internal DeviceLocaionEventArgs(DeviceLocation Location, IPEndPoint LocalEndPoint, IPEndPoint RemoteEndPoint)
+		internal DeviceLocationEventArgs(DeviceLocation Location, IPEndPoint LocalEndPoint, IPEndPoint RemoteEndPoint)
 		{
 			this.location = Location;
 			this.localEndPoint = LocalEndPoint;

@@ -17,13 +17,19 @@ namespace RetroSharp.Networking.UPnP
 		private string baseUrl;
 		private Uri baseUri;
 
-		internal DeviceDescriptionDocument(XmlDocument Xml, UPnPClient Client)
+		internal DeviceDescriptionDocument(XmlDocument Xml, UPnPClient Client, string BaseUrl)
 		{
 			this.xml = Xml;
 
-			if (Xml.DocumentElement != null && Xml.DocumentElement.LocalName == "root" && 
+			if (Xml.DocumentElement != null && Xml.DocumentElement.LocalName == "root" &&
 				Xml.DocumentElement.NamespaceURI == "urn:schemas-upnp-org:device-1-0")
 			{
+				if (!string.IsNullOrEmpty(BaseUrl))
+				{
+					this.baseUrl = BaseUrl;
+					this.baseUri = new Uri(this.baseUrl);
+				}
+
 				foreach (XmlNode N in Xml.DocumentElement.ChildNodes)
 				{
 					switch (N.LocalName)

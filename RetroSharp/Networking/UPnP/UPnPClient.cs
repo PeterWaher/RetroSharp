@@ -141,7 +141,7 @@ namespace RetroSharp.Networking.UPnP
 						{
 							DeviceLocation DeviceLocation = new DeviceLocation(this, Headers.SearchTarget, Headers.Server, Headers.Location,
 								Headers.UniqueServiceName, Headers);
-							DeviceLocaionEventArgs e = new DeviceLocaionEventArgs(DeviceLocation, (IPEndPoint)UdpClient.Client.LocalEndPoint, RemoteIP);
+							DeviceLocationEventArgs e = new DeviceLocationEventArgs(DeviceLocation, (IPEndPoint)UdpClient.Client.LocalEndPoint, RemoteIP);
 							try
 							{
 								h(this, e);
@@ -164,21 +164,56 @@ namespace RetroSharp.Networking.UPnP
 			}
 		}
 
+		/// <summary>
+		/// Event raised when a device has been found as a result of a search made by the client.
+		/// </summary>
 		public event UPnPDeviceLocationEventHandler OnDeviceFound = null;
 
 		private void HandleIncoming(UdpClient UdpClient, IPEndPoint RemoteIP, UPnPHeaders Headers)
 		{
-			Console.Out.WriteLine(RemoteIP.ToString() + "->" + UdpClient.Client.LocalEndPoint.ToString() + ": " + Headers.Verb + "(" + Headers.Parameter + ")");
-
 			switch (Headers.Verb)
 			{
 				case "M-SEARCH":
+					NotificationEventHandler h = this.OnSearch;
+					if (h != null)
+					{
+						try
+						{
+							h(this, new NotificationEventArgs(this, Headers, (IPEndPoint)UdpClient.Client.LocalEndPoint, RemoteIP));
+						}
+						catch (Exception ex)
+						{
+							this.RaiseOnError(ex);
+						}
+					}
 					break;
 
 				case "NOTIFY":
+					h = this.OnNotification;
+					if (h != null)
+					{
+						try
+						{
+							h(this, new NotificationEventArgs(this, Headers, (IPEndPoint)UdpClient.Client.LocalEndPoint, RemoteIP));
+						}
+						catch (Exception ex)
+						{
+							this.RaiseOnError(ex);
+						}
+					}
 					break;
 			}
 		}
+
+		/// <summary>
+		/// Event raised when the client is notified of a device or service in the network.
+		/// </summary>
+		public event NotificationEventHandler OnNotification = null;
+
+		/// <summary>
+		/// Event raised when the client receives a request searching for devices or services in the network.
+		/// </summary>
+		public event NotificationEventHandler OnSearch = null;
 
 		private void EndReceiveIncoming(IAsyncResult ar)
 		{
@@ -206,7 +241,8 @@ namespace RetroSharp.Networking.UPnP
 		/// </summary>
 		public void StartSearch()
 		{
-			this.StartSearch("ssdp:all", defaultMaximumSearchTimeSeconds);
+			this.StartSearch("upnp:rootdevice", defaultMaximumSearchTimeSeconds);
+			//this.StartSearch("ssdp:all", defaultMaximumSearchTimeSeconds);
 		}
 
 		/// <summary>
@@ -215,13 +251,14 @@ namespace RetroSharp.Networking.UPnP
 		/// <param name="MaximumWaitTimeSeconds">Maximum Wait Time, in seconds. Default=10 seconds.</param>
 		public void StartSearch(int MaximumWaitTimeSeconds)
 		{
-			this.StartSearch("ssdp:all", MaximumWaitTimeSeconds);
+			this.StartSearch("upnp:rootdevice", MaximumWaitTimeSeconds);
+			//this.StartSearch("ssdp:all", MaximumWaitTimeSeconds);
 		}
 
 		/// <summary>
 		/// Starts a search for devices on the network.
 		/// </summary>
-		/// <param name="SearchTarget">Search target. (Default="ssdp:all", which searches for all types of devices.)</param>
+		/// <param name="SearchTarget">Search target. (Default="upnp:rootdevice", which searches for all types of root devices.)</param>
 		public void StartSearch(string SearchTarget)
 		{
 			this.StartSearch(SearchTarget, defaultMaximumSearchTimeSeconds);
@@ -230,7 +267,7 @@ namespace RetroSharp.Networking.UPnP
 		/// <summary>
 		/// Starts a search for devices on the network.
 		/// </summary>
-		/// <param name="SearchTarget">Search target. (Default="ssdp:all", which searches for all types of devices.)</param>
+		/// <param name="SearchTarget">Search target. (Default="upnp:rootdevice", which searches for all types of root devices.)</param>
 		/// <param name="MaximumWaitTimeSeconds">Maximum Wait Time, in seconds. Default=10 seconds.</param>
 		public void StartSearch(string SearchTarget, int MaximumWaitTimeSeconds)
 		{
@@ -351,7 +388,7 @@ namespace RetroSharp.Networking.UPnP
 				{
 					e = e2;
 					Done.Set();
-				});
+				}, null);
 
 			if (!Done.WaitOne(Timeout))
 				throw new TimeoutException("Timeout.");
@@ -367,21 +404,25 @@ namespace RetroSharp.Networking.UPnP
 		/// </summary>
 		/// <param name="Location">URL of the Device Description Document.</param>
 		/// <param name="Callback">Callback method. Will be called when the document has been downloaded, or an error has occurred.</param>
-		public void StartGetDevice(string Location, DeviceDescriptionEventHandler Callback)
+		/// <param name="State">State object propagated to the callback method.</param>
+		public void StartGetDevice(string Location, DeviceDescriptionEventHandler Callback, object State)
 		{
 			Uri LocationUri = new Uri(Location);
 			WebClient Client = new WebClient();
 			Client.DownloadDataCompleted += new DownloadDataCompletedEventHandler(DownloadDeviceCompleted);
-			Client.DownloadDataAsync(LocationUri, Callback);
+			Client.DownloadDataAsync(LocationUri, new object[] { Callback, Location, State });
 		}
 
 		private void DownloadDeviceCompleted(object sender, DownloadDataCompletedEventArgs e)
 		{
-			DeviceDescriptionEventHandler Callback = (DeviceDescriptionEventHandler)e.UserState;
+			object[] P = (object[])e.UserState;
+			DeviceDescriptionEventHandler Callback = (DeviceDescriptionEventHandler)P[0];
+			string BaseUrl = (string)P[1];
+			object State = P[2];
 			DeviceDescriptionEventArgs e2;
 
 			if (e.Error != null)
-				e2 = new DeviceDescriptionEventArgs(e.Error, this);
+				e2 = new DeviceDescriptionEventArgs(e.Error, this, State);
 			else
 			{
 				try
@@ -389,13 +430,13 @@ namespace RetroSharp.Networking.UPnP
 					XmlDocument Xml = new XmlDocument();
 					Xml.Load(new MemoryStream(e.Result));
 
-					DeviceDescriptionDocument Device = new DeviceDescriptionDocument(Xml, this);
-					e2 = new DeviceDescriptionEventArgs(Device, this);
+					DeviceDescriptionDocument Device = new DeviceDescriptionDocument(Xml, this, BaseUrl);
+					e2 = new DeviceDescriptionEventArgs(Device, this, State);
 				}
 				catch (Exception ex)
 				{
 					this.RaiseOnError(ex);
-					e2 = new DeviceDescriptionEventArgs(e.Error, this);
+					e2 = new DeviceDescriptionEventArgs(e.Error, this, State);
 				}
 				finally
 				{
@@ -447,7 +488,7 @@ namespace RetroSharp.Networking.UPnP
 			{
 				e = e2;
 				Done.Set();
-			});
+			}, null);
 
 			if (!Done.WaitOne(Timeout))
 				throw new TimeoutException("Timeout.");
@@ -463,11 +504,12 @@ namespace RetroSharp.Networking.UPnP
 		/// </summary>
 		/// <param name="Service">Service object.</param>
 		/// <param name="Callback">Callback method. Will be called when the document has been downloaded, or an error has occurred.</param>
-		public void StartGetService(UPnPService Service, ServiceDescriptionEventHandler Callback)
+		/// <param name="State">State object propagated to the callback method.</param>
+		public void StartGetService(UPnPService Service, ServiceDescriptionEventHandler Callback, object State)
 		{
 			WebClient Client = new WebClient();
 			Client.DownloadDataCompleted += new DownloadDataCompletedEventHandler(DownloadServiceCompleted);
-			Client.DownloadDataAsync(Service.SCPDURI, new object[] { Service, Callback });
+			Client.DownloadDataAsync(Service.SCPDURI, new object[] { Service, Callback, State });
 		}
 
 		private void DownloadServiceCompleted(object sender, DownloadDataCompletedEventArgs e)
@@ -475,10 +517,11 @@ namespace RetroSharp.Networking.UPnP
 			object[] P = (object[])e.UserState;
 			UPnPService Service = (UPnPService)P[0];
 			ServiceDescriptionEventHandler Callback = (ServiceDescriptionEventHandler)P[1];
+			object State = P[2];
 			ServiceDescriptionEventArgs e2;
 
 			if (e.Error != null)
-				e2 = new ServiceDescriptionEventArgs(e.Error, this);
+				e2 = new ServiceDescriptionEventArgs(e.Error, this, State);
 			else
 			{
 				try
@@ -487,12 +530,12 @@ namespace RetroSharp.Networking.UPnP
 					Xml.Load(new MemoryStream(e.Result));
 
 					ServiceDescriptionDocument ServiceDoc = new ServiceDescriptionDocument(Xml, this, Service);
-					e2 = new ServiceDescriptionEventArgs(ServiceDoc, this);
+					e2 = new ServiceDescriptionEventArgs(ServiceDoc, this, State);
 				}
 				catch (Exception ex)
 				{
 					this.RaiseOnError(ex);
-					e2 = new ServiceDescriptionEventArgs(e.Error, this);
+					e2 = new ServiceDescriptionEventArgs(e.Error, this, State);
 				}
 				finally
 				{

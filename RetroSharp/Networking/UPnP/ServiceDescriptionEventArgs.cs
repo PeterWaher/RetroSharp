@@ -15,19 +15,22 @@ namespace RetroSharp.Networking.UPnP
 		private ServiceDescriptionDocument doc;
 		private Exception ex;
 		private UPnPClient client;
+		private object state;
 
-		internal ServiceDescriptionEventArgs(ServiceDescriptionDocument Doc, UPnPClient Client)
+		internal ServiceDescriptionEventArgs(ServiceDescriptionDocument Doc, UPnPClient Client, object State)
 		{
 			this.client = Client;
 			this.doc = Doc;
 			this.ex = null;
+			this.state = State;
 		}
 
-		internal ServiceDescriptionEventArgs(Exception Ex, UPnPClient Client)
+		internal ServiceDescriptionEventArgs(Exception Ex, UPnPClient Client, object State)
 		{
 			this.client = Client;
 			this.doc = null;
 			this.ex = Ex;
+			this.state = State;
 		}
 
 		/// <summary>
@@ -52,6 +55,14 @@ namespace RetroSharp.Networking.UPnP
 		public Exception Exception
 		{
 			get { return this.ex; }
+		}
+
+		/// <summary>
+		/// State object.
+		/// </summary>
+		public object State
+		{
+			get { return this.state; }
 		}
 	}
 }

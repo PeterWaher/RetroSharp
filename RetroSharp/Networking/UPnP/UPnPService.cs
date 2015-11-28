@@ -21,7 +21,21 @@ namespace RetroSharp.Networking.UPnP
 		private Uri controlURI;
 		private Uri eventSubURI;
 
-		internal UPnPService(XmlElement Xml, Uri BaseUri, UPnPClient Client)
+		public UPnPService(UPnPClient Client, string ServiceType, string ServiceId, string ScpdUrl)
+		{
+			this.client = Client;
+			this.xml = null;
+			this.serviceType = ServiceType;
+			this.serviceId = ServiceId;
+			this.scpdURL = ScpdUrl;
+			this.scpdURI = new Uri(ScpdUrl);
+			this.controlURL = null;
+			this.controlURI = null;
+			this.eventSubURL = null;
+			this.eventSubURI = null;
+		}
+
+		public UPnPService(XmlElement Xml, Uri BaseUri, UPnPClient Client)
 		{
 			this.client = Client;
 			this.xml = Xml;
@@ -141,9 +155,10 @@ namespace RetroSharp.Networking.UPnP
 		/// Starts the retrieval of a Service Description Document.
 		/// </summary>
 		/// <param name="Callback">Callback method. Will be called when the document has been downloaded, or an error has occurred.</param>
-		public void StartGetService(ServiceDescriptionEventHandler Callback)
+		/// <param name="State">State object propagated to the callback method.</param>
+		public void StartGetService(ServiceDescriptionEventHandler Callback, object State)
 		{
-			this.client.StartGetService(this, Callback);
+			this.client.StartGetService(this, Callback, State);
 		}
 	}
 }

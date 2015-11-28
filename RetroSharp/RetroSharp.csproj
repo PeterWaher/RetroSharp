@@ -62,12 +62,18 @@
     <Compile Include="Networking\MQTT\MqttConnection.cs" />
     <Compile Include="Networking\MQTT\MqttControlPacketType.cs" />
     <Compile Include="Networking\MQTT\MqttHeader.cs" />
+    <Compile Include="Networking\P2P\PeerToPeerNetwork.cs" />
+    <Compile Include="Networking\UPnP\NotificationEventArgs.cs" />
     <Compile Include="Networking\UPnP\DeviceLocationEventArgs.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\microsoft.com\service\X_MS_MediaReceiverRegistrar\X_MS_MediaReceiverRegistrar.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\ConnectionManager\ConnectionManager.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\ContentDirectory\ContentDirectory.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\Layer3Forwarding\Layer3ForwardingV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANCommonInterfaceConfig\WANCommonInterfaceConfigV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANEthernetLinkConfig\WANEthernetLinkConfigV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV1.cs" />
     <Compile Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\WANIPConnectionV2.cs" />
+    <Compile Include="Networking\UPnP\Services\urn\schemas-wifialliance-org\service\WFAWLANConfig\WFAWLANConfig.cs" />
     <Compile Include="Networking\UPnP\UPnPException.cs" />
     <Compile Include="Networking\UPnP\UPnPHeaders.cs" />
     <Compile Include="Networking\UPnP\UPnPStateVariable.cs" />
@@ -123,6 +129,14 @@
     <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\WANIPConnection\2.scpd.xml">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\ConnectionManager\1.scpd.xml" />
+    <None Include="Networking\UPnP\Services\urn\schemas-upnp-org\service\ContentDirectory\1.scpd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Networking\UPnP\Services\urn\microsoft.com\service\X_MS_MediaReceiverRegistrar\1.scpd.xml" />
+    <None Include="Networking\UPnP\Services\urn\schemas-wifialliance-org\service\WFAWLANConfig\1.scpd.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
