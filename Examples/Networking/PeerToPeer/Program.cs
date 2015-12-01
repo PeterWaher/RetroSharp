@@ -20,19 +20,20 @@ namespace PeerToPeer
 				using (PeerToPeerNetwork P2PNetwork = new PeerToPeerNetwork("Retro Peer-to-Peer example"))
 				{
 					P2PNetwork.OnStateChange += (sender, newstate) => Console.Out.WriteLine(newstate.ToString());
-					P2PNetwork.OnPeerConnected += (sender, client) =>
+					P2PNetwork.OnPeerConnected += (sender, connection) =>
 					{
-						Console.Out.WriteLine("Client connected from: " + client.Client.RemoteEndPoint.ToString());
+						Console.Out.WriteLine("Client connected from: " + connection.Tcp.Client.RemoteEndPoint.ToString());
 					};
 
-					P2PNetwork.Wait();
+					if (!P2PNetwork.Wait())
+						throw new Exception("Unable to configure Internet Gateway NAT traversal.");
 
 					Console.Out.WriteLine("External IP Endpoint: " + P2PNetwork.ExternalEndpoint.ToString());
 
 					Console.Out.WriteLine("Press ENTER to try to connect.");
 					Console.In.ReadLine();
 
-					using (TcpClient Client = P2PNetwork.ConnectToPeer(P2PNetwork.ExternalEndpoint))
+					using (PeerConnection Client = P2PNetwork.ConnectToPeer(P2PNetwork.ExternalEndpoint))
 					{
 						Console.In.ReadLine();
 					}

@@ -508,7 +508,7 @@ namespace RetroSharp.Networking.MQTT
 			}
 			finally
 			{
-				if (ContinueReading)
+				if (ContinueReading && this.stream != null)
 					this.BeginRead();
 			}
 		}
@@ -1088,7 +1088,7 @@ namespace RetroSharp.Networking.MQTT
 		/// <summary>
 		/// Event raised when new content has been received.
 		/// </summary>
-		public ContentReceivedEventHandler OnContentReceived = null;
+		public event ContentReceivedEventHandler OnContentReceived = null;
 
 		/// <summary>
 		/// Unsubscribes from information earlier subscribed to. Topics can include wildcards.

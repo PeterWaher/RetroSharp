@@ -17,7 +17,7 @@ namespace RetroSharp.Networking.P2P
 	public enum PeerToPeerNetworkState
 	{
 		/// <summary>
-		/// Listener object created
+		/// Object created
 		/// </summary>
 		Created,
 
@@ -59,7 +59,7 @@ namespace RetroSharp.Networking.P2P
 	/// </summary>
 	/// <param name="Listener">Sender of event.</param>
 	/// <param name="Peer">Peer connection.</param>
-	public delegate void PeerConnectedEventHandler(PeerToPeerNetwork Listener, TcpClient Peer);
+	public delegate void PeerConnectedEventHandler(PeerToPeerNetwork Listener, PeerConnection Peer);
 
 	/// <summary>
 	/// Manages a peer-to-peer network that can receive connections from outside of a NAT-enabled firewall.
@@ -355,11 +355,12 @@ namespace RetroSharp.Networking.P2P
 				try
 				{
 					TcpClient Client = this.tcpListener.EndAcceptTcpClient(ar);
+					PeerConnection Connection = new PeerConnection(Client);
 
 					this.tcpListener.BeginAcceptTcpClient(this.EndAcceptTcpClient, null);
 					this.State = PeerToPeerNetworkState.Ready;
 
-					this.PeerConnected(Client);
+					this.PeerConnected(Connection);
 				}
 				catch (Exception)
 				{
@@ -372,15 +373,15 @@ namespace RetroSharp.Networking.P2P
 		/// <summary>
 		/// Called when a new peer has connected.
 		/// </summary>
-		/// <param name="Client"></param>
-		protected virtual void PeerConnected(TcpClient Client)
+		/// <param name="Connection">Peer connection</param>
+		protected virtual void PeerConnected(PeerConnection Connection)
 		{
 			PeerConnectedEventHandler h = this.OnPeerConnected;
 			if (h != null)
 			{
 				try
 				{
-					h(this, Client);
+					h(this, Connection);
 				}
 				catch (Exception)
 				{
@@ -425,7 +426,7 @@ namespace RetroSharp.Networking.P2P
 							break;
 					}
 
-					PeerToPeerNetworkStateChangeEventHandler h = OnStateChange;
+					PeerToPeerNetworkStateChangeEventHandler h = this.OnStateChange;
 					if (h != null)
 					{
 						try
@@ -533,7 +534,14 @@ namespace RetroSharp.Networking.P2P
 			if (this.portAdded)
 			{
 				this.portAdded = false;
-				this.serviceWANIPConnectionV1.DeletePortMapping(string.Empty, (ushort)this.localEndpoint.Port, "TCP");
+				try
+				{
+					this.serviceWANIPConnectionV1.DeletePortMapping(string.Empty, (ushort)this.localEndpoint.Port, "TCP");
+				}
+				catch (Exception)
+				{
+					// Ignore
+				}
 				this.serviceWANIPConnectionV1 = null;
 			}
 
@@ -567,8 +575,8 @@ namespace RetroSharp.Networking.P2P
 		/// a direct connection to the local peer is made, for improved performance.
 		/// </summary>
 		/// <param name="RemoteEndPoint">Remote End-point.</param>
-		/// <returns>Connected TCP Client</returns>
-		public TcpClient ConnectToPeer(IPEndPoint RemoteEndPoint)
+		/// <returns>Peer connection</returns>
+		public PeerConnection ConnectToPeer(IPEndPoint RemoteEndPoint)
 		{
 			if (this.state != PeerToPeerNetworkState.Ready)
 				throw new IOException("Peer-to-peer network not ready.");
@@ -577,7 +585,7 @@ namespace RetroSharp.Networking.P2P
 
 			try
 			{
-				if (RemoteEndPoint.Address == this.externalAddress)
+				if (IPAddress.Equals(RemoteEndPoint.Address, this.externalAddress))
 				{
 					ushort InternalPort;
 					string InternalClient;
@@ -599,7 +607,7 @@ namespace RetroSharp.Networking.P2P
 				throw;
 			}
 
-			return Client;
+			return new PeerConnection(Client);
 		}
 
 

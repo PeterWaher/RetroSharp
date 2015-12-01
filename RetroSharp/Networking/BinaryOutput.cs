@@ -197,5 +197,14 @@ namespace RetroSharp.Networking
 			this.WriteUInt32((uint)Color.ToArgb());
 		}
 
+		/// <summary>
+		/// Writes a GUID to the stream.
+		/// </summary>
+		/// <param name="Guid">Value to write.</param>
+		public void WriteGuid(Guid Guid)
+		{
+			this.WriteBytes(Guid.ToByteArray());
+		}
+
 	}
 }

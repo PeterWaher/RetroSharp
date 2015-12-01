@@ -62,7 +62,10 @@
     <Compile Include="Networking\MQTT\MqttConnection.cs" />
     <Compile Include="Networking\MQTT\MqttControlPacketType.cs" />
     <Compile Include="Networking\MQTT\MqttHeader.cs" />
+    <Compile Include="Networking\MultiPlayerEnvironment.cs" />
+    <Compile Include="Networking\P2P\PeerConnection.cs" />
     <Compile Include="Networking\P2P\PeerToPeerNetwork.cs" />
+    <Compile Include="Networking\Player.cs" />
     <Compile Include="Networking\UPnP\NotificationEventArgs.cs" />
     <Compile Include="Networking\UPnP\DeviceLocationEventArgs.cs" />
     <Compile Include="Networking\UPnP\Services\urn\microsoft.com\service\X_MS_MediaReceiverRegistrar\X_MS_MediaReceiverRegistrar.cs" />

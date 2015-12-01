@@ -119,6 +119,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mask", "Examples\Games\Mask
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeerToPeer", "Examples\Networking\PeerToPeer\PeerToPeer.csproj", "{9C75EB1A-D535-42D2-BCA4-5820FF04ED2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiPlayerSetup", "Examples\Networking\MultiPlayerSetup\MultiPlayerSetup.csproj", "{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -579,6 +581,16 @@ Global
 		{9C75EB1A-D535-42D2-BCA4-5820FF04ED2A}.Release|Mixed Platforms.Build.0 = Release|x86
 		{9C75EB1A-D535-42D2-BCA4-5820FF04ED2A}.Release|x86.ActiveCfg = Release|x86
 		{9C75EB1A-D535-42D2-BCA4-5820FF04ED2A}.Release|x86.Build.0 = Release|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Debug|x86.ActiveCfg = Debug|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Debug|x86.Build.0 = Debug|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Release|Any CPU.ActiveCfg = Release|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Release|Mixed Platforms.Build.0 = Release|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Release|x86.ActiveCfg = Release|x86
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -640,5 +652,6 @@ Global
 		{CDE6176F-494E-466A-B1E5-607505176C22} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
 		{482BB0AB-FDEE-4C57-BB62-6222579E60CA} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
 		{9C75EB1A-D535-42D2-BCA4-5820FF04ED2A} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
+		{5D4C38E4-82FD-4BD8-A5AF-8A0EEA0C0A64} = {37B691A8-6D65-41A8-AD48-CC83D83799E3}
 	EndGlobalSection
 EndGlobal

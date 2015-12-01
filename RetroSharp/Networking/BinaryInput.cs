@@ -229,5 +229,15 @@ namespace RetroSharp.Networking
 			return Color.FromArgb((int)this.ReadUInt32());
 		}
 
+		/// <summary>
+		/// Reads a GUID value.
+		/// </summary>
+		/// <returns>GUID.</returns>
+		public Guid ReadGuid()
+		{
+			byte[] Bin = this.ReadBytes(16);
+			return new Guid(Bin);
+		}
+
 	}
 }
