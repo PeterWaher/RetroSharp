@@ -43,7 +43,15 @@ create a new project, in the list of available templates.
 
 The solution includes a series of [examples](Examples) demonstrating how **RetroSharp** can be used. These [examples](Examples) 
 are simple and aim to present a topic in a short and simple manner that is easy to read, understand, and reutilize. The 
-[examples](Examples) are sorted into various categories, from very simple to more advanced, as shown below.
+[examples](Examples) are sorted into various categories, from very simple to more advanced.
+
+* [Text and Strings](#Text-and-strings)
+* [Arithmetics](#arithmetics)
+* [Text Screen Manipulation](#text-screen-manipulation)
+* [Raster Graphics](#raster-graphics)
+* [Sprites](#sprites)
+* [Networking](#networking)
+* [Games](#games)
 
 For each project a small screen shot is presented, with a link to a full screen shot in the description. An executable file in 
 a zip folder is also available if you want to try the program without compiling it. If you follow the *Full Screen Shot* and 
