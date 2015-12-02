@@ -1,6 +1,7 @@
 ﻿//#define LineListener
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text;
@@ -68,9 +69,16 @@ namespace RetroSharp.Networking
 	/// <summary>
 	/// Event handler for player information events.
 	/// </summary>
-	/// <param name="Sender"></param>
-	/// <param name="PlayerInformation"></param>
+	/// <param name="Sender">Sender of event.</param>
+	/// <param name="PlayerInformation">Player information.</param>
 	public delegate void MultiPlayerEnvironmentPlayerInformationEventHandler(MultiPlayerEnvironment Sender, Player PlayerInformation);
+
+	/// <summary>
+	/// Event handler for game data events.
+	/// </summary>
+	/// <param name="Sender">Sender of event.</param>
+	/// <param name="e">Event arguments.</param>
+	public delegate void GameDataEventHandler(MultiPlayerEnvironment Sender, GameDataEventArgs e);
 
 	/// <summary>
 	/// Manages a multi-player environment.
@@ -88,6 +96,7 @@ namespace RetroSharp.Networking
 		private Dictionary<IPAddress, bool> remotePlayerIPs = new Dictionary<IPAddress, bool>();
 		private Dictionary<Guid, Player> playersById = new Dictionary<Guid, Player>();
 		private SortedDictionary<int, Player> remotePlayersByIndex = new SortedDictionary<int, Player>();
+		private Player[] remotePlayers = new Player[0];
 		private string applicationName;
 		private string mqttServer;
 		private int mqttPort;
@@ -215,21 +224,23 @@ namespace RetroSharp.Networking
 			IPEndPoint LocalEndpoint = new IPEndPoint(LocalAddress, LocalPort);
 
 			Guid PlayerId = Input.ReadGuid();
-			if (PlayerId == this.localPlayer.PlayerId)
-				return null;
-
+			bool LocalPlayer = PlayerId == this.localPlayer.PlayerId;
 			int i, c = (int)Input.ReadUInt();
-			KeyValuePair<string, string>[] PlayerMetaInfo = new KeyValuePair<string, string>[c];
+			KeyValuePair<string, string>[] PlayerMetaInfo = LocalPlayer ? null : new KeyValuePair<string, string>[c];
 			string Key, Value;
 
 			for (i = 0; i < c; i++)
 			{
 				Key = Input.ReadString();
 				Value = Input.ReadString();
-				PlayerMetaInfo[i] = new KeyValuePair<string, string>(Key, Value);
+				if (!LocalPlayer)
+					PlayerMetaInfo[i] = new KeyValuePair<string, string>(Key, Value);
 			}
 
-			return new Player(PlayerId, PublicEndpoint, LocalEndpoint, PlayerMetaInfo);
+			if (LocalPlayer)
+				return null;
+			else
+				return new Player(PlayerId, PublicEndpoint, LocalEndpoint, PlayerMetaInfo);
 		}
 
 		private void mqttConnection_OnContentReceived(MqttConnection Sender, MqttContent Content)
@@ -258,7 +269,8 @@ namespace RetroSharp.Networking
 						this.remotePlayersByEndpoint[ExpectedEndpoint] = Player;
 						this.remotePlayerIPs[ExpectedEndpoint.Address] = true;
 						this.playersById[Player.PlayerId] = Player;
-						this.playerCount = 1 + this.remotePlayersByEndpoint.Count;
+
+						this.UpdateRemotePlayersLocked();
 					}
 
 					MultiPlayerEnvironmentPlayerInformationEventHandler h = this.OnPlayerAvailable;
@@ -268,9 +280,10 @@ namespace RetroSharp.Networking
 						{
 							h(this, Player);
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-							// Ignore.
+							Debug.WriteLine(ex.Message);
+							Debug.WriteLine(ex.StackTrace.ToString());
 						}
 					}
 					break;
@@ -312,7 +325,7 @@ namespace RetroSharp.Networking
 #if LineListener
 							Console.Out.Write("," + Player.ToString());
 #endif
-							Player.Index = Index;
+							Player.Index = Index++;
 							Players.AddLast(Player);
 						}
 					}
@@ -346,7 +359,7 @@ namespace RetroSharp.Networking
 							this.playersById[Player2.PlayerId] = Player2;
 						}
 
-						this.playerCount = 1 + this.remotePlayersByEndpoint.Count;
+						this.UpdateRemotePlayersLocked();
 					}
 
 					this.State = MultiPlayerState.ConnectingPlayers;
@@ -388,15 +401,28 @@ namespace RetroSharp.Networking
 						if (!AddressFound)
 							this.remotePlayerIPs.Remove(ExpectedAddress);
 
-						this.playerCount = 1 + this.remotePlayersByEndpoint.Count;
+						this.UpdateRemotePlayersLocked();
 					}
 					break;
 			}
 		}
 
+		private void UpdateRemotePlayersLocked()
+		{
+			int c = this.remotePlayersByEndpoint.Count;
+
+			this.playerCount = 1 + c;
+			this.remotePlayers = new Player[c];
+			this.remotePlayersByEndpoint.Values.CopyTo(this.remotePlayers, 0);
+		}
+
 		private void p2pNetwork_OnPeerConnected(PeerToPeerNetwork Listener, PeerConnection Peer)
 		{
 			IPEndPoint Endpoint = (IPEndPoint)Peer.Tcp.Client.RemoteEndPoint;
+
+#if LineListener
+			Console.Out.WriteLine("Receiving connection from " + Endpoint.ToString());
+#endif
 
 			lock (this.remotePlayersByEndpoint)
 			{
@@ -412,6 +438,7 @@ namespace RetroSharp.Networking
 
 			Peer.Send(this.localPlayer.PlayerId.ToByteArray());
 		}
+
 
 		private void Peer_OnReceived(object Sender, byte[] Packet)
 		{
@@ -470,9 +497,10 @@ namespace RetroSharp.Networking
 					{
 						h(this, Player);
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
-						// Ignore.
+						Debug.WriteLine(ex.Message);
+						Debug.WriteLine(ex.StackTrace.ToString());
 					}
 				}
 
@@ -485,7 +513,7 @@ namespace RetroSharp.Networking
 			else
 				Player = (Player)Connection.StateObject;
 
-			this.OnGameDateReceived(Player, Connection, Packet);
+			this.GameDataReceived(Player, Connection, Packet);
 		}
 
 		/// <summary>
@@ -494,9 +522,81 @@ namespace RetroSharp.Networking
 		/// <param name="FromPlayer">Data came from this player.</param>
 		/// <param name="Connection">Data came over this connection.</param>
 		/// <param name="Packet">Data received.</param>
-		protected virtual void OnGameDateReceived(Player FromPlayer, PeerConnection Connection, byte[] Packet)
+		protected virtual void GameDataReceived(Player FromPlayer, PeerConnection Connection, byte[] Packet)
 		{
-			// TODO: Game data received.
+			GameDataEventHandler h = this.OnGameDataReceived;
+			if (h != null)
+			{
+				try
+				{
+					h(this, new GameDataEventArgs(FromPlayer, Connection, Packet));
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine(ex.Message);
+					Debug.WriteLine(ex.StackTrace.ToString());
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event raised when game data has been received from a player.
+		/// </summary>
+		public event GameDataEventHandler OnGameDataReceived = null;
+
+		/// <summary>
+		/// Sends a packet to all remote players. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// </summary>
+		/// <param name="Packet">Packet to send.</param>
+		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
+		public void SendToAll(byte[] Packet)
+		{
+			if (this.state != MultiPlayerState.Ready)
+				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
+
+			PeerConnection Connection;
+			foreach (Player Player in this.remotePlayers)
+			{
+				if ((Connection = Player.Connection) != null)
+					Connection.Send(Packet);
+			}
+		}
+
+		/// <summary>
+		/// Sends a packet to a specific player. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// </summary>
+		/// <param name="Player">Player to send the packet to.</param>
+		/// <param name="Packet">Packet to send.</param>
+		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
+		public void SendTo(Player Player, byte[] Packet)
+		{
+			if (this.state != MultiPlayerState.Ready)
+				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
+
+			PeerConnection Connection = Player.Connection;
+			if (Connection != null)
+				Connection.Send(Packet);
+		}
+
+		/// <summary>
+		/// Sends a packet to a specific player. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// </summary>
+		/// <param name="PlayerId">ID of player to send the packet to.</param>
+		/// <param name="Packet">Packet to send.</param>
+		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
+		public void SendTo(Guid PlayerId, byte[] Packet)
+		{
+			Player Player;
+
+			lock (this.remotePlayersByEndpoint)
+			{
+				if (!this.playersById.TryGetValue(PlayerId, out Player))
+					throw new ArgumentException("No player with that ID.", "PlayerId");
+			}
+
+			PeerConnection Connection = Player.Connection;
+			if (Connection != null)
+				Connection.Send(Packet);
 		}
 
 		private void Peer_OnClosed(object sender, EventArgs e)
@@ -524,9 +624,10 @@ namespace RetroSharp.Networking
 				{
 					h(this, Player);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					// Ignore.
+					Debug.WriteLine(ex.Message);
+					Debug.WriteLine(ex.StackTrace.ToString());
 				}
 			}
 
@@ -552,6 +653,9 @@ namespace RetroSharp.Networking
 		/// </summary>
 		public void ConnectPlayers()
 		{
+			if (this.state != MultiPlayerState.FindingPlayers)
+				throw new Exception("The multiplayer environment is not in the state of finding players.");
+
 			this.State = MultiPlayerState.ConnectingPlayers;
 
 			int Index = 0;
@@ -590,31 +694,34 @@ namespace RetroSharp.Networking
 
 		private void StartConnecting()
 		{
-			Player[] Players;
-
-			lock (this.remotePlayersByEndpoint)
-			{
-				Players = new Player[this.remotePlayersByEndpoint.Count];
-				this.remotePlayersByEndpoint.Values.CopyTo(Players, 0);
-			}
-
-			foreach (Player Player in Players)
-			{
-				if (Player.Index < this.localPlayer.Index)
-				{
 #if LineListener
-					Console.Out.WriteLine("Connecting to " + Player.ToString());
+			Console.Out.WriteLine("Current player has index " + this.localPlayer.Index.ToString());
 #endif
-					PeerConnection Connection = this.p2pNetwork.ConnectToPeer(Player.PublicEndpoint);
-
-					Connection.StateObject = Player;
-					Connection.OnReceived += new BinaryEventHandler(Connection_OnReceived);
-				}
-				else
+			if (this.remotePlayers.Length == 0)
+				this.State = MultiPlayerState.Ready;
+			else
+			{
+				foreach (Player Player in this.remotePlayers)
 				{
+					if (Player.Index < this.localPlayer.Index)
+					{
 #if LineListener
-					Console.Out.WriteLine("Waiting for connection from " + Player.ToString());
+						Console.Out.WriteLine("Connecting to " + Player.ToString() + " (index " + Player.Index.ToString() + ")");
 #endif
+						PeerConnection Connection = this.p2pNetwork.ConnectToPeer(Player.PublicEndpoint);
+
+						Connection.StateObject = Player;
+						Connection.OnClosed += new EventHandler(Peer_OnClosed);
+						Connection.OnReceived += new BinaryEventHandler(Connection_OnReceived);
+
+						Connection.Start();
+					}
+					else
+					{
+#if LineListener
+						Console.Out.WriteLine("Waiting for connection from " + Player.ToString() + " (index " + Player.Index.ToString() + ")");
+#endif
+					}
 				}
 			}
 		}
@@ -657,9 +764,10 @@ namespace RetroSharp.Networking
 				{
 					h(this, Player);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					// Ignore.
+					Debug.WriteLine(ex.Message);
+					Debug.WriteLine(ex.StackTrace.ToString());
 				}
 			}
 		}
@@ -728,9 +836,10 @@ namespace RetroSharp.Networking
 						{
 							h(this, value);
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-							// Ignore
+							Debug.WriteLine(ex.Message);
+							Debug.WriteLine(ex.StackTrace.ToString());
 						}
 					}
 				}
@@ -803,7 +912,7 @@ namespace RetroSharp.Networking
 		/// Waits for the multi-player environment object to be ready to play.
 		/// </summary>
 		/// <param name="TimeoutMilliseconds">Timeout, in milliseconds. Default=10000.</param>
-		/// <returns>true, if environment is ready to play, false if an error has occurred.</returns>
+		/// <returns>true, if environment is ready to play, false if an error has occurred, or the environment could not be setup in the allotted time frame.</returns>
 		public bool Wait(int TimeoutMilliseconds)
 		{
 			switch (WaitHandle.WaitAny(new WaitHandle[] { this.ready, this.error }, TimeoutMilliseconds))
@@ -812,11 +921,7 @@ namespace RetroSharp.Networking
 					return true;
 
 				case 1:
-					return false;
-
 				default:
-					this.exception = new TimeoutException();
-					this.State = MultiPlayerState.Error;
 					return false;
 			}
 		}
@@ -862,6 +967,7 @@ namespace RetroSharp.Networking
 					}
 
 					this.remotePlayersByEndpoint.Clear();
+					this.remotePlayers = null;
 				}
 			}
 		}

@@ -352,9 +352,20 @@ namespace RetroSharp
 				return;
 			}
 
-			// TODO: OnException event. Can supress termination
-
-			if (!wnd.IsExiting)
+			EventHandler h = OnException;
+			if (h != null)
+			{
+				try
+				{
+					h(sender, new EventArgs());
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine(ex.Message);
+					Debug.WriteLine(ex.StackTrace.ToString());
+				}
+			}
+			else if (!wnd.IsExiting)
 			{
 				Exception ex = e.ExceptionObject as Exception;
 
@@ -381,6 +392,12 @@ namespace RetroSharp
 
 			Terminate();
 		}
+
+		/// <summary>
+		/// Event raised when an unexpected exception occurs. If an event handler is not provided, the default action is to
+		/// close the application.
+		/// </summary>
+		public static EventHandler OnException = null;
 
 		private static void ExecutionThread()
 		{
@@ -944,8 +961,25 @@ namespace RetroSharp
 			DisposeCharacterSetTextures();
 			GenerateCharacterSetTextures();
 
-			// TODO: Event
+			EventHandler h = OnResized;
+			if (h != null)
+			{
+				try
+				{
+					h(sender, new EventArgs());
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine(ex.Message);
+					Debug.WriteLine(ex.StackTrace.ToString());
+				}
+			}
 		}
+
+		/// <summary>
+		/// Event raised when the window has been resized.
+		/// </summary>
+		public static event EventHandler OnResized = null;
 
 		private static void wnd_RenderFrame(object sender, FrameEventArgs e)
 		{
@@ -2682,8 +2716,18 @@ namespace RetroSharp
 		public static int ConsoleWidth
 		{
 			get { return consoleWidth; }
+			set
+			{
+				if (consoleWidth != value)
+				{
+					if (value <= 0)
+						throw new ArgumentException("Value must be positive.", "ConsoleWidth");
 
-			// TODO: Set property
+					consoleWidth = value;
+					DisposeCharacterSetTextures();
+					GenerateCharacterSetTextures();
+				}
+			}
 		}
 
 		/// <summary>
@@ -2692,8 +2736,18 @@ namespace RetroSharp
 		public static int ConsoleHeight
 		{
 			get { return consoleHeight; }
+			set
+			{
+				if (consoleHeight != value)
+				{
+					if (value <= 0)
+						throw new ArgumentException("Value must be positive.", "ConsoleHeight");
 
-			// TODO: Set property
+					consoleHeight = value;
+					DisposeCharacterSetTextures();
+					GenerateCharacterSetTextures();
+				}
+			}
 		}
 
 		/// <summary>
@@ -2702,8 +2756,11 @@ namespace RetroSharp
 		public static int RasterWidth
 		{
 			get { return rasterWidth; }
-
-			// TODO: Set property
+			set
+			{
+				if (rasterWidth != value)
+					UpdateRasterSize(value, rasterHeight);
+			}
 		}
 
 		/// <summary>
@@ -2712,8 +2769,63 @@ namespace RetroSharp
 		public static int RasterHeight
 		{
 			get { return rasterHeight; }
+			set
+			{
+				if (rasterHeight != value)
+					UpdateRasterSize(rasterWidth, RasterHeight);
+			}
+		}
 
-			// TODO: Set property
+		/// <summary>
+		/// Updates the size of the raster display.
+		/// </summary>
+		/// <param name="Width">New raster width</param>
+		/// <param name="Height">New raster height</param>
+		public static void UpdateRasterSize(int Width, int Height)
+		{
+			if (Width <= 0)
+				throw new ArgumentException("Value must be positive.", "Width");
+
+			if (Height <= 0)
+				throw new ArgumentException("Value must be positive.", "Height");
+
+			rasterWidth = rasterObj.rasterWidth = Width;
+			rasterHeight = rasterObj.rasterHeight = Height;
+
+			rasterClipRight = rasterObj.rasterClipRight = rasterWidth - 1;
+			rasterClipBottom = rasterObj.rasterClipBottom = rasterHeight - 1;
+
+			rasterStride = rasterObj.rasterStride = rasterWidth * 4;
+			rasterSize = rasterWidth * rasterStride;
+
+			byte R = rasterBackgroundColor.R;
+			byte G = rasterBackgroundColor.G;
+			byte B = rasterBackgroundColor.B;
+			byte A = rasterBackgroundColor.A;
+
+			raster = rasterObj.raster = new byte[rasterSize];
+
+			rasterBlocksX = rasterWidth / RasterBlockSize;
+			if ((rasterWidth % RasterBlockSize) != 0)
+				rasterBlocksX++;
+
+			rasterBlocksY = rasterHeight / RasterBlockSize;
+			if ((rasterHeight % RasterBlockSize) != 0)
+				rasterBlocksY++;
+
+			rasterObj.rasterBlocksX = rasterBlocksX;
+			rasterObj.rasterBlocksY = rasterBlocksY;
+
+			rasterBlocks = rasterObj.rasterBlocks = new bool[rasterBlocksX * rasterBlocksY];
+
+			int i = 0;
+			while (i < rasterSize)
+			{
+				raster[i++] = R;
+				raster[i++] = G;
+				raster[i++] = B;
+				raster[i++] = A;
+			}
 		}
 
 		/// <summary>
@@ -2902,7 +3014,17 @@ namespace RetroSharp
 		public static int LeftMargin
 		{
 			get { return leftMargin; }
-			// TODO: Set proeprty
+			set
+			{
+				if (leftMargin != value)
+				{
+					if (value < 0)
+						throw new ArgumentException("Value cannot be negative.", "LeftMargin");
+
+					leftMargin = value;
+					visibleScreenWidth = screenWidth - leftMargin - rightMargin;
+				}
+			}
 		}
 
 		/// <summary>
@@ -2911,7 +3033,17 @@ namespace RetroSharp
 		public static int RightMargin
 		{
 			get { return rightMargin; }
-			// TODO: Set proeprty
+			set
+			{
+				if (rightMargin != value)
+				{
+					if (value < 0)
+						throw new ArgumentException("Value cannot be negative.", "RightMargin");
+
+					rightMargin = value;
+					visibleScreenWidth = screenWidth - leftMargin - rightMargin;
+				}
+			}
 		}
 
 		/// <summary>
@@ -2920,7 +3052,17 @@ namespace RetroSharp
 		public static int TopMargin
 		{
 			get { return topMargin; }
-			// TODO: Set proeprty
+			set
+			{
+				if (topMargin != value)
+				{
+					if (value < 0)
+						throw new ArgumentException("Value cannot be negative.", "TopMargin");
+
+					topMargin = value;
+					visibleScreenHeight = screenHeight - topMargin - bottomMargin;
+				}
+			}
 		}
 
 		/// <summary>
@@ -2929,7 +3071,17 @@ namespace RetroSharp
 		public static int BottomMargin
 		{
 			get { return bottomMargin; }
-			// TODO: Set proeprty
+			set
+			{
+				if (bottomMargin != value)
+				{
+					if (value < 0)
+						throw new ArgumentException("Value cannot be negative.", "BottomMargin");
+
+					bottomMargin = value;
+					visibleScreenHeight = screenHeight - topMargin - bottomMargin;
+				}
+			}
 		}
 
 		/// <summary>

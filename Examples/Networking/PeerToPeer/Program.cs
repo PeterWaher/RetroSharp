@@ -35,6 +35,7 @@ namespace PeerToPeer
 
 					using (PeerConnection Client = P2PNetwork.ConnectToPeer(P2PNetwork.ExternalEndpoint))
 					{
+						Client.Start();
 						Console.In.ReadLine();
 					}
 				}

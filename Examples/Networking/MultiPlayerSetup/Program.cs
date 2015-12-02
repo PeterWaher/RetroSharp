@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using RetroSharp;
 using RetroSharp.Networking;
 
@@ -12,10 +13,11 @@ namespace MultiPlayerSetup
 	{
 		public static void Main(string[] args)
 		{
-			//Initialize();
+			Initialize();
 
 			try
 			{
+				DateTime Start = DateTime.Now;
 				Guid PlayerId = Guid.NewGuid();
 				string Name;
 
@@ -27,22 +29,43 @@ namespace MultiPlayerSetup
 					2, PlayerId, new KeyValuePair<string, string>("NAME", Name)))
 				{
 					MPE.OnStateChange += (sender, newstate) => Console.Out.WriteLine(newstate.ToString());
+
 					MPE.OnPlayerAvailable += (sender, player) =>
 					{
 						Console.Out.WriteLine("New player available: " + player["NAME"]);
-						if (sender.PlayerCount == 2)
+						if (sender.PlayerCount >= 5 || (DateTime.Now - Start).TotalSeconds >= 20)
 							MPE.ConnectPlayers();
 					};
+
 					MPE.OnPlayerConnected += (sender, player) => Console.Out.WriteLine("Player connected: " + player["NAME"]);
 
-					if (!MPE.Wait(10000))
-						throw new Exception("Unable to setup multi-player environment.");
+					MPE.OnGameDataReceived += (sender, e) => Console.Out.WriteLine(e.FromPlayer["NAME"] + ": " + e.Data.ReadString());
 
-					Console.Out.WriteLine("All players now connected.");
+					MPE.OnPlayerDisconnected += (sender, player) => Console.Out.WriteLine("Player disconnected: " + player["NAME"]);
+
+					if (!MPE.Wait(20000))
+					{
+						if (MPE.State == MultiPlayerState.FindingPlayers)
+							MPE.ConnectPlayers();
+						else
+							throw new Exception("Unable to setup multi-player environment.");
+					}
+
+					Console.Out.WriteLine(MPE.PlayerCount.ToString() + " player(s) now connected.");
 					Console.Out.WriteLine("Write anything and send it to the others.");
 					Console.Out.WriteLine("An empty row will quit the application.");
 					Console.Out.WriteLine();
-					Console.In.ReadLine();
+
+					string s = Console.In.ReadLine();
+
+					while (!string.IsNullOrEmpty(s))
+					{
+						BinaryOutput Msg = new BinaryOutput();
+						Msg.WriteString(s);
+						MPE.SendToAll(Msg.GetPacket());
+
+						s = Console.In.ReadLine();
+					}
 				}
 			}
 			catch (Exception ex)
@@ -51,7 +74,7 @@ namespace MultiPlayerSetup
 				Console.In.ReadLine();
 			}
 
-			//Terminate();
+			Terminate();
 		}
 	}
 }

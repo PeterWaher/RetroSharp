@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
@@ -361,6 +362,8 @@ namespace RetroSharp.Networking.P2P
 					this.State = PeerToPeerNetworkState.Ready;
 
 					this.PeerConnected(Connection);
+
+					Connection.Start();
 				}
 				catch (Exception)
 				{
@@ -383,9 +386,10 @@ namespace RetroSharp.Networking.P2P
 				{
 					h(this, Connection);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					// Ignore error
+					Debug.WriteLine(ex.Message);
+					Debug.WriteLine(ex.StackTrace.ToString());
 				}
 			}
 		}
@@ -433,9 +437,10 @@ namespace RetroSharp.Networking.P2P
 						{
 							h(this, value);
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-							// Ignore
+							Debug.WriteLine(ex.Message);
+							Debug.WriteLine(ex.StackTrace.ToString());
 						}
 					}
 				}
@@ -500,7 +505,7 @@ namespace RetroSharp.Networking.P2P
 		/// Waits for the peer-to-peer network object to be ready to receive connections.
 		/// </summary>
 		/// <param name="TimeoutMilliseconds">Timeout, in milliseconds. Default=10000.</param>
-		/// <returns>true, if connections can be received, false if a peer-to-peer listener cannot be created in the current network.</returns>
+		/// <returns>true, if connections can be received, false if a peer-to-peer listener could not be created in the allotted time.</returns>
 		public bool Wait(int TimeoutMilliseconds)
 		{
 			switch (WaitHandle.WaitAny(new WaitHandle[] { this.ready, this.error }, TimeoutMilliseconds))
@@ -509,11 +514,7 @@ namespace RetroSharp.Networking.P2P
 					return true;
 
 				case 1:
-					return false;
-
 				default:
-					this.exception = new TimeoutException();
-					this.State = PeerToPeerNetworkState.Error;
 					return false;
 			}
 		}

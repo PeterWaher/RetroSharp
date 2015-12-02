@@ -56,6 +56,7 @@
     <Compile Include="Gradients\Subtract.cs" />
     <Compile Include="Networking\BinaryInput.cs" />
     <Compile Include="Networking\BinaryOutput.cs" />
+    <Compile Include="Networking\GameDataEventArgs.cs" />
     <Compile Include="Networking\MQTT\MqttContent.cs" />
     <Compile Include="Networking\MQTT\MqttState.cs" />
     <Compile Include="Networking\MQTT\MqttQualityOfService.cs" />

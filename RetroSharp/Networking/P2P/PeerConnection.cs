@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
@@ -32,7 +34,13 @@ namespace RetroSharp.Networking.P2P
 		{
 			this.tcpConnection = TcpConnection;
 			this.stream = this.tcpConnection.GetStream();
+		}
 
+		/// <summary>
+		/// Starts receiving on the connection.
+		/// </summary>
+		public void Start()
+		{
 			this.stream.BeginRead(this.incomingBuffer, 0, BufferSize, this.EndRead, null);
 		}
 
@@ -95,9 +103,10 @@ namespace RetroSharp.Networking.P2P
 						{
 							h(this, (byte[])ar.AsyncState);
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-							// Ignore.
+							Debug.WriteLine(ex.Message);
+							Debug.WriteLine(ex.StackTrace.ToString());
 						}
 					}
 
@@ -149,9 +158,10 @@ namespace RetroSharp.Networking.P2P
 					{
 						h(this, Packet);
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
- 						// Ignore.
+						Debug.WriteLine(ex.Message);
+						Debug.WriteLine(ex.StackTrace.ToString());
 					}
 				}
 			}
@@ -181,9 +191,10 @@ namespace RetroSharp.Networking.P2P
 					{
 						h(this, new EventArgs());
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
-						// Ignore
+						Debug.WriteLine(ex.Message);
+						Debug.WriteLine(ex.StackTrace.ToString());
 					}
 				}
 			}

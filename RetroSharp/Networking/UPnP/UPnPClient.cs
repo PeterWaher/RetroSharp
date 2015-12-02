@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Collections.Generic;
 using System.IO;
@@ -311,9 +312,10 @@ namespace RetroSharp.Networking.UPnP
 				{
 					h(this, ex);
 				}
-				catch (Exception)
+				catch (Exception ex2)
 				{
-					// Ignore
+					Debug.WriteLine(ex2.Message);
+					Debug.WriteLine(ex2.StackTrace.ToString());
 				}
 			}
 		}
