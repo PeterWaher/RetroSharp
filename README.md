@@ -45,7 +45,7 @@ The solution includes a series of [examples](Examples) demonstrating how **Retro
 are simple and aim to present a topic in a short and simple manner that is easy to read, understand, and reutilize. The 
 [examples](Examples) are sorted into various categories, from very simple to more advanced.
 
-* [Text and Strings](#Text-and-strings)
+* [Text and Strings](#text-and-strings)
 * [Arithmetics](#arithmetics)
 * [Text Screen Manipulation](#text-screen-manipulation)
 * [Raster Graphics](#raster-graphics)
