@@ -108,7 +108,8 @@ namespace RetroSharp.Networking
 		private string mqttPassword;
 		private bool mqttTls;
 
-		public MultiPlayerEnvironment(string ApplicationName, string MqttServer, int MqttPort, bool MqttTls, string MqttUserName, string MqttPassword,
+		public MultiPlayerEnvironment(string ApplicationName, bool AllowMultipleApplicationsOnSameMachine, 
+			string MqttServer, int MqttPort, bool MqttTls, string MqttUserName, string MqttPassword,
 			string MqttNegotiationTopic, int EstimatedMaxNrPlayers, Guid PlayerId, params KeyValuePair<string, string>[] PlayerMetaInfo)
 		{
 			this.localPlayer = new Player(PlayerId, new IPEndPoint(IPAddress.Any, 0), new IPEndPoint(IPAddress.Any, 0), PlayerMetaInfo);
@@ -122,7 +123,8 @@ namespace RetroSharp.Networking
 			this.mqttPassword = MqttPassword;
 			this.mqttNegotiationTopic = MqttNegotiationTopic;
 
-			this.p2pNetwork = new PeerToPeerNetwork(this.applicationName + " (" + PlayerId.ToString() + ")", 0, EstimatedMaxNrPlayers);
+			this.p2pNetwork = new PeerToPeerNetwork(AllowMultipleApplicationsOnSameMachine ? this.applicationName + " (" + PlayerId.ToString() + ")" : 
+				this.applicationName, 0, EstimatedMaxNrPlayers);
 			this.p2pNetwork.OnStateChange += this.P2PNetworkStateChange;
 			this.p2pNetwork.OnPeerConnected += new PeerConnectedEventHandler(p2pNetwork_OnPeerConnected);
 		}
@@ -1013,6 +1015,14 @@ namespace RetroSharp.Networking
 		public int PlayerCount
 		{
 			get { return this.playerCount; }
+		}
+
+		/// <summary>
+		/// If the local player is the first player in the list of players. Can be used to determine which machine controls game logic.
+		/// </summary>
+		public bool LocalPlayerIsFirst
+		{
+			get { return this.localPlayer.Index == 0; }
 		}
 
 	}

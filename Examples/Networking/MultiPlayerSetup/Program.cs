@@ -24,9 +24,9 @@ namespace MultiPlayerSetup
 				Console.Out.WriteLine("Hello. What is your name?");
 				Name = Console.ReadLine();
 
-				using (MultiPlayerEnvironment MPE = new MultiPlayerEnvironment("MultiPlayerSetup",
+				using (MultiPlayerEnvironment MPE = new MultiPlayerEnvironment("MultiPlayerSetup", true,
 					"iot.eclipse.org", 1883, false, string.Empty, string.Empty, "RetroSharp/Examples/Networking/MultiPlayerSetup",
-					2, PlayerId, new KeyValuePair<string, string>("NAME", Name)))
+					5, PlayerId, new KeyValuePair<string, string>("NAME", Name)))
 				{
 					MPE.OnStateChange += (sender, newstate) => Console.Out.WriteLine(newstate.ToString());
 
