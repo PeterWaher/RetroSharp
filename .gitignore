@@ -18,6 +18,10 @@ $RECYCLE.BIN/
 bin/
 obj/
 
+# User files
+*.suo
+*.csproj.user
+
 # Windows shortcuts
 *.lnk
 

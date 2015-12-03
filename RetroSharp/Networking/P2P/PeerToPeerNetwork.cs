@@ -85,7 +85,8 @@ namespace RetroSharp.Networking.P2P
 		private string applicationName;
 		private int desiredPort;
 		private int backlog;
-		private bool portAdded = false;
+		private bool tcpMappingAdded = false;
+		private bool udpMappingAdded = false;
 
 		/// <summary>
 		/// Manages a peer-to-peer network that can receive connections from outside of a NAT-enabled firewall.
@@ -321,7 +322,7 @@ namespace RetroSharp.Networking.P2P
 
 					i = ((IPEndPoint)this.tcpListener.LocalEndpoint).Port;
 					LocalPort = (ushort)(i);
-					if (i < 0 || i > ushort.MaxValue || TcpPortMapped.ContainsKey(LocalPort))
+					if (i < 0 || i > ushort.MaxValue || TcpPortMapped.ContainsKey(LocalPort) || UdpPortMapped.ContainsKey(LocalPort))
 					{
 						this.tcpListener.Stop();
 						this.tcpListener = null;
@@ -335,7 +336,10 @@ namespace RetroSharp.Networking.P2P
 				this.localEndpoint = new IPEndPoint(this.localAddress, LocalPort);
 
 				this.serviceWANIPConnectionV1.AddPortMapping(string.Empty, LocalPort, "TCP", LocalPort, LocalAddress.ToString(), true, this.applicationName, 0);
-				this.portAdded = true;
+				this.tcpMappingAdded = true;
+				
+				this.serviceWANIPConnectionV1.AddPortMapping(string.Empty, LocalPort, "UDP", LocalPort, LocalAddress.ToString(), true, this.applicationName, 0);
+				this.udpMappingAdded = true;
 
 				this.externalEndpoint = new IPEndPoint(this.externalAddress, LocalPort);
 				this.State = PeerToPeerNetworkState.Ready;
@@ -532,9 +536,9 @@ namespace RetroSharp.Networking.P2P
 				this.tcpListener = null;
 			}
 
-			if (this.portAdded)
+			if (this.tcpMappingAdded)
 			{
-				this.portAdded = false;
+				this.tcpMappingAdded = false;
 				try
 				{
 					this.serviceWANIPConnectionV1.DeletePortMapping(string.Empty, (ushort)this.localEndpoint.Port, "TCP");
@@ -543,8 +547,22 @@ namespace RetroSharp.Networking.P2P
 				{
 					// Ignore
 				}
-				this.serviceWANIPConnectionV1 = null;
 			}
+
+			if (this.udpMappingAdded)
+			{
+				this.udpMappingAdded = false;
+				try
+				{
+					this.serviceWANIPConnectionV1.DeletePortMapping(string.Empty, (ushort)this.localEndpoint.Port, "UDP");
+				}
+				catch (Exception)
+				{
+					// Ignore
+				}
+			}
+
+			this.serviceWANIPConnectionV1 = null;
 
 			if (this.upnpClient != null)
 			{
