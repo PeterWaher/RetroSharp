@@ -1,3 +1,5 @@
+del ..\Examples\*.vshost.* /S /Q
+
 del ..\Examples\Arithmetics\Koch\bin\Release\*.pdb
 del ..\Examples\Arithmetics\Koch\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a Koch.zip ..\Examples\Arithmetics\Koch\bin\Release\*.*
@@ -24,6 +26,10 @@ del ..\Examples\Games\Asteroids\bin\Release\*.pdb
 del ..\Examples\Games\Asteroids\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a Asteroids.zip ..\Examples\Games\Asteroids\bin\Release\*.*
 
+del ..\Examples\Games\Mask\bin\Release\*.pdb
+del ..\Examples\Games\Mask\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a Mask.zip ..\Examples\Games\Mask\bin\Release\*.*
+
 del ..\Examples\Games\Mines\bin\Release\*.pdb
 del ..\Examples\Games\Mines\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a Mines.zip ..\Examples\Games\Mines\bin\Release\*.*
@@ -46,6 +52,10 @@ del ..\Examples\Networking\Latency\bin\Release\*.pdb
 del ..\Examples\Networking\Latency\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a Latency.zip ..\Examples\Networking\Latency\bin\Release\*.*
 
+del ..\Examples\Networking\MultiPlayerSetup\bin\Release\*.pdb
+del ..\Examples\Networking\MultiPlayerSetup\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a MultiPlayerSetup.zip ..\Examples\Networking\MultiPlayerSetup\bin\Release\*.*
+
 del ..\Examples\Networking\MultiUserChat\bin\Release\*.pdb
 del ..\Examples\Networking\MultiUserChat\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a MultiUserChat.zip ..\Examples\Networking\MultiUserChat\bin\Release\*.*
@@ -53,6 +63,10 @@ c:\Program\7-Zip\7z.exe a MultiUserChat.zip ..\Examples\Networking\MultiUserChat
 del ..\Examples\Networking\MultiUserDraw\bin\Release\*.pdb
 del ..\Examples\Networking\MultiUserDraw\bin\Release\OpenTK.xml
 c:\Program\7-Zip\7z.exe a MultiUserDraw.zip ..\Examples\Networking\MultiUserDraw\bin\Release\*.*
+
+del ..\Examples\Networking\PeerToPeer\bin\Release\*.pdb
+del ..\Examples\Networking\PeerToPeer\bin\Release\OpenTK.xml
+c:\Program\7-Zip\7z.exe a PeerToPeer.zip ..\Examples\Networking\PeerToPeer\bin\Release\*.*
 
 
 
