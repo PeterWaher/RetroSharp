@@ -36,9 +36,13 @@ namespace Mask
 
 				MPE.OnPlayerAvailable += (sender, player) =>
 				{
-					Player2Name = player["NAME"];
-					Console.Out.WriteLine("New player available: " + Player2Name);
+					Console.Out.WriteLine("New player available: " + player["NAME"]);
 					MPE.ConnectPlayers();
+				};
+
+				MPE.OnPlayerConnected += (sender, player) =>
+				{
+					Player2Name = player["NAME"];
 				};
 
 				MPE.OnPlayerDisconnected += (sender, player) =>
@@ -88,9 +92,12 @@ namespace Mask
 				FillRectangle(0, 0, 319, 7, Color.FromKnownColor(KnownColor.DimGray));
 				SetClipArea(0, 8, 319, 199);
 
-				Console.Out.Write(Player1Name);
-				GotoXY(ConsoleWidth - Player2Name.Length, 0);
-				Console.Out.Write(Player2Name);
+				string s = Player1Name.Length <= 10 ? Player1Name : Player1Name.Substring(0, 10);
+				Console.Out.Write(s);
+
+				s = Player2Name.Length <= 10 ? Player2Name : Player2Name.Substring(0, 10);
+				GotoXY(ConsoleWidth - s.Length, 0);
+				Console.Out.Write(s);
 
 				OnKeyDown += (sender, e) =>
 				{
