@@ -30,7 +30,9 @@ namespace RetroSharp.Networking.P2P
 		private object stateObject = null;
 		private int readState = 0;
 		private int packetSize = 0;
-		private int packetSizeOffset = 0;
+		private ulong outgoingPacketNumber = 0;
+		private ulong incomingPacketNumber = 0; 
+		private int ulongOffset = 0;
 		private int packetPos = 0;
 		private bool writing = false;
 		private bool closed = false;
@@ -48,7 +50,7 @@ namespace RetroSharp.Networking.P2P
 		{
 			this.readState = 0;
 			this.packetSize = 0;
-			this.packetSizeOffset = 0;
+			this.ulongOffset = 0;
 			this.stream.BeginRead(this.incomingBuffer, 0, BufferSize, this.EndRead, null);
 		}
 
@@ -84,6 +86,7 @@ namespace RetroSharp.Networking.P2P
 		/// <param name="Packet">Packet to send.</param>
 		public void Send(byte[] Packet)
 		{
+			ulong l;
 			int i = Packet.Length;
 			int j = 0;
 			int c = 1;
@@ -94,6 +97,15 @@ namespace RetroSharp.Networking.P2P
 			{
 				c++;
 				i >>= 7;
+			}
+
+			l = this.outgoingPacketNumber;
+			c++;
+			l >>= 7;
+			while (l > 0)
+			{
+				c++;
+				l >>= 7;
 			}
 
 			i = Packet.Length;
@@ -111,6 +123,19 @@ namespace RetroSharp.Networking.P2P
 				Packet2[j++] = b;
 			}
 			while (i > 0);
+
+			l = this.outgoingPacketNumber++;
+
+			do
+			{
+				b = (byte)(l & 127);
+				l >>= 7;
+				if (l > 0)
+					b |= 128;
+
+				Packet2[j++] = b;
+			}
+			while (l > 0);
 
 			lock (this.outgoingPackets)
 			{
@@ -188,17 +213,37 @@ namespace RetroSharp.Networking.P2P
 						{
 							case 0:
 								b = this.incomingBuffer[Pos++];
-								this.packetSize |= (b & 127) << this.packetSizeOffset;
-								this.packetSizeOffset += 7;
+								this.packetSize |= (b & 127) << this.ulongOffset;
+								this.ulongOffset += 7;
 								if ((b & 128) == 0)
 								{
 									this.packetBuffer = new byte[this.packetSize];
 									this.packetPos = 0;
+									this.incomingPacketNumber = 0;
+									this.ulongOffset = 0;
 									this.readState++;
 								}
 								break;
 
 							case 1:
+								b = this.incomingBuffer[Pos++];
+								this.incomingPacketNumber |= ((ulong)(b & 127)) << this.ulongOffset;
+								this.ulongOffset += 7;
+								if ((b & 128) == 0)
+								{
+									if (this.packetSize == 0)
+									{
+										this.readState = 0;	// Only a NOP
+										this.packetSize = 0;
+										this.ulongOffset = 0;
+										this.packetBuffer = null;
+									}
+									else
+										this.readState++;
+								}
+								break;
+
+							case 2:
 								NrLeft = NrRead - Pos;
 								if (NrLeft > this.packetSize - this.packetPos)
 									NrLeft = this.packetSize - this.packetPos;
@@ -225,7 +270,7 @@ namespace RetroSharp.Networking.P2P
 
 									this.readState = 0;
 									this.packetSize = 0;
-									this.packetSizeOffset = 0;
+									this.ulongOffset = 0;
 									this.packetBuffer = null;
 								}
 								break;

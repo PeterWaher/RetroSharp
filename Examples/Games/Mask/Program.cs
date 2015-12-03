@@ -31,8 +31,29 @@ namespace Mask
 			using (MPE = new MultiPlayerEnvironment("Mask", false, "iot.eclipse.org", 1883, false, string.Empty, string.Empty,
 				"RetroSharp/Examples/Games/Mask", 2, PlayerId, new KeyValuePair<string, string>("NAME", Player1Name)))
 			{
-				Console.Out.WriteLine("Waiting for another player to connect.");
-				Console.Out.WriteLine("Press ESC to play in single player mode.");
+				MPE.OnStateChange += (sender, state) =>
+				{
+					switch (state)
+					{
+						case MultiPlayerState.SearchingForGateway:
+							Console.Out.WriteLine("Searching for Internet Gateway.");
+							break;
+
+						case MultiPlayerState.RegisteringApplicationInGateway:
+							Console.Out.WriteLine("Registering game in gateway.");
+							break;
+
+						case MultiPlayerState.FindingPlayers:
+							Console.Out.WriteLine("Waiting for another player to connect.");
+							Console.Out.WriteLine("Press ESC to play in single player mode.");
+							OnKeyDown += new KeyEventHandler(MPE_Wait_OnKeyDown);
+							break;
+
+						case MultiPlayerState.ConnectingPlayers:
+							Console.Out.WriteLine("Connecting to players.");
+							break;
+					}
+				};
 
 				MPE.OnPlayerAvailable += (sender, player) =>
 				{
@@ -51,8 +72,6 @@ namespace Mask
 					NrPlayers = 1;
 					LocalMachineIsGameServer = true;
 				};
-
-				OnKeyDown += new KeyEventHandler(MPE_Wait_OnKeyDown);
 
 				if (MPE.Wait(int.MaxValue))
 				{
