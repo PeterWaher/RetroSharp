@@ -15,6 +15,7 @@ namespace Mask
 	{
 		internal static MultiPlayerEnvironment MPE;
 		internal static bool LocalMachineIsGameServer = true;
+		internal static int NrPlayers = 2;
 
 		public static void Main(string[] args)
 		{
@@ -30,8 +31,6 @@ namespace Mask
 			using (MPE = new MultiPlayerEnvironment("Mask", false, "iot.eclipse.org", 1883, false, string.Empty, string.Empty,
 				"RetroSharp/Examples/Games/Mask", 2, PlayerId, new KeyValuePair<string, string>("NAME", Player1Name)))
 			{
-				int NrPlayers = 2;
-
 				Console.Out.WriteLine("Waiting for another player to connect.");
 				Console.Out.WriteLine("Press ESC to play in single player mode.");
 
@@ -68,8 +67,9 @@ namespace Mask
 				LinkedList<Shot> Shots = new LinkedList<Shot>();
 				LinkedList<Explosion> Explosions = new LinkedList<Explosion>();
 				LinkedList<Present> Presents = new LinkedList<Present>();
+				LinkedList<PlayerPosition> Player2Positions = new LinkedList<PlayerPosition>();
 				Player Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
-				Player Player2 = new Player(2, 280, 180, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
+				Player Player2 = new Player(2, 299, 179, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
 				bool Player1Up = false;
 				bool Player1Down = false;
 				bool Player1Left = false;
@@ -186,25 +186,33 @@ namespace Mask
 						case Key.Enter:
 							if (Player1.Dead)
 							{
-								Shots.Clear();
-								Explosions.Clear();
-								Presents.Clear();
-								Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
-								Player2 = new Player(2, 280, 180, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
-								Player1Up = false;
-								Player1Down = false;
-								Player1Left = false;
-								Player1Right = false;
-								Player1Fire = false;
+								if (NrPlayers > 1)
+									MPE.SendToAll(new byte[] { 5 });
+								else
+								{
+									lock (Player2Positions)
+									{
+										Player2Positions.Clear();
+									}
 
-								Player1.Opponent = Player2;
-								Player2.Opponent = Player1;
+									Shots.Clear();
+									Explosions.Clear();
+									Presents.Clear();
+									Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
+									Player2 = new Player(2, 299, 179, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
+									Player1Up = false;
+									Player1Down = false;
+									Player1Left = false;
+									Player1Right = false;
+									Player1Fire = false;
 
-								FillRectangle(0, 8, 319, 199, Color.Black);
-								PlayerMsg(1, string.Empty);
-								PlayerMsg(2, string.Empty);
+									Player1.Opponent = Player2;
+									Player2.Opponent = Player1;
 
-								MPE.SendToAll(new byte[] { 5 });
+									FillRectangle(0, 8, 319, 199, Color.Black);
+									PlayerMsg(1, string.Empty);
+									PlayerMsg(2, string.Empty);
+								}
 							}
 							break;
 					}
@@ -212,7 +220,7 @@ namespace Mask
 
 				OnUpdateModel += (sender, e) =>
 				{
-					if (Random() < 0.005)
+					if (LocalMachineIsGameServer && Random() < 0.005)
 					{
 						int x1, y1;
 
@@ -224,6 +232,17 @@ namespace Mask
 						while (!Present.CanPlace(x1, y1, x1 + 5, y1 + 5));
 
 						Presents.AddLast(new Present(x1, y1, x1 + 5, y1 + 5));
+
+						if (NrPlayers > 1)
+						{
+							BinaryOutput Output = new BinaryOutput();
+
+							Output.WriteByte(6);
+							Output.WriteInt(x1);
+							Output.WriteInt(y1);
+
+							MPE.SendToAll(Output.GetPacket());
+						}
 					}
 
 					LinkedListNode<Present> PresentObj, NextPresentObj;
@@ -283,8 +302,39 @@ namespace Mask
 					if (!Player1.Dead && Player1.Move())
 						Explosions.AddLast(new Explosion(Player1.X, Player1.Y, 30, Color.White));
 
-					if (!Player2.Dead && Player2.Move())
-						Explosions.AddLast(new Explosion(Player2.X, Player2.Y, 30, Color.White));
+					if (!Player2.Dead)
+					{
+						if (NrPlayers == 1)
+						{
+							if (Player2.Move())
+								Explosions.AddLast(new Explosion(Player2.X, Player2.Y, 30, Color.White));
+						}
+						else
+						{
+							lock (Player2Positions)
+							{
+								try
+								{
+									foreach (PlayerPosition P in Player2Positions)
+									{
+										Player2.BeforeMove();
+										Player2.SetPosition(P.X, P.Y, P.VX, P.VY);
+										Player2.AfterMove();
+
+										if (P.Dead)
+										{
+											Player2.Die();
+											Explosions.AddLast(new Explosion(Player2.X, Player2.Y, 30, Color.White));
+										}
+									}
+								}
+								finally
+								{
+									Player2Positions.Clear();
+								}
+							}
+						}
+					}
 
 					if (Player1Fire)
 					{
@@ -358,11 +408,21 @@ namespace Mask
 							break;
 
 						case 5:	// Remote player presses ENTER (Restart)
+						case 9:	// Acknowledgement of remote player presses ENTER (Restart)
+
+							if (Command == 5)
+								MPE.SendToAll(new byte[] { 9 });
+
+							lock (Player2Positions)
+							{
+								Player2Positions.Clear();
+							}
+
 							Shots.Clear();
 							Explosions.Clear();
 							Presents.Clear();
 							Player1 = new Player(1, 20, 28, 1, 0, 3, Color.Green, Color.LightGreen, 15);
-							Player2 = new Player(2, 280, 180, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
+							Player2 = new Player(2, 299, 179, -1, 0, 3, Color.Blue, Color.LightBlue, 15);
 							Player1Up = false;
 							Player1Down = false;
 							Player1Left = false;
@@ -376,6 +436,26 @@ namespace Mask
 							PlayerMsg(1, string.Empty);
 							PlayerMsg(2, string.Empty);
 							break;
+
+						case 6:	// New Present
+							int x1 = 315 - (int)e.Data.ReadInt();
+							int y1 = 203 - (int)e.Data.ReadInt();
+
+							Presents.AddLast(new Present(x1, y1, x1 + 5, y1 + 5));
+							break;
+
+						case 7:	// Gift
+							x1 = (int)e.Data.ReadInt();
+							Player2.GetGift(x1, null, e.Data);
+							break;
+
+						case 8:	// Move player 2
+							lock (Player2Positions)
+							{
+								Player2Positions.AddLast(new PlayerPosition(e.Data));
+							}
+							break;
+
 					}
 				};
 

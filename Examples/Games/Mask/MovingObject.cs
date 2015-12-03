@@ -32,6 +32,20 @@ namespace Mask
 		public int VX { get { return this.vx; } }
 		public int VY{ get { return this.vy; } }
 
+		public void SetPosition(int X, int Y)
+		{
+			this.x = X;
+			this.y = Y;
+		}
+
+		public void SetPosition(int X, int Y, int VX, int VY)
+		{
+			this.x = X;
+			this.y = Y;
+			this.vx = VX;
+			this.vy = VY;
+		}
+
 		public override bool MoveStep()
 		{
 			if (this.dead)
@@ -87,8 +101,8 @@ namespace Mask
 			return this.dead;
 		}
 
-		protected abstract void BeforeMove();
-		protected abstract void AfterMove();
+		public abstract void BeforeMove();
+		public abstract void AfterMove();
 
 	}
 }

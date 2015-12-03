@@ -20,12 +20,12 @@ namespace Mask
 
 		public int Power { get { return this.power; } }
 
-		protected override void BeforeMove()
+		public override void BeforeMove()
 		{
 			RetroApplication.Raster[this.x, this.y] = Color.Black;
 		}
 
-		protected override void AfterMove()
+		public override void AfterMove()
 		{
 			if (RetroApplication.Raster[this.x, this.y].ToArgb() != Color.Black.ToArgb())
 				this.Die();

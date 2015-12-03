@@ -23,10 +23,15 @@ namespace RetroSharp.Networking.P2P
 		private const int BufferSize = 65536;
 
 		private byte[] incomingBuffer = new byte[BufferSize];
+		private byte[] packetBuffer = null;
 		private LinkedList<byte[]> outgoingPackets = new LinkedList<byte[]>();
 		private TcpClient tcpConnection;
 		private NetworkStream stream;
 		private object stateObject = null;
+		private int readState = 0;
+		private int packetSize = 0;
+		private int packetSizeOffset = 0;
+		private int packetPos = 0;
 		private bool writing = false;
 		private bool closed = false;
 
@@ -41,6 +46,9 @@ namespace RetroSharp.Networking.P2P
 		/// </summary>
 		public void Start()
 		{
+			this.readState = 0;
+			this.packetSize = 0;
+			this.packetSizeOffset = 0;
 			this.stream.BeginRead(this.incomingBuffer, 0, BufferSize, this.EndRead, null);
 		}
 
@@ -76,14 +84,42 @@ namespace RetroSharp.Networking.P2P
 		/// <param name="Packet">Packet to send.</param>
 		public void Send(byte[] Packet)
 		{
+			int i = Packet.Length;
+			int j = 0;
+			int c = 1;
+			byte b;
+
+			i >>= 7;
+			while (i > 0)
+			{
+				c++;
+				i >>= 7;
+			}
+
+			i = Packet.Length;
+
+			byte[] Packet2 = new byte[c + i];
+			Array.Copy(Packet, 0, Packet2, c, i);
+
+			do
+			{
+				b = (byte)(i & 127);
+				i >>= 7;
+				if (i > 0)
+					b |= 128;
+
+				Packet2[j++] = b;
+			}
+			while (i > 0);
+
 			lock (this.outgoingPackets)
 			{
 				if (this.writing)
-					this.outgoingPackets.AddLast(Packet);
+					this.outgoingPackets.AddLast(Packet2);
 				else
 				{
 					this.writing = true;
-					this.stream.BeginWrite(Packet, 0, Packet.Length, this.EndWrite, Packet);
+					this.stream.BeginWrite(Packet2, 0, Packet2.Length, this.EndWrite, Packet);
 				}
 			}
 		}
@@ -133,8 +169,10 @@ namespace RetroSharp.Networking.P2P
 
 		private void EndRead(IAsyncResult ar)
 		{
-			byte[] Packet = null;
 			BinaryEventHandler h = null;
+			int Pos;
+			int NrLeft;
+			byte b;
 
 			try
 			{
@@ -143,26 +181,58 @@ namespace RetroSharp.Networking.P2P
 					this.Closed();
 				else
 				{
-					if ((h = this.OnReceived) != null)
+					Pos = 0;
+					while (Pos < NrRead)
 					{
-						Packet = new byte[NrRead];
-						Array.Copy(this.incomingBuffer, 0, Packet, 0, NrRead);
+						switch (this.readState)
+						{
+							case 0:
+								b = this.incomingBuffer[Pos++];
+								this.packetSize |= (b & 127) << this.packetSizeOffset;
+								this.packetSizeOffset += 7;
+								if ((b & 128) == 0)
+								{
+									this.packetBuffer = new byte[this.packetSize];
+									this.packetPos = 0;
+									this.readState++;
+								}
+								break;
+
+							case 1:
+								NrLeft = NrRead - Pos;
+								if (NrLeft > this.packetSize - this.packetPos)
+									NrLeft = this.packetSize - this.packetPos;
+
+								Array.Copy(this.incomingBuffer, Pos, this.packetBuffer, this.packetPos, NrLeft);
+								Pos += NrLeft;
+								this.packetPos += NrLeft;
+
+								if (this.packetPos >= this.packetSize)
+								{
+									h = this.OnReceived;
+									if (h != null)
+									{
+										try
+										{
+											h(this, this.packetBuffer);
+										}
+										catch (Exception ex)
+										{
+											Debug.WriteLine(ex.Message);
+											Debug.WriteLine(ex.StackTrace.ToString());
+										}
+									}
+
+									this.readState = 0;
+									this.packetSize = 0;
+									this.packetSizeOffset = 0;
+									this.packetBuffer = null;
+								}
+								break;
+						}
 					}
 
 					this.stream.BeginRead(this.incomingBuffer, 0, BufferSize, this.EndRead, null);
-				}
-
-				if (Packet != null)
-				{
-					try
-					{
-						h(this, Packet);
-					}
-					catch (Exception ex)
-					{
-						Debug.WriteLine(ex.Message);
-						Debug.WriteLine(ex.StackTrace.ToString());
-					}
 				}
 			}
 			catch (Exception)

@@ -206,5 +206,14 @@ namespace RetroSharp.Networking
 			this.WriteBytes(Guid.ToByteArray());
 		}
 
+		/// <summary>
+		/// Writes a boolean value to the stream.
+		/// </summary>
+		/// <param name="b">Value to write.</param>
+		public void WriteBool(bool b)
+		{
+			this.WriteByte((byte)(b ? 1 : 0));
+		}
+
 	}
 }

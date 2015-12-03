@@ -239,5 +239,14 @@ namespace RetroSharp.Networking
 			return new Guid(Bin);
 		}
 
+		/// <summary>
+		/// Reads a boolean value.
+		/// </summary>
+		/// <returns>Boolean value.</returns>
+		public bool ReadBool()
+		{
+			return this.ReadByte() != 0;
+		}
+
 	}
 }
