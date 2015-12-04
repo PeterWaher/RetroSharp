@@ -145,7 +145,7 @@ namespace Mask
 										Player2Down = true;
 								}
 								else
-									MPE.SendToAll(new byte[] { 0 });
+									MPE.SendUdpToAll(new byte[] { 0 }, 3);
 							}
 							break;
 
@@ -160,7 +160,7 @@ namespace Mask
 										Player2Up = true;
 								}
 								else
-									MPE.SendToAll(new byte[] { 1 });
+									MPE.SendUdpToAll(new byte[] { 1 }, 3);
 							}
 							break;
 
@@ -175,7 +175,7 @@ namespace Mask
 										Player2Right = true;
 								}
 								else
-									MPE.SendToAll(new byte[] { 2 });
+									MPE.SendUdpToAll(new byte[] { 2 }, 3);
 							}
 							break;
 
@@ -190,7 +190,7 @@ namespace Mask
 										Player2Left = true;
 								}
 								else
-									MPE.SendToAll(new byte[] { 3 });
+									MPE.SendUdpToAll(new byte[] { 3 }, 3);
 							}
 							break;
 
@@ -205,7 +205,7 @@ namespace Mask
 										Player2Fire = true;
 								}
 								else
-									MPE.SendToAll(new byte[] { 4 });
+									MPE.SendUdpToAll(new byte[] { 4 }, 3);
 							}
 							break;
 
@@ -213,7 +213,7 @@ namespace Mask
 							if (Player1.Dead)
 							{
 								if (NrPlayers > 1)
-									MPE.SendToAll(new byte[] { 5 });
+									MPE.SendUdpToAll(new byte[] { 5 }, 3);
 								else
 								{
 									lock (Player2Positions)
@@ -267,7 +267,7 @@ namespace Mask
 							Output.WriteInt(x1);
 							Output.WriteInt(y1);
 
-							MPE.SendToAll(Output.GetPacket());
+							MPE.SendUdpToAll(Output.GetPacket(), 3);
 						}
 					}
 
@@ -437,7 +437,7 @@ namespace Mask
 						case 9:	// Acknowledgement of remote player presses ENTER (Restart)
 
 							if (Command == 5)
-								MPE.SendToAll(new byte[] { 9 });
+								MPE.SendUdpToAll(new byte[] { 9 }, 3);
 
 							lock (Player2Positions)
 							{

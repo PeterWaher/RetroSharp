@@ -62,7 +62,7 @@ namespace MultiPlayerSetup
 					{
 						BinaryOutput Msg = new BinaryOutput();
 						Msg.WriteString(s);
-						MPE.SendToAll(Msg.GetPacket());
+						MPE.SendTcpToAll(Msg.GetPacket());
 
 						s = Console.In.ReadLine();
 					}

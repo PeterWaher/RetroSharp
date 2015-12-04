@@ -49,7 +49,7 @@ namespace RetroSharp.Networking.UPnP
 
 				foreach (UnicastIPAddressInformation UnicastAddress in Properties.UnicastAddresses)
 				{
-					if (UnicastAddress.Address.AddressFamily == AddressFamily.InterNetwork && Socket.SupportsIPv4)
+					if (UnicastAddress.Address.AddressFamily == AddressFamily.InterNetwork && Socket.OSSupportsIPv4)
 					{
 						try
 						{
@@ -133,7 +133,7 @@ namespace RetroSharp.Networking.UPnP
 				string Header = Encoding.ASCII.GetString(Packet);
 				UPnPHeaders Headers = new UPnPHeaders(Header);
 
-				if (Headers.Direction == HttpDirection.Response && Headers.HttpVersion >= 1.0 && Headers.ResponseCode == 200)
+				if (RemoteIP != null && Headers.Direction == HttpDirection.Response && Headers.HttpVersion >= 1.0 && Headers.ResponseCode == 200)
 				{
 					if (!string.IsNullOrEmpty(Headers.Location))
 					{
@@ -226,7 +226,7 @@ namespace RetroSharp.Networking.UPnP
 				string Header = Encoding.ASCII.GetString(Packet);
 				UPnPHeaders Headers = new UPnPHeaders(Header);
 
-				if (Headers.Direction == HttpDirection.Request && Headers.HttpVersion >= 1.0)
+				if (RemoteIP != null && Headers.Direction == HttpDirection.Request && Headers.HttpVersion >= 1.0)
 					this.HandleIncoming(UdpClient, RemoteIP, Headers);
 
 				UdpClient.BeginReceive(this.EndReceiveOutgoing, UdpClient);

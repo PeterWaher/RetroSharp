@@ -221,6 +221,21 @@ namespace RetroSharp.Networking
 		}
 
 		/// <summary>
+		/// Gets the remaining bytes.
+		/// </summary>
+		/// <returns>Remaining bytes.</returns>
+		public byte[] GetRemainingData()
+		{
+			int c = this.BytesLeft;
+			byte[] Result = new byte[c];
+
+			if (c > 0)
+				Array.Copy(this.ms.GetBuffer(), this.ms.Position, Result, 0, c);
+
+			return Result;
+		}
+
+		/// <summary>
 		/// Reads a Color value.
 		/// </summary>
 		/// <returns>Color.</returns>

@@ -127,6 +127,21 @@ namespace RetroSharp.Networking
 				this.applicationName, 0, EstimatedMaxNrPlayers);
 			this.p2pNetwork.OnStateChange += this.P2PNetworkStateChange;
 			this.p2pNetwork.OnPeerConnected += new PeerConnectedEventHandler(p2pNetwork_OnPeerConnected);
+			this.p2pNetwork.OnUdpDatagramReceived += new UdpDatagramEvent(p2pNetwork_OnUdpDatagramReceived);
+		}
+
+		private void p2pNetwork_OnUdpDatagramReceived(PeerToPeerNetwork Sender, UdpDatagramEventArgs e)
+		{
+			Player Player;
+
+			lock (this.remotePlayersByEndpoint)
+			{
+				if (!this.remotePlayersByEndpoint.TryGetValue(e.RemoteEndpoint, out Player))
+					return;
+			}
+
+			if (Player.Connection != null)
+				Player.Connection.UdpDatagramReceived(Sender, e);
 		}
 
 		private void P2PNetworkStateChange(object Sender, PeerToPeerNetworkState NewState)
@@ -438,9 +453,14 @@ namespace RetroSharp.Networking
 			Peer.OnClosed += new EventHandler(Peer_OnClosed);
 			Peer.OnReceived += new BinaryEventHandler(Peer_OnReceived);
 
-			Peer.Send(this.localPlayer.PlayerId.ToByteArray());
-		}
+			BinaryOutput Output = new BinaryOutput();
 
+			Output.WriteGuid(this.localPlayer.PlayerId);
+			Output.WriteString(this.ExternalEndpoint.Address.ToString());
+			Output.WriteUInt16((ushort)this.ExternalEndpoint.Port);
+
+			Peer.SendTcp(Output.GetPacket());
+		}
 
 		private void Peer_OnReceived(object Sender, byte[] Packet)
 		{
@@ -449,28 +469,28 @@ namespace RetroSharp.Networking
 
 			if (Connection.StateObject == null)
 			{
-				if (Packet.Length < 16)
+				BinaryInput Input = new BinaryInput(Packet);
+				Guid PlayerId;
+				IPAddress PlayerRemoteAddress;
+				IPEndPoint PlayerRemoteEndpoint;
+
+				try
+				{
+					PlayerId = Input.ReadGuid();
+					PlayerRemoteAddress = IPAddress.Parse(Input.ReadString());
+					PlayerRemoteEndpoint = new IPEndPoint(PlayerRemoteAddress, Input.ReadUInt16());
+				}
+				catch (Exception)
 				{
 					Connection.Dispose();
 					return;
 				}
 
-				byte[] Bin;
-
-				if (Packet.Length == 16)
-				{
-					Bin = Packet;
+				if (Input.BytesLeft == 0)
 					Packet = null;
-				}
 				else
-				{
-					Bin = new byte[16];
-					Array.Copy(Packet, 0, Bin, 0, 16);
-					Array.Copy(Packet, 16, Packet, 0, Packet.Length - 16);
-					Array.Resize<byte>(ref Packet, Packet.Length - 16);
-				}
+					Packet = Input.GetRemainingData();
 
-				Guid PlayerId = new Guid(Bin);
 				bool AllConnected;
 
 				lock (this.remotePlayersByEndpoint)
@@ -488,6 +508,7 @@ namespace RetroSharp.Networking
 
 					Player.Connection = Connection;
 					Connection.StateObject = Player;
+					Connection.RemoteEndpoint = Player.GetExpectedEndpoint(this.p2pNetwork);
 
 					AllConnected = this.connectionCount + 1 == this.playerCount;
 				}
@@ -547,11 +568,11 @@ namespace RetroSharp.Networking
 		public event GameDataEventHandler OnGameDataReceived = null;
 
 		/// <summary>
-		/// Sends a packet to all remote players. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// Sends a packet to all remote players using TCP. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
 		/// </summary>
 		/// <param name="Packet">Packet to send.</param>
 		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
-		public void SendToAll(byte[] Packet)
+		public void SendTcpToAll(byte[] Packet)
 		{
 			if (this.state != MultiPlayerState.Ready)
 				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
@@ -560,33 +581,33 @@ namespace RetroSharp.Networking
 			foreach (Player Player in this.remotePlayers)
 			{
 				if ((Connection = Player.Connection) != null)
-					Connection.Send(Packet);
+					Connection.SendTcp(Packet);
 			}
 		}
 
 		/// <summary>
-		/// Sends a packet to a specific player. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// Sends a packet to a specific player using TCP. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
 		/// </summary>
 		/// <param name="Player">Player to send the packet to.</param>
 		/// <param name="Packet">Packet to send.</param>
 		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
-		public void SendTo(Player Player, byte[] Packet)
+		public void SendTcpTo(Player Player, byte[] Packet)
 		{
 			if (this.state != MultiPlayerState.Ready)
 				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
 
 			PeerConnection Connection = Player.Connection;
 			if (Connection != null)
-				Connection.Send(Packet);
+				Connection.SendTcp(Packet);
 		}
 
 		/// <summary>
-		/// Sends a packet to a specific player. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// Sends a packet to a specific player using TCP. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
 		/// </summary>
 		/// <param name="PlayerId">ID of player to send the packet to.</param>
 		/// <param name="Packet">Packet to send.</param>
 		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
-		public void SendTo(Guid PlayerId, byte[] Packet)
+		public void SendTcpTo(Guid PlayerId, byte[] Packet)
 		{
 			Player Player;
 
@@ -598,7 +619,68 @@ namespace RetroSharp.Networking
 
 			PeerConnection Connection = Player.Connection;
 			if (Connection != null)
-				Connection.Send(Packet);
+				Connection.SendTcp(Packet);
+		}
+
+		/// <summary>
+		/// Sends a packet to all remote players using UDP. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// </summary>
+		/// <param name="Packet">Packet to send.</param>
+		/// <param name="IncludeNrPreviousPackets">Number of previous packets to include in the datagram. Note that the network limits
+		/// total size of datagram packets.</param>
+		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
+		public void SendUdpToAll(byte[] Packet, int IncludeNrPreviousPackets)
+		{
+			if (this.state != MultiPlayerState.Ready)
+				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
+
+			PeerConnection Connection;
+			foreach (Player Player in this.remotePlayers)
+			{
+				if ((Connection = Player.Connection) != null)
+					Connection.SendUdp(Packet, IncludeNrPreviousPackets);
+			}
+		}
+
+		/// <summary>
+		/// Sends a packet to a specific player using UDP. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// </summary>
+		/// <param name="Player">Player to send the packet to.</param>
+		/// <param name="Packet">Packet to send.</param>
+		/// <param name="IncludeNrPreviousPackets">Number of previous packets to include in the datagram. Note that the network limits
+		/// total size of datagram packets.</param>
+		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
+		public void SendUdpTo(Player Player, byte[] Packet, int IncludeNrPreviousPackets)
+		{
+			if (this.state != MultiPlayerState.Ready)
+				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
+
+			PeerConnection Connection = Player.Connection;
+			if (Connection != null)
+				Connection.SendUdp(Packet, IncludeNrPreviousPackets);
+		}
+
+		/// <summary>
+		/// Sends a packet to a specific player using UDP. Can only be done if <see cref="State"/>=<see cref="MultiPlayerState.Ready"/>.
+		/// </summary>
+		/// <param name="PlayerId">ID of player to send the packet to.</param>
+		/// <param name="Packet">Packet to send.</param>
+		/// <param name="IncludeNrPreviousPackets">Number of previous packets to include in the datagram. Note that the network limits
+		/// total size of datagram packets.</param>
+		/// <exception cref="Exception">If <see cref="State"/>!=<see cref="MultiPlayerState.Ready"/>.</exception>
+		public void SendUdpTo(Guid PlayerId, byte[] Packet, int IncludeNrPreviousPackets)
+		{
+			Player Player;
+
+			lock (this.remotePlayersByEndpoint)
+			{
+				if (!this.playersById.TryGetValue(PlayerId, out Player))
+					throw new ArgumentException("No player with that ID.", "PlayerId");
+			}
+
+			PeerConnection Connection = Player.Connection;
+			if (Connection != null)
+				Connection.SendUdp(Packet, IncludeNrPreviousPackets);
 		}
 
 		private void Peer_OnClosed(object sender, EventArgs e)
@@ -731,14 +813,24 @@ namespace RetroSharp.Networking
 		private void Connection_OnReceived(object Sender, byte[] Packet)
 		{
 			PeerConnection Connection = (PeerConnection)Sender;
+			Guid PlayerId;
+			IPAddress PlayerRemoteAddress;
+			IPEndPoint PlayerRemoteEndpoint;
 
-			if (Packet.Length != 16)
+			try
+			{
+				BinaryInput Input = new BinaryInput(Packet);
+
+				PlayerId = Input.ReadGuid();
+				PlayerRemoteAddress = IPAddress.Parse(Input.ReadString());
+				PlayerRemoteEndpoint = new IPEndPoint(PlayerRemoteAddress, Input.ReadUInt16());
+			}
+			catch (Exception)
 			{
 				Connection.Dispose();
 				return;
 			}
 
-			Guid PlayerId = new Guid(Packet);
 			Player Player = (Player)Connection.StateObject;
 			Player Player2;
 
@@ -753,11 +845,20 @@ namespace RetroSharp.Networking
 				Player.Connection = Connection;
 			}
 
+			Connection.RemoteEndpoint = Player.GetExpectedEndpoint(this.p2pNetwork);
+
 			Connection.OnReceived -= new BinaryEventHandler(Connection_OnReceived);
 			Connection.OnReceived += new BinaryEventHandler(Peer_OnReceived);
 
 			Connection.OnSent += new BinaryEventHandler(Connection_OnSent);
-			Connection.Send(this.localPlayer.PlayerId.ToByteArray());
+
+			BinaryOutput Output = new BinaryOutput();
+
+			Output.WriteGuid(this.localPlayer.PlayerId);
+			Output.WriteString(this.ExternalAddress.ToString());
+			Output.WriteUInt16((ushort)this.ExternalEndpoint.Port);
+
+			Connection.SendTcp(Output.GetPacket());
 
 			MultiPlayerEnvironmentPlayerInformationEventHandler h = this.OnPlayerConnected;
 			if (h != null)

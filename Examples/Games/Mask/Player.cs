@@ -62,7 +62,7 @@ namespace Mask
 					Output.WriteInt(this.vy);
 					Output.WriteBool(Result);
 
-					Program.MPE.SendToAll(Output.GetPacket());
+					Program.MPE.SendUdpToAll(Output.GetPacket(), 3);
 				}
 
 				return Result;
@@ -92,7 +92,7 @@ namespace Mask
 						this.GetGift(Gift, Output, null);
 
 						if (Program.NrPlayers > 1)
-							Program.MPE.SendToAll(Output.GetPacket());
+							Program.MPE.SendUdpToAll(Output.GetPacket(), 3);
 					}
 				}
 				else

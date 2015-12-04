@@ -72,6 +72,7 @@ namespace RetroSharp.Networking.P2P
 
 		private Dictionary<IPAddress, bool> ipAddressesFound = new Dictionary<IPAddress, bool>();
 		private TcpListener tcpListener;
+		private UdpClient udpClient;
 		private UPnPClient upnpClient;
 		private WANIPConnectionV1 serviceWANIPConnectionV1;
 		private IPAddress localAddress;
@@ -125,6 +126,9 @@ namespace RetroSharp.Networking.P2P
 			this.desiredPort = Port;
 			this.backlog = Backlog;
 
+			this.tcpListener = null;
+			this.udpClient = null;
+
 			if (this.OnPublicNetwork())
 			{
 				try
@@ -139,14 +143,31 @@ namespace RetroSharp.Networking.P2P
 
 					this.localEndpoint = new IPEndPoint(this.localAddress, LocalPort);
 					this.externalEndpoint = new IPEndPoint(this.externalAddress, LocalPort);
+
+					this.udpClient = new UdpClient(this.localEndpoint.AddressFamily);
+					this.udpClient.Client.Bind(this.localEndpoint);
+
 					this.State = PeerToPeerNetworkState.Ready;
 
 					this.tcpListener.BeginAcceptTcpClient(this.EndAcceptTcpClient, null);
+					this.udpClient.BeginReceive(this.EndReceiveUdp, null);
 				}
 				catch (Exception ex)
 				{
 					this.exception = ex;
 					this.State = PeerToPeerNetworkState.Error;
+
+					if (this.tcpListener != null)
+					{
+						this.tcpListener.Stop();
+						this.tcpListener = null;
+					}
+
+					if (this.udpClient != null)
+					{
+						this.udpClient.Close();
+						this.udpClient = null;
+					}
 				}
 			}
 			else
@@ -164,7 +185,7 @@ namespace RetroSharp.Networking.P2P
 
 				foreach (UnicastIPAddressInformation UnicastAddress in Properties.UnicastAddresses)
 				{
-					if (UnicastAddress.Address.AddressFamily == AddressFamily.InterNetwork && Socket.SupportsIPv4)
+					if (UnicastAddress.Address.AddressFamily == AddressFamily.InterNetwork && Socket.OSSupportsIPv4)
 					{
 						byte[] Addr = UnicastAddress.Address.GetAddressBytes();
 
@@ -330,6 +351,19 @@ namespace RetroSharp.Networking.P2P
 						if (this.desiredPort != 0)
 							throw new ArgumentException("Port already assigned to another application in the network.", "Port");
 					}
+					else
+					{
+						try
+						{
+							this.udpClient = new UdpClient(this.tcpListener.LocalEndpoint.AddressFamily);
+							this.udpClient.Client.Bind((IPEndPoint)this.tcpListener.LocalEndpoint);
+						}
+						catch (Exception)
+						{
+							this.tcpListener.Stop();
+							this.tcpListener = null;
+						}
+					}
 				}
 				while (this.tcpListener == null);
 
@@ -337,7 +371,7 @@ namespace RetroSharp.Networking.P2P
 
 				this.serviceWANIPConnectionV1.AddPortMapping(string.Empty, LocalPort, "TCP", LocalPort, LocalAddress.ToString(), true, this.applicationName, 0);
 				this.tcpMappingAdded = true;
-				
+
 				this.serviceWANIPConnectionV1.AddPortMapping(string.Empty, LocalPort, "UDP", LocalPort, LocalAddress.ToString(), true, this.applicationName, 0);
 				this.udpMappingAdded = true;
 
@@ -345,6 +379,7 @@ namespace RetroSharp.Networking.P2P
 				this.State = PeerToPeerNetworkState.Ready;
 
 				this.tcpListener.BeginAcceptTcpClient(this.EndAcceptTcpClient, null);
+				this.udpClient.BeginReceive(this.EndReceiveUdp, null);
 			}
 			catch (Exception ex)
 			{
@@ -360,7 +395,7 @@ namespace RetroSharp.Networking.P2P
 				try
 				{
 					TcpClient Client = this.tcpListener.EndAcceptTcpClient(ar);
-					PeerConnection Connection = new PeerConnection(Client);
+					PeerConnection Connection = new PeerConnection(Client, this, (IPEndPoint)Client.Client.RemoteEndPoint);
 
 					this.tcpListener.BeginAcceptTcpClient(this.EndAcceptTcpClient, null);
 					this.State = PeerToPeerNetworkState.Ready;
@@ -601,6 +636,7 @@ namespace RetroSharp.Networking.P2P
 				throw new IOException("Peer-to-peer network not ready.");
 
 			TcpClient Client = new TcpClient(new IPEndPoint(this.localAddress, 0));
+			IPEndPoint RemoteEndPoint2;
 
 			try
 			{
@@ -615,10 +651,14 @@ namespace RetroSharp.Networking.P2P
 					this.serviceWANIPConnectionV1.GetSpecificPortMappingEntry(string.Empty, (ushort)RemoteEndPoint.Port, "TCP",
 						out InternalPort, out InternalClient, out Enabled, out PortMappingDescription, out LeaseDuration);
 
-					Client.Connect(new IPEndPoint(IPAddress.Parse(InternalClient), InternalPort));
+					RemoteEndPoint2 = new IPEndPoint(IPAddress.Parse(InternalClient), InternalPort);
+					Client.Connect(RemoteEndPoint2);
 				}
 				else
+				{
+					RemoteEndPoint2 = RemoteEndPoint;
 					Client.Connect(RemoteEndPoint);
+				}
 			}
 			catch (Exception)
 			{
@@ -626,9 +666,139 @@ namespace RetroSharp.Networking.P2P
 				throw;
 			}
 
-			return new PeerConnection(Client);
+			PeerConnection Result = new PeerConnection(Client, this, RemoteEndPoint2);
+
+			Result.StartIdleTimer();
+
+			return Result;
 		}
 
+		private void EndReceiveUdp(IAsyncResult ar)
+		{
+			try
+			{
+				if (this.udpClient != null)
+				{
+					IPEndPoint RemoteEndpoint = null;
+
+					byte[] Data = this.udpClient.EndReceive(ar, ref RemoteEndpoint);
+					if (RemoteEndpoint != null && Data != null)
+					{
+						UdpDatagramEvent h = this.OnUdpDatagramReceived;
+						if (h != null)
+						{
+							try
+							{
+								h(this, new UdpDatagramEventArgs(RemoteEndpoint, Data));
+							}
+							catch (Exception ex)
+							{
+								Debug.WriteLine(ex.Message);
+								Debug.WriteLine(ex.StackTrace.ToString());
+							}
+						}
+					}
+
+					this.udpClient.BeginReceive(this.EndReceiveUdp, null);
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				Debug.WriteLine(ex.StackTrace.ToString());
+			}
+		}
+
+		/// <summary>
+		/// Event raised when an incoming UDP datagram has been received.
+		/// </summary>
+		public event UdpDatagramEvent OnUdpDatagramReceived = null;
+
+		/// <summary>
+		/// Sends an UDP datagram to a remote destination.
+		/// </summary>
+		/// <param name="RemoteEndpoint">Remote endpoint of destination.</param>
+		/// <param name="Datagram">UDP Datagram to send.</param>
+		public void SendUdp(IPEndPoint RemoteEndpoint, byte[] Datagram)
+		{
+			lock (this.writeQueue)
+			{
+				if (this.isWriting)
+					this.writeQueue.AddLast(new KeyValuePair<IPEndPoint, byte[]>(RemoteEndpoint, Datagram));
+				else
+				{
+					this.isWriting = true;
+					try
+					{
+						this.udpClient.BeginSend(Datagram, Datagram.Length, RemoteEndpoint, this.EndSend, new UdpDatagramEventArgs(RemoteEndpoint, Datagram));
+					}
+					catch (Exception)
+					{
+						this.isWriting = false;
+						this.writeQueue.Clear();
+						throw;
+					}
+				}
+			}
+		}
+
+		private bool isWriting = false;
+		private LinkedList<KeyValuePair<IPEndPoint, byte[]>> writeQueue = new LinkedList<KeyValuePair<IPEndPoint, byte[]>>();
+
+		private void EndSend(IAsyncResult ar)
+		{
+			try
+			{
+				if (this.udpClient != null)
+				{
+					UdpDatagramEventArgs e = (UdpDatagramEventArgs)ar.AsyncState;
+					this.udpClient.EndSend(ar);
+
+					lock (this.writeQueue)
+					{
+						if (this.writeQueue.First != null)
+						{
+							KeyValuePair<IPEndPoint, byte[]> Rec = this.writeQueue.First.Value;
+							this.writeQueue.RemoveFirst();
+
+							this.udpClient.BeginSend(Rec.Value, Rec.Value.Length, Rec.Key, this.EndSend, new UdpDatagramEventArgs(Rec.Key, Rec.Value));
+						}
+						else
+							this.isWriting = false;
+					}
+
+					UdpDatagramEvent h = this.OnUdpDatagramSent;
+					if (h != null)
+					{
+						try
+						{
+							h(this, e);
+						}
+						catch (Exception ex)
+						{
+							Debug.WriteLine(ex.Message);
+							Debug.WriteLine(ex.StackTrace.ToString());
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				lock (this.writeQueue)
+				{
+					this.isWriting = false;
+					this.writeQueue.Clear();
+				}
+
+				Debug.WriteLine(ex.Message);
+				Debug.WriteLine(ex.StackTrace.ToString());
+			}
+		}
+
+		/// <summary>
+		/// Event raised when an outgoing UDP datagram has been sent.
+		/// </summary>
+		public event UdpDatagramEvent OnUdpDatagramSent = null;
 
 	}
 }

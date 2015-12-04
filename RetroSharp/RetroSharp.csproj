@@ -67,6 +67,7 @@
     <Compile Include="Networking\MultiPlayerEnvironment.cs" />
     <Compile Include="Networking\P2P\PeerConnection.cs" />
     <Compile Include="Networking\P2P\PeerToPeerNetwork.cs" />
+    <Compile Include="Networking\P2P\UdpDatagramEventArgs.cs" />
     <Compile Include="Networking\Player.cs" />
     <Compile Include="Networking\UPnP\NotificationEventArgs.cs" />
     <Compile Include="Networking\UPnP\DeviceLocationEventArgs.cs" />
