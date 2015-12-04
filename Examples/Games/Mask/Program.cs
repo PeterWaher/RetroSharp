@@ -25,6 +25,14 @@ namespace Mask
 			string Player1Name;
 			string Player2Name;
 
+			Console.Out.WriteLine("Welcome to Mask! (Worms/Tron)");
+			Console.Out.WriteLine(new string('-', 70));
+			Console.Out.WriteLine("You control the work using the cursor keys.");
+			Console.Out.WriteLine("Fire, using SPACE.");
+			Console.Out.WriteLine("If you die, press ENTER to restart the game.");
+			Console.Out.WriteLine("You can chat during the game.");
+			Console.Out.WriteLine("Remember to try to fetch the gifts. You do that by moving into them.");
+			Console.Out.WriteLine();
 			Console.Out.WriteLine("Hello. What is your name?");
 			Player1Name = Player2Name = Console.ReadLine();
 
@@ -135,7 +143,7 @@ namespace Mask
 							break;
 
 						case Key.Up:
-							if (!Player1.Dead)
+							if (!Player1.Dead && Player1.VY != 1)
 							{
 								Player1Up = true;
 
@@ -150,7 +158,7 @@ namespace Mask
 							break;
 
 						case Key.Down:
-							if (!Player1.Dead)
+							if (!Player1.Dead && Player1.VY != -1)
 							{
 								Player1Down = true;
 
@@ -165,7 +173,7 @@ namespace Mask
 							break;
 
 						case Key.Left:
-							if (!Player1.Dead)
+							if (!Player1.Dead && Player1.VX != 1)
 							{
 								Player1Left = true;
 
@@ -180,7 +188,7 @@ namespace Mask
 							break;
 
 						case Key.Right:
-							if (!Player1.Dead)
+							if (!Player1.Dead && Player1.VX != -1)
 							{
 								Player1Right = true;
 
@@ -242,6 +250,12 @@ namespace Mask
 							}
 							break;
 					}
+				};
+
+				OnKeyPressed += (sender, e) =>
+				{
+					ChatCharacter(1, e.Character);
+					MPE.SendTcpToAll(new byte[] { 10, (byte)(e.Character >> 8), (byte)(e.Character) });
 				};
 
 				OnUpdateModel += (sender, e) =>
@@ -482,6 +496,10 @@ namespace Mask
 							}
 							break;
 
+						case 10:	// chat character
+							char ch = (char)e.Data.ReadUInt16();
+							ChatCharacter(2, ch);
+							break;
 					}
 				};
 
@@ -509,6 +527,17 @@ namespace Mask
 			GotoXY(PlayerNr == 1 ? 10 : 40, 0);
 			ForegroundColor = Color.LightBlue;
 			Console.Out.Write(s);
+		}
+
+		public static void ChatCharacter(int PlayerNr, char ch)
+		{
+			int x = PlayerNr == 1 ? 10 : 40;
+			int i;
+
+			for (i = 0; i < 29; i++)
+				Screen[x + i, 0] = Screen[x + i + 1, 0];
+
+			Screen[x + 29, 0] = ch;
 		}
 
 	}
