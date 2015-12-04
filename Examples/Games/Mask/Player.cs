@@ -6,6 +6,14 @@ using RetroSharp.Networking;
 
 namespace Mask
 {
+	public enum Gun
+	{
+		Normal,
+		WurstScheibe,
+		Homing,
+		Diagonal
+	}
+
 	public class Player : MovingObject
 	{
 		private Player opponent = null;
@@ -15,8 +23,8 @@ namespace Mask
 		private int shotPower;
 		private int shotSpeed = 1;
 		private bool tail = true;
-		private bool wurstScheibe = false;
-		private bool homing = false;
+		private Gun gun = Gun.Normal;
+		private bool invisible = false;
 
 		public Player(int PlayerNr, int X, int Y, int VX, int VY, int FramesPerPixel, Color Color, Color HeadColor, int Power)
 			: base(X, Y, VX, VY, FramesPerPixel, 1, true)
@@ -38,7 +46,10 @@ namespace Mask
 
 		public override void BeforeMove()
 		{
-			RetroApplication.Raster[this.x, this.y] = this.tail ? this.color : Color.Black;
+			if (!this.tail || (this.invisible && this.playerNr == 2))
+				RetroApplication.Raster[this.x, this.y] = Color.Black;
+			else
+				RetroApplication.Raster[this.x, this.y] = this.color;
 		}
 
 		public override bool MoveStep()
@@ -84,12 +95,12 @@ namespace Mask
 					if (this.playerNr == 1)
 					{
 						BinaryOutput Output = new BinaryOutput();
-						int Gift = RetroApplication.Random(0, 24);
+						int Gift = RetroApplication.Random(0, 26);
 
 						Output.WriteByte(7);
 						Output.WriteInt(Gift);
 
-						this.GetGift(Gift, Output, null);
+						this.GetGift(1, Gift, Output, null);
 
 						if (Program.NrPlayers > 1)
 							Program.MPE.SendUdpToAll(Output.GetPacket(), 3);
@@ -102,10 +113,11 @@ namespace Mask
 				}
 			}
 
-			RetroApplication.Raster[this.x, this.y] = this.headColor;
+			if (!this.invisible || this.playerNr == 2)
+				RetroApplication.Raster[this.x, this.y] = this.headColor;
 		}
 
-		public void GetGift(int GiftIndex, BinaryOutput Output, BinaryInput Input)
+		public void GetGift(int PlayerIndex, int GiftIndex, BinaryOutput Output, BinaryInput Input)
 		{
 			switch (GiftIndex)
 			{
@@ -273,12 +285,12 @@ namespace Mask
 					break;
 
 				case 21:
-					this.wurstScheibe = true;
+					this.gun = Gun.WurstScheibe;
 					Program.PlayerMsg(this.playerNr, "Wurst scheibe");
 					break;
 
 				case 22:
-					this.homing = true;
+					this.gun = Gun.Homing;
 					Program.PlayerMsg(this.playerNr, "Homing Missile");
 					break;
 
@@ -286,8 +298,8 @@ namespace Mask
 					this.shotPower = 15;
 					this.shotSpeed = 1;
 					this.tail = true;
-					this.wurstScheibe = false;
-					this.homing = false;
+					this.gun = Gun.Normal;
+					this.invisible = false;
 					Program.PlayerMsg(this.playerNr, "Reset");
 					break;
 
@@ -351,6 +363,16 @@ namespace Mask
 					RetroApplication.DrawRoundedRectangle(X1, Y1, X2, Y2, 8, 8, Color.Cyan);
 					Program.PlayerMsg(this.playerNr, "Obstacle");
 					break;
+
+				case 25:
+					this.invisible = true;
+					Program.PlayerMsg(this.playerNr, "Invisibility");
+					break;
+
+				case 26:
+					this.gun = Gun.Diagonal;
+					Program.PlayerMsg(this.playerNr, "Diagonal shots");
+					break;
 			}
 		}
 
@@ -386,35 +408,36 @@ namespace Mask
 
 		public void Fire(LinkedList<Shot> Shots)
 		{
-			if (this.homing)
+			switch (this.gun)
 			{
-				Shots.AddLast(new HomingMissile(this.x + this.vx, this.y + this.vy, 1, this.shotSpeed, Color.White, this.shotPower, this.opponent));
+				case Gun.Normal:
+					Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+					break;
 
-				if (this.wurstScheibe)
-				{
+				case Gun.Homing:
+					Shots.AddLast(new HomingMissile(this.x + this.vx, this.y + this.vy, 1, this.shotSpeed, Color.White, this.shotPower, this.opponent));
+					break;
+
+				case Gun.WurstScheibe:
 					int i;
 
 					for (i = -20; i <= 20; i += 10)
-					{
-						if (i != 0)
-							Shots.AddLast(new HomingMissile(this.x + this.vx - i * this.vy, this.y + this.vy - i * this.vx, 1, this.shotSpeed, Color.White, this.shotPower, this.opponent));
-					}
-				}
-			}
-			else
-			{
-				Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new Shot(this.x + this.vx - i * this.vy, this.y + this.vy - i * this.vx, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
 
-				if (this.wurstScheibe)
-				{
-					int i;
+					break;
 
-					for (i = -20; i <= 20; i += 10)
+				case Gun.Diagonal:
+					if (this.vy == 0)
 					{
-						if (i != 0)
-							Shots.AddLast(new Shot(this.x + this.vx - i * this.vy, this.y + this.vy - i * this.vx, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, 1, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, -1, 1, this.shotSpeed, Color.White, this.shotPower));
 					}
-				}
+					else
+					{
+						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, 1, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, -1, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+					}
+					break;
 			}
 		}
 

@@ -486,7 +486,7 @@ namespace Mask
 
 						case 7:	// Gift
 							x1 = (int)e.Data.ReadInt();
-							Player2.GetGift(x1, null, e.Data);
+							Player2.GetGift(2, x1, null, e.Data);
 							break;
 
 						case 8:	// Move player 2
