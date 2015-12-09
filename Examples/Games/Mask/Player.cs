@@ -11,7 +11,7 @@ namespace Mask
 		Normal,
 		WurstScheibe,
 		Homing,
-		Diagonal
+		BouncingBalls
 	}
 
 	public class Player : MovingObject
@@ -25,6 +25,10 @@ namespace Mask
 		private bool tail = true;
 		private Gun gun = Gun.Normal;
 		private bool invisible = false;
+		private bool wrappingShots = false;
+		private int immortalSecondsLeft;
+		private bool immortal = false;
+		private DateTime immortalStart = DateTime.MinValue;
 
 		public Player(int PlayerNr, int X, int Y, int VX, int VY, int FramesPerPixel, Color Color, Color HeadColor, int Power)
 			: base(X, Y, VX, VY, FramesPerPixel, 1, true)
@@ -95,7 +99,7 @@ namespace Mask
 					if (this.playerNr == 1)
 					{
 						BinaryOutput Output = new BinaryOutput();
-						int Gift = RetroApplication.Random(0, 26);
+						int Gift = RetroApplication.Random(0, 31);
 
 						Output.WriteByte(7);
 						Output.WriteInt(Gift);
@@ -106,7 +110,7 @@ namespace Mask
 							Program.MPE.SendUdpToAll(Output.GetPacket(), 3);
 					}
 				}
-				else
+				else if (!this.immortal)
 				{
 					this.Die();
 					return;
@@ -115,6 +119,25 @@ namespace Mask
 
 			if (!this.invisible || this.playerNr == 2)
 				RetroApplication.Raster[this.x, this.y] = this.headColor;
+
+			if (this.immortal)
+			{
+				int SecondsLeft = 10 - (int)(DateTime.Now - this.immortalStart).TotalSeconds;
+
+				if (SecondsLeft != this.immortalSecondsLeft)
+				{
+					if (SecondsLeft < 0)
+					{
+						this.immortal = false;
+						Program.PlayerMsg(this.playerNr, string.Empty);
+					}
+					else
+					{
+						this.immortalSecondsLeft = SecondsLeft;
+						Program.PlayerMsg(this.playerNr, "Immortal " + SecondsLeft.ToString());
+					}
+				}
+			}
 		}
 
 		public void GetGift(int PlayerIndex, int GiftIndex, BinaryOutput Output, BinaryInput Input)
@@ -300,6 +323,11 @@ namespace Mask
 					this.tail = true;
 					this.gun = Gun.Normal;
 					this.invisible = false;
+					this.immortal = false;
+					this.wrappingShots = false;
+					this.wrap = true;
+					this.opponent.wrap = true;
+					Program.BorderColor = Color.FromKnownColor(KnownColor.DimGray);
 					Program.PlayerMsg(this.playerNr, "Reset");
 					break;
 
@@ -370,8 +398,39 @@ namespace Mask
 					break;
 
 				case 26:
-					this.gun = Gun.Diagonal;
-					Program.PlayerMsg(this.playerNr, "Diagonal shots");
+					this.gun = Gun.BouncingBalls;
+					Program.PlayerMsg(this.playerNr, "Bouncing balls");
+					break;
+
+				case 27:
+					this.shotPower = 200;
+					Program.PlayerMsg(this.playerNr, "Atomic Bomb");
+					break;
+
+				case 28:
+					this.immortalStart = DateTime.Now;
+					this.immortal = true;
+					this.immortalSecondsLeft = 10;
+					Program.PlayerMsg(this.playerNr, "Immortal 10");
+					break;
+
+				case 29:
+					this.wrappingShots = true;
+					Program.PlayerMsg(this.playerNr, "Wrapping shots");
+					break;
+
+				case 30:
+					this.wrap = false;
+					this.opponent.wrap = false;
+					Program.BorderColor = Color.FromArgb(40, 40, 40);
+					Program.PlayerMsg(this.playerNr, "Lock Border");
+					break;
+
+				case 31:
+					this.wrap = true;
+					this.opponent.wrap = true;
+					Program.BorderColor = Color.FromKnownColor(KnownColor.DimGray);
+					Program.PlayerMsg(this.playerNr, "Open Border");
 					break;
 			}
 		}
@@ -411,7 +470,8 @@ namespace Mask
 			switch (this.gun)
 			{
 				case Gun.Normal:
-					Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+					Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower,
+						this.wrappingShots));
 					break;
 
 				case Gun.Homing:
@@ -422,20 +482,22 @@ namespace Mask
 					int i;
 
 					for (i = -20; i <= 20; i += 10)
-						Shots.AddLast(new Shot(this.x + this.vx - i * this.vy, this.y + this.vy - i * this.vx, this.vx, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
-
+					{
+						Shots.AddLast(new Shot(this.x + this.vx - i * this.vy, this.y + this.vy - i * this.vx, this.vx, this.vy, 1, this.shotSpeed,
+							Color.White, this.shotPower, this.wrappingShots));
+					}
 					break;
 
-				case Gun.Diagonal:
+				case Gun.BouncingBalls:
 					if (this.vy == 0)
 					{
-						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, 1, 1, this.shotSpeed, Color.White, this.shotPower));
-						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, this.vx, -1, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new BouncingBall(this.x + this.vx, this.y + this.vy, this.vx, 1, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new BouncingBall(this.x + this.vx, this.y + this.vy, this.vx, -1, 1, this.shotSpeed, Color.White, this.shotPower));
 					}
 					else
 					{
-						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, 1, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
-						Shots.AddLast(new Shot(this.x + this.vx, this.y + this.vy, -1, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new BouncingBall(this.x + this.vx, this.y + this.vy, 1, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
+						Shots.AddLast(new BouncingBall(this.x + this.vx, this.y + this.vy, -1, this.vy, 1, this.shotSpeed, Color.White, this.shotPower));
 					}
 					break;
 			}

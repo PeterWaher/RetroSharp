@@ -9,8 +9,8 @@ namespace Mask
 		private Color color;
 		private int power;
 
-		public Shot(int X, int Y, int VX, int VY, int FramesPerPixel, int StepsPerFrame, Color Color, int Power)
-			: base(X, Y, VX, VY, FramesPerPixel, StepsPerFrame, false)
+		public Shot(int X, int Y, int VX, int VY, int FramesPerPixel, int StepsPerFrame, Color Color, int Power, bool Wrap)
+			: base(X, Y, VX, VY, FramesPerPixel, StepsPerFrame, Wrap)
 		{
 			this.color = Color;
 			this.power = Power;

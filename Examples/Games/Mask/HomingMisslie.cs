@@ -9,7 +9,7 @@ namespace Mask
 		private Player target;
 
 		public HomingMissile(int X, int Y, int FramesPerPixel, int StepsPerFrame, Color Color, int Power, Player Target)
-			: base(X, Y, 0, 0, FramesPerPixel, StepsPerFrame, Color, Power)
+			: base(X, Y, 0, 0, FramesPerPixel, StepsPerFrame, Color, Power, false)
 		{
 			this.target = Target;
 		}
@@ -19,7 +19,13 @@ namespace Mask
 			this.vx = Math.Sign(this.target.X - this.x);
 			this.vy = Math.Sign(this.target.Y - this.y);
 
-			return base.MoveStep();
+			if (this.vx == 0 && this.vy == 0)
+			{
+				this.Die();
+				return true;
+			}
+			else
+				return base.MoveStep();
 		}
 
 	}

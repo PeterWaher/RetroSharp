@@ -63,9 +63,9 @@ namespace Mask
 						this.x += this.vx;
 
 						if (this.x < 0)
-							this.x += w;
-						else if (this.x >= w)
-							this.x -= w;
+							this.x += this.w;
+						else if (this.x >= this.w)
+							this.x -= this.w;
 					}
 
 					if (this.vy != 0)
@@ -73,9 +73,9 @@ namespace Mask
 						this.y += this.vy;
 
 						if (this.y < 8)
-							this.y += (h - 8);
-						else if (this.y >= h)
-							this.y -= (h - 8);
+							this.y += (this.h - 8);
+						else if (this.y >= this.h)
+							this.y -= (this.h - 8);
 					}
 				}
 				else
@@ -83,13 +83,13 @@ namespace Mask
 					int i;
 
 					i = this.x + this.vx;
-					if (i < 0 || i >= w)
+					if (i < 0 || i >= this.w)
 						this.Die();
 					else
 						this.x = i;
 
 					i = this.y + this.vy;
-					if (i < 8 || i >= h)
+					if (i < 8 || i >= this.h)
 						this.Die();
 					else
 						this.y = i;

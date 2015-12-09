@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimatedObject.cs" />
+    <Compile Include="BouncingBall.cs" />
     <Compile Include="HomingMisslie.cs" />
     <Compile Include="PlayerPosition.cs" />
     <Compile Include="Present.cs" />
