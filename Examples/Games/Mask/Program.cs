@@ -475,6 +475,8 @@ namespace Mask
 							FillRectangle(0, 8, 319, 199, Color.Black);
 							PlayerMsg(1, string.Empty);
 							PlayerMsg(2, string.Empty);
+
+							BorderColor = Color.FromKnownColor(KnownColor.DimGray);
 							break;
 
 						case 6:	// New Present

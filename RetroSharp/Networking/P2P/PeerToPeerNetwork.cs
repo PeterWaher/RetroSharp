@@ -201,6 +201,9 @@ namespace RetroSharp.Networking.P2P
 						else if (Addr[0] == 192 && Addr[1] == 168)
 							continue;	// Private address range: 192.168.0.0 - 192.168.255.255
 
+						else if (Addr[0] == 169 && Addr[1] == 254)
+							continue;	// Link-local address range: 169.254.0.0 - 169.254.255.255
+
 						this.externalAddress = UnicastAddress.Address;
 						return true;
 					}
