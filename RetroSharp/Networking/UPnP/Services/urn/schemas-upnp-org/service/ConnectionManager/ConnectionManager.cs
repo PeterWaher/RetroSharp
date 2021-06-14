@@ -20,7 +20,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetProtocolInfo == null)
+			if (actionGetProtocolInfo is null)
 				actionGetProtocolInfo = this.service.GetAction("GetProtocolInfo");
 
 			this.actionGetProtocolInfo.Invoke(out OutputValues);
@@ -33,7 +33,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetCurrentConnectionIDs == null)
+			if (actionGetCurrentConnectionIDs is null)
 				actionGetCurrentConnectionIDs = this.service.GetAction("GetCurrentConnectionIDs");
 
 			this.actionGetCurrentConnectionIDs.Invoke(out OutputValues);
@@ -45,7 +45,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetCurrentConnectionInfo == null)
+			if (actionGetCurrentConnectionInfo is null)
 				actionGetCurrentConnectionInfo = this.service.GetAction("GetCurrentConnectionInfo");
 
 			this.actionGetCurrentConnectionInfo.Invoke(out OutputValues,

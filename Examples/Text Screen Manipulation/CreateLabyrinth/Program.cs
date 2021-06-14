@@ -120,7 +120,7 @@ namespace CreateLabyrinth
                     if (NrOptions == 0)     // If no more options, retrace steps to see if other options are available.
                     {
                         Path.RemoveLast();
-                        if (Path.Last == null)
+                        if (Path.Last is null)
                             break;  // Terminates the loop: while (NrOptions == 0).
 
                         x = Path.Last.Value.Key;

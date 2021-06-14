@@ -52,7 +52,7 @@ namespace RetroSharp.Networking.MQTT
 		{
 			get
 			{
-				if (this.dataInput == null)
+				if (this.dataInput is null)
 					this.dataInput = new BinaryInput(this.data);
 
 				return this.dataInput;

@@ -140,7 +140,7 @@ namespace RetroSharp.Networking
 					return;
 			}
 
-			if (Player.Connection != null)
+			if (!(Player.Connection is null))
 				Player.Connection.UdpDatagramReceived(Sender, e);
 		}
 
@@ -273,7 +273,7 @@ namespace RetroSharp.Networking
 						break;
 
 					Player Player = this.Deserialize(Input);
-					if (Player == null)
+					if (Player is null)
 						break;
 
 #if LineListener
@@ -291,7 +291,7 @@ namespace RetroSharp.Networking
 					}
 
 					MultiPlayerEnvironmentPlayerInformationEventHandler h = this.OnPlayerAvailable;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -311,7 +311,7 @@ namespace RetroSharp.Networking
 						break;
 
 					Player = this.Deserialize(Input);
-					if (Player == null)
+					if (Player is null)
 						break;
 
 #if LineListener
@@ -329,7 +329,7 @@ namespace RetroSharp.Networking
 					for (i = 0; i < c; i++)
 					{
 						Player = this.Deserialize(Input);
-						if (Player == null)
+						if (Player is null)
 						{
 #if LineListener
 							Console.Out.Write("," + this.localPlayer.ToString());
@@ -467,7 +467,7 @@ namespace RetroSharp.Networking
 			PeerConnection Connection = (PeerConnection)Sender;
 			Player Player;
 
-			if (Connection.StateObject == null)
+			if (Connection.StateObject is null)
 			{
 				BinaryInput Input = new BinaryInput(Packet);
 				Guid PlayerId;
@@ -501,7 +501,7 @@ namespace RetroSharp.Networking
 						return;
 					}
 
-					if (Player.Connection == null)
+					if (Player.Connection is null)
 						this.connectionCount++;
 					else
 						Player.Connection.Dispose();
@@ -514,7 +514,7 @@ namespace RetroSharp.Networking
 				}
 
 				MultiPlayerEnvironmentPlayerInformationEventHandler h = this.OnPlayerConnected;
-				if (h != null)
+				if (!(h is null))
 				{
 					try
 					{
@@ -530,7 +530,7 @@ namespace RetroSharp.Networking
 				if (AllConnected)
 					this.State = MultiPlayerState.Ready;
 
-				if (Packet == null)
+				if (Packet is null)
 					return;
 			}
 			else
@@ -548,7 +548,7 @@ namespace RetroSharp.Networking
 		protected virtual void GameDataReceived(Player FromPlayer, PeerConnection Connection, byte[] Packet)
 		{
 			GameDataEventHandler h = this.OnGameDataReceived;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -597,7 +597,7 @@ namespace RetroSharp.Networking
 				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
 
 			PeerConnection Connection = Player.Connection;
-			if (Connection != null)
+			if (!(Connection is null))
 				Connection.SendTcp(Packet);
 		}
 
@@ -618,7 +618,7 @@ namespace RetroSharp.Networking
 			}
 
 			PeerConnection Connection = Player.Connection;
-			if (Connection != null)
+			if (!(Connection is null))
 				Connection.SendTcp(Packet);
 		}
 
@@ -656,7 +656,7 @@ namespace RetroSharp.Networking
 				throw new Exception("The multiplayer environment is not ready to exchange data between players.");
 
 			PeerConnection Connection = Player.Connection;
-			if (Connection != null)
+			if (!(Connection is null))
 				Connection.SendUdp(Packet, IncludeNrPreviousPackets);
 		}
 
@@ -679,7 +679,7 @@ namespace RetroSharp.Networking
 			}
 
 			PeerConnection Connection = Player.Connection;
-			if (Connection != null)
+			if (!(Connection is null))
 				Connection.SendUdp(Packet, IncludeNrPreviousPackets);
 		}
 
@@ -687,7 +687,7 @@ namespace RetroSharp.Networking
 		{
 			PeerConnection Connection = (PeerConnection)sender;
 			Player Player = (Player)Connection.StateObject;
-			if (Player == null)
+			if (Player is null)
 				return;
 
 			if (Player.Connection != Connection)
@@ -702,7 +702,7 @@ namespace RetroSharp.Networking
 			}
 
 			MultiPlayerEnvironmentPlayerInformationEventHandler h = this.OnPlayerDisconnected;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -861,7 +861,7 @@ namespace RetroSharp.Networking
 			Connection.SendTcp(Output.GetPacket());
 
 			MultiPlayerEnvironmentPlayerInformationEventHandler h = this.OnPlayerConnected;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -933,7 +933,7 @@ namespace RetroSharp.Networking
 					}
 
 					MultiPlayerEnvironmentStateChangeEventHandler h = this.OnStateChange;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -1038,25 +1038,25 @@ namespace RetroSharp.Networking
 
 			this.State = MultiPlayerState.Closed;
 
-			if (this.p2pNetwork != null)
+			if (!(this.p2pNetwork is null))
 			{
 				this.p2pNetwork.Dispose();
 				this.p2pNetwork = null;
 			}
 
-			if (this.ready != null)
+			if (!(this.ready is null))
 			{
 				this.ready.Close();
 				this.ready = null;
 			}
 
-			if (this.error != null)
+			if (!(this.error is null))
 			{
 				this.error.Close();
 				this.error = null;
 			}
 
-			if (this.remotePlayersByEndpoint != null)
+			if (!(this.remotePlayersByEndpoint is null))
 			{
 				lock (this.remotePlayersByEndpoint)
 				{
@@ -1065,7 +1065,7 @@ namespace RetroSharp.Networking
 
 					foreach (Player Player in this.remotePlayersByEndpoint.Values)
 					{
-						if (Player.Connection != null)
+						if (!(Player.Connection is null))
 							Player.Connection.Dispose();
 					}
 
@@ -1077,7 +1077,7 @@ namespace RetroSharp.Networking
 
 		private void CloseMqtt()
 		{
-			if (this.mqttConnection != null)
+			if (!(this.mqttConnection is null))
 			{
 				if (this.mqttConnection.State == MqttState.Connected)
 				{
@@ -1103,7 +1103,7 @@ namespace RetroSharp.Networking
 
 		private void mqttConnection_OnPublished(MqttConnection Sender, ushort PacketIdentifier)
 		{
-			if (this.mqttConnection != null && PacketIdentifier == this.mqttTerminatedPacketIdentifier)
+			if (!(this.mqttConnection is null) && PacketIdentifier == this.mqttTerminatedPacketIdentifier)
 			{
 				this.mqttConnection.Dispose();
 				this.mqttConnection = null;

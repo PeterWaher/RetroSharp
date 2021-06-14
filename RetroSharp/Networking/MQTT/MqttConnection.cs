@@ -121,7 +121,7 @@ namespace RetroSharp.Networking.MQTT
 		private void ConnectionError(Exception ex)
 		{
 			MqttExceptionEventHandler h = this.OnConnectionError;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -226,7 +226,7 @@ namespace RetroSharp.Networking.MQTT
 
 			foreach (byte b in Packet)
 			{
-				if (sb == null)
+				if (sb is null)
 					sb = new StringBuilder();
 				else
 					sb.Append(' ');
@@ -283,13 +283,13 @@ namespace RetroSharp.Networking.MQTT
 					if (Now < P.Key)
 						break;
 
-					if (Resend == null)
+					if (Resend is null)
 						Resend = new LinkedList<KeyValuePair<DateTime, KeyValuePair<byte[], int>>>();
 
 					Resend.AddLast(P);
 				}
 
-				if (Resend != null)
+				if (!(Resend is null))
 				{
 					foreach (KeyValuePair<DateTime, KeyValuePair<byte[], int>> P in Resend)
 					{
@@ -299,7 +299,7 @@ namespace RetroSharp.Networking.MQTT
 				}
 			}
 
-			if (Resend != null)
+			if (!(Resend is null))
 			{
 				foreach (KeyValuePair<DateTime, KeyValuePair<byte[], int>> P in Resend)
 					this.BeginWrite(P.Value.Key, P.Value.Value);
@@ -330,7 +330,7 @@ namespace RetroSharp.Networking.MQTT
 
 		private void EndWrite(IAsyncResult ar)
 		{
-			if (this.stream == null)
+			if (this.stream is null)
 				return;
 
 			try
@@ -343,7 +343,7 @@ namespace RetroSharp.Networking.MQTT
 				{
 					LinkedListNode<KeyValuePair<byte[], int>> Next = this.outputQueue.First;
 
-					if (Next == null)
+					if (Next is null)
 						this.isWriting = false;
 					else
 					{
@@ -373,7 +373,7 @@ namespace RetroSharp.Networking.MQTT
 		{
 			int NrRead;
 
-			if (this.stream == null)
+			if (this.stream is null)
 				return;
 
 			try
@@ -402,7 +402,7 @@ namespace RetroSharp.Networking.MQTT
 					{
 						b = this.buffer[i];
 
-						if (sb == null)
+						if (sb is null)
 							sb = new StringBuilder();
 						else
 							sb.Append(' ');
@@ -508,7 +508,7 @@ namespace RetroSharp.Networking.MQTT
 			}
 			finally
 			{
-				if (ContinueReading && this.stream != null)
+				if (ContinueReading && !(this.stream is null))
 					this.BeginRead();
 			}
 		}
@@ -573,7 +573,7 @@ namespace RetroSharp.Networking.MQTT
 
 					case MqttControlPacketType.PINGRESP:
 						EventHandler h = this.OnPingResponse;
-						if (h != null)
+						if (!(h is null))
 						{
 							try
 							{
@@ -624,7 +624,7 @@ namespace RetroSharp.Networking.MQTT
 					case MqttControlPacketType.PUBACK:
 						this.PacketDelivered(Header.PacketIdentifier);
 						PacketAcknowledgedEventHandler h2 = this.OnPublished;
-						if (h2 != null)
+						if (!(h2 is null))
 						{
 							try
 							{
@@ -654,14 +654,14 @@ namespace RetroSharp.Networking.MQTT
 						}
 						this.PUBCOMP(Header.PacketIdentifier);
 
-						if (Content != null)
+						if (!(Content is null))
 							this.ContentReceived(Content);
 						break;
 
 					case MqttControlPacketType.PUBCOMP:
 						this.PacketDelivered(Header.PacketIdentifier);
 						h2 = this.OnPublished;
-						if (h2 != null)
+						if (!(h2 is null))
 						{
 							try
 							{
@@ -679,7 +679,7 @@ namespace RetroSharp.Networking.MQTT
 					case MqttControlPacketType.SUBACK:
 						this.PacketDelivered(Header.PacketIdentifier);
 						h2 = this.OnSubscribed;
-						if (h2 != null)
+						if (!(h2 is null))
 						{
 							try
 							{
@@ -697,7 +697,7 @@ namespace RetroSharp.Networking.MQTT
 					case MqttControlPacketType.UNSUBACK:
 						this.PacketDelivered(Header.PacketIdentifier);
 						h2 = this.OnUnsubscribed;
-						if (h2 != null)
+						if (!(h2 is null))
 						{
 							try
 							{
@@ -724,7 +724,7 @@ namespace RetroSharp.Networking.MQTT
 		private void Error(Exception ex)
 		{
 			MqttExceptionEventHandler h = this.OnError;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -761,7 +761,7 @@ namespace RetroSharp.Networking.MQTT
 			this.BeginWrite(PacketData, 0);
 
 			EventHandler h = this.OnPing;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -861,7 +861,7 @@ namespace RetroSharp.Networking.MQTT
 					this.state = value;
 
 					StateChangedEventHandler h = this.OnStateChanged;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -1070,7 +1070,7 @@ namespace RetroSharp.Networking.MQTT
 		private void ContentReceived(MqttContent Content)
 		{
 			ContentReceivedEventHandler h = this.OnContentReceived;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -1139,7 +1139,7 @@ namespace RetroSharp.Networking.MQTT
 			if (this.state == MqttState.Connected)
 				this.DISCONNECT();
 
-			if (this.outputQueue != null)
+			if (!(this.outputQueue is null))
 			{
 				lock (this.outputQueue)
 				{
@@ -1149,7 +1149,7 @@ namespace RetroSharp.Networking.MQTT
 				}
 			}
 
-			if (this.contentCache != null)
+			if (!(this.contentCache is null))
 			{
 				lock (this.contentCache)
 				{
@@ -1157,19 +1157,19 @@ namespace RetroSharp.Networking.MQTT
 				}
 			}
 
-			if (this.secondTimer != null)
+			if (!(this.secondTimer is null))
 			{
 				this.secondTimer.Dispose();
 				this.secondTimer = null;
 			}
 
-			if (this.stream != null)
+			if (!(this.stream is null))
 			{
 				this.stream.Dispose();
 				this.stream = null;
 			}
 
-			if (this.client != null)
+			if (!(this.client is null))
 			{
 				this.client.Close();
 				this.client = null;
@@ -1196,7 +1196,7 @@ namespace RetroSharp.Networking.MQTT
 			ManualResetEvent Done = (ManualResetEvent)ar.AsyncState;
 			try
 			{
-				if (this.stream != null)
+				if (!(this.stream is null))
 					this.stream.EndWrite(ar);
 
 				this.State = MqttState.Offline;

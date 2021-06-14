@@ -22,7 +22,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetCommonLinkProperties == null)
+			if (actionGetCommonLinkProperties is null)
 				actionGetCommonLinkProperties = this.service.GetAction("GetCommonLinkProperties");
 
 			this.actionGetCommonLinkProperties.Invoke(out OutputValues);
@@ -37,7 +37,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetTotalBytesSent == null)
+			if (actionGetTotalBytesSent is null)
 				actionGetTotalBytesSent = this.service.GetAction("GetTotalBytesSent");
 
 			this.actionGetTotalBytesSent.Invoke(out OutputValues);
@@ -49,7 +49,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetTotalBytesReceived == null)
+			if (actionGetTotalBytesReceived is null)
 				actionGetTotalBytesReceived = this.service.GetAction("GetTotalBytesReceived");
 
 			this.actionGetTotalBytesReceived.Invoke(out OutputValues);
@@ -61,7 +61,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetTotalPacketsSent == null)
+			if (actionGetTotalPacketsSent is null)
 				actionGetTotalPacketsSent = this.service.GetAction("GetTotalPacketsSent");
 
 			this.actionGetTotalPacketsSent.Invoke(out OutputValues);
@@ -73,7 +73,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetTotalPacketsReceived == null)
+			if (actionGetTotalPacketsReceived is null)
 				actionGetTotalPacketsReceived = this.service.GetAction("GetTotalPacketsReceived");
 
 			this.actionGetTotalPacketsReceived.Invoke(out OutputValues);

@@ -117,7 +117,7 @@ namespace RetroSharp
             ResourceName = Namespace + "." + ResourceName;
 
             Stream Stream = Assembly.GetManifestResourceStream(ResourceName);
-            if (Stream == null)
+            if (Stream is null)
                 throw RetroApplication.ResourceNotFoundException(ResourceName, Assembly);
 
             Stream.Position = 0;

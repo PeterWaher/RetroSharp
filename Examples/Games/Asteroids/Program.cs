@@ -116,7 +116,7 @@ namespace Asteroids
 
                     double ElapsedSeconds = e.Seconds;
 
-                    if (Asteroids.First == null)
+                    if (Asteroids.First is null)
                     {
                         ImmortalSecondsLeft = 4;
 
@@ -158,7 +158,7 @@ namespace Asteroids
                         Obj.Move(ElapsedSeconds);
                         Obj.Draw(Color.White);
 
-                        if (Ship != null && ImmortalSecondsLeft <= 0 && IntersectsPolygon(Ship.Points, Obj.Points))
+                        if (!(Ship is null) && ImmortalSecondsLeft <= 0 && IntersectsPolygon(Ship.Points, Obj.Points))
                         {
                             Ship.Draw(Color.Black);
 
@@ -183,7 +183,7 @@ namespace Asteroids
                         }
                     }
 
-                    if (Ship != null)
+                    if (!(Ship is null))
                     {
                         Ship.Draw(Color.Black);
 
@@ -284,7 +284,7 @@ namespace Asteroids
                     LinkedListNode<Particle> Next;
                     Particle Particle;
 
-                    while (ParticleNode != null)
+                    while (!(ParticleNode is null))
                     {
                         Particle = ParticleNode.Value;
 
@@ -309,7 +309,7 @@ namespace Asteroids
                     int x0, y0, x1, y1;
                     double vx, vy;
 
-                    while (ShotNode != null)
+                    while (!(ShotNode is null))
                     {
                         Shot = ShotNode.Value;
 
@@ -322,7 +322,7 @@ namespace Asteroids
                             y1 = (int)(Shot.Y + 0.5);
 
                             AsteroidNode = Asteroids.First;
-                            while (AsteroidNode != null)
+                            while (!(AsteroidNode is null))
                             {
                                 Asteroid = AsteroidNode.Value;
 
@@ -399,7 +399,7 @@ namespace Asteroids
                                     AsteroidNode = AsteroidNode.Next;
                             }
 
-                            if (AsteroidNode == null)
+                            if (AsteroidNode is null)
                             {
                                 Shot.Draw(Shot.Color);
                                 ShotNode = ShotNode.Next;
@@ -429,7 +429,7 @@ namespace Asteroids
                             break;
 
                         case ' ':
-                            if (Ship != null)
+                            if (!(Ship is null))
                             {
                                 d = Ship.Angle * ToRadians;                 // Shot direction
                                 Shots.AddLast(new Particle(

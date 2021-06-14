@@ -260,7 +260,7 @@ namespace Mask
 					int TriesLeft = 100;
 					int Black = Color.Black.ToArgb();
 
-					if (Input != null)
+					if (!(Input is null))
 					{
 						this.x = 319 - (int)Input.ReadInt();
 						this.y = 207 - (int)Input.ReadInt();
@@ -297,7 +297,7 @@ namespace Mask
 							}
 						}
 
-						if (!Ok && Output != null)
+						if (!Ok && !(Output is null))
 						{
 							Output.WriteInt(this.x);
 							Output.WriteInt(this.y);
@@ -335,7 +335,7 @@ namespace Mask
 					int X1, Y1, X2, Y2;
 					bool Inside;
 
-					if (Input != null)
+					if (!(Input is null))
 					{
 						X2 = 319 - (int)Input.ReadInt();
 						Y2 = 207 - (int)Input.ReadInt();
@@ -371,7 +371,7 @@ namespace Mask
 						}
 						while (Inside || Math.Abs(X1 - X2) < 20 || Math.Abs(Y1 - Y2) < 20);
 
-						if (Output != null)
+						if (!(Output is null))
 						{
 							Output.WriteInt(X1);
 							Output.WriteInt(Y1);

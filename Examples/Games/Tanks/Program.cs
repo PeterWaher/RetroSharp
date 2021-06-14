@@ -67,7 +67,7 @@ namespace Tanks
 				LinkedListNode<Particle> Next;
 				Particle Particle;
 
-				while (ParticleNode != null)
+				while (!(ParticleNode is null))
 				{
 					Particle = ParticleNode.Value;
 

@@ -21,7 +21,7 @@ namespace RetroSharp.Networking.UPnP
 		{
 			this.xml = Xml;
 
-			if (Xml.DocumentElement != null && Xml.DocumentElement.LocalName == "root" &&
+			if (!(Xml.DocumentElement is null) && Xml.DocumentElement.LocalName == "root" &&
 				Xml.DocumentElement.NamespaceURI == "urn:schemas-upnp-org:device-1-0")
 			{
 				if (!string.IsNullOrEmpty(BaseUrl))
@@ -128,7 +128,7 @@ namespace RetroSharp.Networking.UPnP
 		/// <returns>Device object, if found, null otherwise.</returns>
 		public UPnPDevice GetDevice(string DeviceType)
 		{
-			if (this.device == null)
+			if (this.device is null)
 				return null;
 			else
 				return this.device.GetDevice(DeviceType);
@@ -141,7 +141,7 @@ namespace RetroSharp.Networking.UPnP
 		/// <returns>Service object, if found, null otherwise.</returns>
 		public UPnPService GetService(string ServiceType)
 		{
-			if (this.device == null)
+			if (this.device is null)
 				return null;
 			else
 				return this.device.GetService(ServiceType);

@@ -17,7 +17,7 @@ namespace Mask
 		internal static bool LocalMachineIsGameServer = true;
 		internal static int NrPlayers = 2;
 
-		public static void Main(string[] args)
+		public static void Main(string[] _)
 		{
 			Initialize();
 
@@ -288,7 +288,7 @@ namespace Mask
 					LinkedListNode<Present> PresentObj, NextPresentObj;
 
 					PresentObj = Presents.First;
-					while (PresentObj != null)
+					while (!(PresentObj is null))
 					{
 						NextPresentObj = PresentObj.Next;
 						if (PresentObj.Value.Move())
@@ -391,7 +391,7 @@ namespace Mask
 					LinkedListNode<Shot> ShotObj, NextShotObj;
 
 					ShotObj = Shots.First;
-					while (ShotObj != null)
+					while (!(ShotObj is null))
 					{
 						NextShotObj = ShotObj.Next;
 						if (ShotObj.Value.Move())
@@ -406,7 +406,7 @@ namespace Mask
 					LinkedListNode<Explosion> ExplosionObj, NextExplosionObj;
 
 					ExplosionObj = Explosions.First;
-					while (ExplosionObj != null)
+					while (!(ExplosionObj is null))
 					{
 						NextExplosionObj = ExplosionObj.Next;
 						if (ExplosionObj.Value.Move())

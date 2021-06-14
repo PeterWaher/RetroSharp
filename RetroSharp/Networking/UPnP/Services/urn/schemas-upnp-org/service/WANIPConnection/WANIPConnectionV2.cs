@@ -27,7 +27,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionRequestTermination == null)
+			if (actionRequestTermination is null)
 				actionRequestTermination = this.service.GetAction("RequestTermination");
 
 			this.actionRequestTermination.Invoke(out OutputValues);
@@ -37,7 +37,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionSetAutoDisconnectTime == null)
+			if (actionSetAutoDisconnectTime is null)
 				actionSetAutoDisconnectTime = this.service.GetAction("SetAutoDisconnectTime");
 
 			this.actionSetAutoDisconnectTime.Invoke(out OutputValues,
@@ -48,7 +48,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionSetIdleDisconnectTime == null)
+			if (actionSetIdleDisconnectTime is null)
 				actionSetIdleDisconnectTime = this.service.GetAction("SetIdleDisconnectTime");
 
 			this.actionSetIdleDisconnectTime.Invoke(out OutputValues,
@@ -59,7 +59,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionSetWarnDisconnectDelay == null)
+			if (actionSetWarnDisconnectDelay is null)
 				actionSetWarnDisconnectDelay = this.service.GetAction("SetWarnDisconnectDelay");
 
 			this.actionSetWarnDisconnectDelay.Invoke(out OutputValues,
@@ -70,7 +70,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetAutoDisconnectTime == null)
+			if (actionGetAutoDisconnectTime is null)
 				actionGetAutoDisconnectTime = this.service.GetAction("GetAutoDisconnectTime");
 
 			this.actionGetAutoDisconnectTime.Invoke(out OutputValues);
@@ -82,7 +82,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetIdleDisconnectTime == null)
+			if (actionGetIdleDisconnectTime is null)
 				actionGetIdleDisconnectTime = this.service.GetAction("GetIdleDisconnectTime");
 
 			this.actionGetIdleDisconnectTime.Invoke(out OutputValues);
@@ -94,7 +94,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetWarnDisconnectDelay == null)
+			if (actionGetWarnDisconnectDelay is null)
 				actionGetWarnDisconnectDelay = this.service.GetAction("GetWarnDisconnectDelay");
 
 			this.actionGetWarnDisconnectDelay.Invoke(out OutputValues);
@@ -106,7 +106,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionDeletePortMappingRange == null)
+			if (actionDeletePortMappingRange is null)
 				actionDeletePortMappingRange = this.service.GetAction("DeletePortMappingRange");
 
 			this.actionDeletePortMappingRange.Invoke(out OutputValues,
@@ -120,7 +120,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetListOfPortMappings == null)
+			if (actionGetListOfPortMappings is null)
 				actionGetListOfPortMappings = this.service.GetAction("GetListOfPortMappings");
 
 			this.actionGetListOfPortMappings.Invoke(out OutputValues,
@@ -137,7 +137,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionAddAnyPortMapping == null)
+			if (actionAddAnyPortMapping is null)
 				actionAddAnyPortMapping = this.service.GetAction("AddAnyPortMapping");
 
 			this.actionAddAnyPortMapping.Invoke(out OutputValues,

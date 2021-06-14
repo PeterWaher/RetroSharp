@@ -23,13 +23,13 @@ namespace TextAdventure2
         static XmlSchema Schema;
         static XmlDocument Doc;
         static XmlNamespaceManager Mgr;
-        static Dictionary<string, KeyValuePair<string, string>> VisibleObjects = new Dictionary<string, KeyValuePair<string, string>>();
-        static Dictionary<string, bool> Visited = new Dictionary<string, bool>();
-        static Dictionary<string, bool> Flags = new Dictionary<string, bool>();
-        static Dictionary<string, bool> Inventory = new Dictionary<string, bool>();
-        static Dictionary<string, string> ObjectLocation = new Dictionary<string, string>();
-        static Dictionary<string, List<string>> ObjectsPerLocation = new Dictionary<string, List<string>>();
-        static Dictionary<string, string> DynamicExits = new Dictionary<string, string>();
+        static readonly Dictionary<string, KeyValuePair<string, string>> VisibleObjects = new Dictionary<string, KeyValuePair<string, string>>();
+        static readonly Dictionary<string, bool> Visited = new Dictionary<string, bool>();
+        static readonly Dictionary<string, bool> Flags = new Dictionary<string, bool>();
+        static readonly Dictionary<string, bool> Inventory = new Dictionary<string, bool>();
+        static readonly Dictionary<string, string> ObjectLocation = new Dictionary<string, string>();
+        static readonly Dictionary<string, List<string>> ObjectsPerLocation = new Dictionary<string, List<string>>();
+        static readonly Dictionary<string, string> DynamicExits = new Dictionary<string, string>();
         static string CurrentLocation;
         static List<string> StringList;
         static KeyValuePair<string, string> Pair;
@@ -44,7 +44,7 @@ namespace TextAdventure2
         static int i, j;
         static string s;
 
-        public static void Main(string[] args)
+        public static void Main(string[] _)
         {
             Initialize();
 
@@ -216,7 +216,7 @@ namespace TextAdventure2
                                                 s = null;
                                         }
 
-                                        if (s == null)
+                                        if (s is null)
                                         {
                                             ForegroundColor = Color.Salmon;
                                             WriteLineWordWrap("You cannot go north from this location.");
@@ -238,7 +238,7 @@ namespace TextAdventure2
                                                 s = null;
                                         }
 
-                                        if (s == null)
+                                        if (s is null)
                                         {
                                             ForegroundColor = Color.Salmon;
                                             WriteLineWordWrap("You cannot go east from this location.");
@@ -260,7 +260,7 @@ namespace TextAdventure2
                                                 s = null;
                                         }
 
-                                        if (s == null)
+                                        if (s is null)
                                         {
                                             ForegroundColor = Color.Salmon;
                                             WriteLineWordWrap("You cannot go south from this location.");
@@ -282,7 +282,7 @@ namespace TextAdventure2
                                                 s = null;
                                         }
 
-                                        if (s == null)
+                                        if (s is null)
                                         {
                                             ForegroundColor = Color.Salmon;
                                             WriteLineWordWrap("You cannot go west from this location.");
@@ -304,7 +304,7 @@ namespace TextAdventure2
                                                 s = null;
                                         }
 
-                                        if (s == null)
+                                        if (s is null)
                                         {
                                             ForegroundColor = Color.Salmon;
                                             WriteLineWordWrap("You cannot go up from this location.");
@@ -326,7 +326,7 @@ namespace TextAdventure2
                                                 s = null;
                                         }
 
-                                        if (s == null)
+                                        if (s is null)
                                         {
                                             ForegroundColor = Color.Salmon;
                                             WriteLineWordWrap("You cannot go down from this location.");
@@ -414,37 +414,37 @@ namespace TextAdventure2
                                         if (!DynamicExits.TryGetValue(CurrentLocation + "|north", out s) && CurrentLocationElement.HasAttribute("north"))
                                             s = CurrentLocationElement.GetAttribute("north");
 
-                                        if (s != null)
+                                        if (!(s is null))
                                             StringList.Add("north");
 
                                         if (!DynamicExits.TryGetValue(CurrentLocation + "|east", out s) && CurrentLocationElement.HasAttribute("east"))
                                             s = CurrentLocationElement.GetAttribute("east");
 
-                                        if (s != null)
+                                        if (!(s is null))
                                             StringList.Add("east");
 
                                         if (!DynamicExits.TryGetValue(CurrentLocation + "|south", out s) && CurrentLocationElement.HasAttribute("south"))
                                             s = CurrentLocationElement.GetAttribute("south");
 
-                                        if (s != null)
+                                        if (!(s is null))
                                             StringList.Add("south");
 
                                         if (!DynamicExits.TryGetValue(CurrentLocation + "|west", out s) && CurrentLocationElement.HasAttribute("west"))
                                             s = CurrentLocationElement.GetAttribute("west");
 
-                                        if (s != null)
+                                        if (!(s is null))
                                             StringList.Add("west");
 
                                         if (!DynamicExits.TryGetValue(CurrentLocation + "|up", out s) && CurrentLocationElement.HasAttribute("up"))
                                             s = CurrentLocationElement.GetAttribute("up");
 
-                                        if (s != null)
+                                        if (!(s is null))
                                             StringList.Add("up");
 
                                         if (!DynamicExits.TryGetValue(CurrentLocation + "|down", out s) && CurrentLocationElement.HasAttribute("down"))
                                             s = CurrentLocationElement.GetAttribute("down");
 
-                                        if (s != null)
+                                        if (!(s is null))
                                             StringList.Add("down");
 
                                         if (StringList.Count == 0)
@@ -513,7 +513,7 @@ namespace TextAdventure2
                                             {
                                                 w.Write(Rec.Key);
 
-                                                if (Rec.Value == null)
+                                                if (Rec.Value is null)
                                                     w.Write(false);
                                                 else
                                                 {
@@ -706,7 +706,7 @@ namespace TextAdventure2
                 foreach (XmlElement Command in Action.SelectNodes("child::*", Mgr))
                     Actions.AddLast(Command);
 
-                while (Actions.First != null)
+                while (!(Actions.First is null))
                 {
                     E = Actions.First.Value;
                     Actions.RemoveFirst();
@@ -837,7 +837,7 @@ namespace TextAdventure2
 
                             Inventory[s] = true;
 
-                            if (ObjectLocation.TryGetValue(s, out s2) && s2 != null && ObjectsPerLocation.TryGetValue(s2, out StringList))
+                            if (ObjectLocation.TryGetValue(s, out s2) && !(s2 is null) && ObjectsPerLocation.TryGetValue(s2, out StringList))
                                 StringList.Remove(s);
 
                             ObjectLocation[s] = null;    // null = inventory
@@ -848,7 +848,7 @@ namespace TextAdventure2
                         case "AddObjectToLocation":
                             s = E.GetAttribute("ref");
 
-                            if (ObjectLocation.TryGetValue(s, out s2) && s2 != null && ObjectsPerLocation.TryGetValue(s2, out StringList))
+                            if (ObjectLocation.TryGetValue(s, out s2) && !(s2 is null) && ObjectsPerLocation.TryGetValue(s2, out StringList))
                                 StringList.Remove(s);
 
                             if (E.HasAttribute("location"))
@@ -881,7 +881,7 @@ namespace TextAdventure2
                         case "RemoveObjectFromLocation":
                             s = E.GetAttribute("ref");
 
-                            if (ObjectLocation.TryGetValue(s, out s2) && s2 != null && ObjectsPerLocation.TryGetValue(s2, out StringList))
+                            if (ObjectLocation.TryGetValue(s, out s2) && !(s2 is null) && ObjectsPerLocation.TryGetValue(s2, out StringList))
                                 StringList.Remove(s);
 
                             ObjectLocation[s] = null;
@@ -917,7 +917,7 @@ namespace TextAdventure2
 
             foreach (string s2 in s)
             {
-                if (sb == null)
+                if (sb is null)
                     sb = new StringBuilder();
                 else
                     sb.Append(" ");
@@ -925,7 +925,7 @@ namespace TextAdventure2
                 sb.Append(s2.Trim());
             }
 
-            if (sb == null)
+            if (sb is null)
                 return string.Empty;
             else
                 return sb.ToString();

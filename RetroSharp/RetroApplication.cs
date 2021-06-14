@@ -80,8 +80,8 @@ namespace RetroSharp
 		private static Size[] characterSetSizes = null;
 
 		private static SpriteTexture[] spriteTexturesStatic = new SpriteTexture[0];
-		private static List<SpriteTexture> spriteTexturesDynamic = new List<SpriteTexture>();
-		private static LinkedList<Sprite> sprites = new LinkedList<Sprite>();
+		private static readonly List<SpriteTexture> spriteTexturesDynamic = new List<SpriteTexture>();
+		private static readonly LinkedList<Sprite> sprites = new LinkedList<Sprite>();
 		private static readonly Vector3d depthZVector = new Vector3d(0, 0, 1);
 
 		private static DisplayMode displayMode = DisplayMode.Characters;
@@ -89,14 +89,14 @@ namespace RetroSharp
 		protected static int[] emptyRow = null;
 		private static Color[] foregroundColorBuffer = null;
 		private static Color[] backgroundColorBuffer = null;
-		private static Screen screen = new Screen();
-		private static ForegroundColor foreground = new ForegroundColor();
-		private static BackgroundColor background = new BackgroundColor();
+		private static readonly Screen screen = new Screen();
+		private static readonly ForegroundColor foreground = new ForegroundColor();
+		private static readonly BackgroundColor background = new BackgroundColor();
 
 		private static byte[] raster = null;
 		private static bool[] rasterBlocks = null;
 		private static Color rasterBackgroundColor = Color.Black;
-		private static Raster rasterObj = new Raster();
+		private static readonly Raster rasterObj = new Raster();
 		private static int rasterWidth = 320;
 		private static int rasterHeight = 200;
 		private static int rasterBlocksX = 0;
@@ -122,27 +122,27 @@ namespace RetroSharp
 		private static int bottomMargin = 0;
 		private static Color borderColor = Color.Empty;
 
-		private static Dictionary<OpenTK.Input.Key, bool> keysPressed = new Dictionary<OpenTK.Input.Key, bool>();
-		private static LinkedList<char> inputBuffer = new LinkedList<char>();
+		private static readonly Dictionary<OpenTK.Input.Key, bool> keysPressed = new Dictionary<OpenTK.Input.Key, bool>();
+		private static readonly LinkedList<char> inputBuffer = new LinkedList<char>();
 		private static double inputTime = 0;
 		private static bool requestingInput = false;
 		private static int startInputX = 0;
 		private static int startInputY = 0;
-		private static ManualResetEvent inputBufferNonempty = new ManualResetEvent(false);
+		private static readonly ManualResetEvent inputBufferNonempty = new ManualResetEvent(false);
 
 		private static TextWriter consoleOutput = null;
 		private static TextReader consoleInput = null;
 
-		private static ManualResetEvent started = new ManualResetEvent(false);
+		private static readonly ManualResetEvent started = new ManualResetEvent(false);
 		private static Thread renderingThread = null;
-		private static Random gen = new Random();
+		private static readonly Random gen = new Random();
 
-		private static LinkedList<EventHandler> openGLTasks = new LinkedList<EventHandler>();
+		private static readonly LinkedList<EventHandler> openGLTasks = new LinkedList<EventHandler>();
 
 		private static AudioContext audioContext = null;
 		private static XRamExtension xRam = null;
-		private static Dictionary<int, bool> audioBuffers = new Dictionary<int, bool>();
-		private static Dictionary<int, int> audioSources = new Dictionary<int, int>();
+		private static readonly Dictionary<int, bool> audioBuffers = new Dictionary<int, bool>();
+		private static readonly Dictionary<int, int> audioSources = new Dictionary<int, int>();
 
 		#region Execution
 
@@ -297,11 +297,13 @@ namespace RetroSharp
 
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-			renderingThread = new Thread(ExecutionThread);
-			renderingThread.Priority = ThreadPriority.AboveNormal;
-			renderingThread.Name = "OpenGL rendering thread";
-			renderingThread.Start();
+			renderingThread = new Thread(ExecutionThread)
+			{
+				Priority = ThreadPriority.AboveNormal,
+				Name = "OpenGL rendering thread"
+			};
 
+			renderingThread.Start();
 			started.WaitOne();
 
 			Console.SetOut(consoleOutput = new ConsoleOutput());
@@ -314,7 +316,7 @@ namespace RetroSharp
 		/// </summary>
 		public static void Terminate()
 		{
-			if (renderingThread != null)
+			if (!(renderingThread is null))
 			{
 				renderingThread.Abort();
 				renderingThread = null;
@@ -333,7 +335,7 @@ namespace RetroSharp
 					audioBuffers.Clear();
 				}
 
-				if (audioContext != null)
+				if (!(audioContext is null))
 				{
 					audioContext.Dispose();
 					audioContext = null;
@@ -353,7 +355,7 @@ namespace RetroSharp
 			}
 
 			EventHandler h = OnException;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -367,14 +369,12 @@ namespace RetroSharp
 			}
 			else if (!wnd.IsExiting)
 			{
-				Exception ex = e.ExceptionObject as Exception;
-
 				WriteLine();
-				if (ex == null)
+				if (!(e.ExceptionObject is Exception ex))
 					WriteLine(e.ExceptionObject.ToString());
 				else
 				{
-					while (ex != null)
+					while (!(ex is null))
 					{
 						WriteLine(ex.Message);
 						ex = ex.InnerException;
@@ -404,24 +404,24 @@ namespace RetroSharp
 			DisplayDevice MainDisplay = DisplayDevice.Default;
 
 			wnd = new GameWindow(screenWidth, screenHeight, GraphicsMode.Default, "Retro Console", GameWindowFlags.Fullscreen, MainDisplay);
-			wnd.RenderFrame += new EventHandler<FrameEventArgs>(wnd_RenderFrame);
-			wnd.UpdateFrame += new EventHandler<FrameEventArgs>(wnd_UpdateFrame);
-			wnd.KeyPress += new EventHandler<KeyPressEventArgs>(wnd_KeyPress);
-			wnd.KeyDown += new EventHandler<OpenTK.Input.KeyboardKeyEventArgs>(wnd_KeyDown);
-			wnd.KeyUp += new EventHandler<OpenTK.Input.KeyboardKeyEventArgs>(wnd_KeyUp);
-			wnd.MouseDown += new EventHandler<OpenTK.Input.MouseButtonEventArgs>(wnd_MouseDown);
-			wnd.MouseEnter += new EventHandler<EventArgs>(wnd_MouseEnter);
-			wnd.MouseLeave += new EventHandler<EventArgs>(wnd_MouseLeave);
-			wnd.MouseMove += new EventHandler<OpenTK.Input.MouseMoveEventArgs>(wnd_MouseMove);
-			wnd.MouseUp += new EventHandler<OpenTK.Input.MouseButtonEventArgs>(wnd_MouseUp);
-			wnd.Resize += new EventHandler<EventArgs>(wnd_Resize);
-			wnd.Closed += new EventHandler<EventArgs>(wnd_Closed);
+			wnd.RenderFrame += new EventHandler<FrameEventArgs>(Wnd_RenderFrame);
+			wnd.UpdateFrame += new EventHandler<FrameEventArgs>(Wnd_UpdateFrame);
+			wnd.KeyPress += new EventHandler<KeyPressEventArgs>(Wnd_KeyPress);
+			wnd.KeyDown += new EventHandler<OpenTK.Input.KeyboardKeyEventArgs>(Wnd_KeyDown);
+			wnd.KeyUp += new EventHandler<OpenTK.Input.KeyboardKeyEventArgs>(Wnd_KeyUp);
+			wnd.MouseDown += new EventHandler<OpenTK.Input.MouseButtonEventArgs>(Wnd_MouseDown);
+			wnd.MouseEnter += new EventHandler<EventArgs>(Wnd_MouseEnter);
+			wnd.MouseLeave += new EventHandler<EventArgs>(Wnd_MouseLeave);
+			wnd.MouseMove += new EventHandler<OpenTK.Input.MouseMoveEventArgs>(Wnd_MouseMove);
+			wnd.MouseUp += new EventHandler<OpenTK.Input.MouseButtonEventArgs>(Wnd_MouseUp);
+			wnd.Resize += new EventHandler<EventArgs>(Wnd_Resize);
+			wnd.Closed += new EventHandler<EventArgs>(Wnd_Closed);
 
 			wnd.Cursor = MouseCursor.Empty;
 
 			GenerateCharacterSetTextures();
 
-			if (raster != null)
+			if (!(raster is null))
 			{
 				rasterTexture = GL.GenTexture();
 
@@ -452,7 +452,7 @@ namespace RetroSharp
 			DisposeSpriteTextures();
 		}
 
-		private static void wnd_Closed(object sender, EventArgs e)
+		private static void Wnd_Closed(object sender, EventArgs e)
 		{
 			Terminate();
 		}
@@ -505,7 +505,7 @@ namespace RetroSharp
 		private static void DisposeCharacterSetTextures()
 		{
 
-			if (characterSetTextures != null)
+			if (!(characterSetTextures is null))
 				GL.DeleteTextures(characterSetTextures.Length, characterSetTextures);
 		}
 
@@ -896,7 +896,7 @@ namespace RetroSharp
 			{
 				LinkedListNode<Sprite> Prev = Node.Previous;
 
-				if (Prev != null)
+				if (!(Prev is null))
 				{
 					sprites.Remove(Node);
 					sprites.AddBefore(Prev, Node.Value);
@@ -910,7 +910,7 @@ namespace RetroSharp
 			{
 				LinkedListNode<Sprite> Next = Node.Next;
 
-				if (Next != null)
+				if (!(Next is null))
 				{
 					sprites.Remove(Node);
 					sprites.AddAfter(Next, Node.Value);
@@ -924,7 +924,7 @@ namespace RetroSharp
 			{
 				LinkedListNode<Sprite> Prev = Node.Previous;
 
-				if (Prev != null)
+				if (!(Prev is null))
 				{
 					sprites.Remove(Node);
 					sprites.AddFirst(Node.Value);
@@ -938,7 +938,7 @@ namespace RetroSharp
 			{
 				LinkedListNode<Sprite> Next = Node.Next;
 
-				if (Next != null)
+				if (!(Next is null))
 				{
 					sprites.Remove(Node);
 					sprites.AddLast(Node.Value);
@@ -950,7 +950,7 @@ namespace RetroSharp
 
 		#region Rendering
 
-		private static void wnd_Resize(object sender, EventArgs e)
+		private static void Wnd_Resize(object sender, EventArgs e)
 		{
 			screenWidth = wnd.Width;
 			screenHeight = wnd.Height;
@@ -962,7 +962,7 @@ namespace RetroSharp
 			GenerateCharacterSetTextures();
 
 			EventHandler h = OnResized;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -981,7 +981,7 @@ namespace RetroSharp
 		/// </summary>
 		public static event EventHandler OnResized = null;
 
-		private static void wnd_RenderFrame(object sender, FrameEventArgs e)
+		private static void Wnd_RenderFrame(object sender, FrameEventArgs e)
 		{
 			int x, y, i, j, xp, yp, xp2, yp2, w, h;
 			double d = e.Time;
@@ -994,7 +994,7 @@ namespace RetroSharp
 			renderingWatch.Start();
 
 			eventHandler = OnBeforeRender;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1019,7 +1019,7 @@ namespace RetroSharp
 			GL.LoadIdentity();
 
 			eventHandler = OnRenderMatrixSetup;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1033,7 +1033,7 @@ namespace RetroSharp
 			}
 
 			eventHandler = OnBeforeBackgroundRender;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1046,108 +1046,110 @@ namespace RetroSharp
 				}
 			}
 
-			if (displayMode == DisplayMode.Characters)
+			switch (displayMode)
 			{
-				yp2 = topMargin;
-				for (y = i = 0; y < consoleHeight; y++)
-				{
-					yp = yp2;
-					yp2 = (y + 1) * visibleScreenHeight / consoleHeight + topMargin;
-
-					xp2 = leftMargin;
-					for (x = 0; x < consoleWidth; x++, i++)
+				case DisplayMode.Characters:
+					yp2 = topMargin;
+					for (y = i = 0; y < consoleHeight; y++)
 					{
-						xp = xp2;
-						xp2 = (x + 1) * visibleScreenWidth / consoleWidth + leftMargin;
+						yp = yp2;
+						yp2 = (y + 1) * visibleScreenHeight / consoleHeight + topMargin;
 
-						GL.Color3(backgroundColorBuffer[i]);
-						GL.Rect(xp, yp, xp2, yp2);
-					}
-				}
-			}
-			else if (displayMode == DisplayMode.RasterGraphics)
-			{
-				byte[] Data = null;
-				IntPtr Ptr = IntPtr.Zero;
-				bool First = true;
-
-				try
-				{
-					for (y = i = 0; y < rasterBlocksY; y++)
-					{
-						for (x = 0; x < rasterBlocksX; x++, i++)
+						xp2 = leftMargin;
+						for (x = 0; x < consoleWidth; x++, i++)
 						{
-							if (rasterBlocks[i])
+							xp = xp2;
+							xp2 = (x + 1) * visibleScreenWidth / consoleWidth + leftMargin;
+
+							GL.Color3(backgroundColorBuffer[i]);
+							GL.Rect(xp, yp, xp2, yp2);
+						}
+					}
+					break;
+
+				case DisplayMode.RasterGraphics:
+					byte[] Data = null;
+					IntPtr Ptr = IntPtr.Zero;
+					bool First = true;
+
+					try
+					{
+						for (y = i = 0; y < rasterBlocksY; y++)
+						{
+							for (x = 0; x < rasterBlocksX; x++, i++)
 							{
-								rasterBlocks[i] = false;
-
-								if (First)
+								if (rasterBlocks[i])
 								{
-									First = false;
-									Ptr = Marshal.AllocHGlobal(RasterBlockSize * RasterBlockSize * 4);
-									Data = new byte[RasterBlockSize * RasterBlockSize * 4];
+									rasterBlocks[i] = false;
 
-									GL.BindTexture(TextureTarget.Texture2D, rasterTexture);
+									if (First)
+									{
+										First = false;
+										Ptr = Marshal.AllocHGlobal(RasterBlockSize * RasterBlockSize * 4);
+										Data = new byte[RasterBlockSize * RasterBlockSize * 4];
+
+										GL.BindTexture(TextureTarget.Texture2D, rasterTexture);
+									}
+
+									xp = (y * rasterWidth + x) * RasterBlockSize * 4;
+									w = rasterWidth - x * RasterBlockSize;
+									if (w > RasterBlockSize)
+										w = RasterBlockSize;
+
+									yp2 = w << 2;
+
+									h = rasterHeight - y * RasterBlockSize;
+									if (h > RasterBlockSize)
+										h = RasterBlockSize;
+
+									xp2 = yp2 * h;
+
+									for (yp = 0; yp < xp2; yp += yp2)
+									{
+										Buffer.BlockCopy(raster, xp, Data, yp, yp2);
+										xp += rasterStride;
+									}
+
+									j = h * yp2;
+
+									Marshal.Copy(Data, 0, Ptr, j);
+
+									GL.TexSubImage2D(TextureTarget.Texture2D, 0, x * RasterBlockSize, y * RasterBlockSize, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, Ptr);
 								}
-
-								xp = (y * rasterWidth + x) * RasterBlockSize * 4;
-								w = rasterWidth - x * RasterBlockSize;
-								if (w > RasterBlockSize)
-									w = RasterBlockSize;
-
-								yp2 = w << 2;
-
-								h = rasterHeight - y * RasterBlockSize;
-								if (h > RasterBlockSize)
-									h = RasterBlockSize;
-
-								xp2 = yp2 * h;
-
-								for (yp = 0; yp < xp2; yp += yp2)
-								{
-									Buffer.BlockCopy(raster, xp, Data, yp, yp2);
-									xp += rasterStride;
-								}
-
-								j = h * yp2;
-
-								Marshal.Copy(Data, 0, Ptr, j);
-
-								GL.TexSubImage2D(TextureTarget.Texture2D, 0, x * RasterBlockSize, y * RasterBlockSize, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, Ptr);
 							}
 						}
 					}
-				}
-				finally
-				{
-					if (!First)
-						Marshal.FreeHGlobal(Ptr);
-				}
+					finally
+					{
+						if (!First)
+							Marshal.FreeHGlobal(Ptr);
+					}
 
-				GL.Enable(EnableCap.Texture2D);
+					GL.Enable(EnableCap.Texture2D);
 
-				GL.Color3(Color.White);
-				GL.BindTexture(TextureTarget.Texture2D, rasterTexture);
+					GL.Color3(Color.White);
+					GL.BindTexture(TextureTarget.Texture2D, rasterTexture);
 
-				GL.Begin(PrimitiveType.Quads);
-				GL.TexCoord2(0, 0);
-				GL.Vertex2(leftMargin, topMargin);
+					GL.Begin(PrimitiveType.Quads);
+					GL.TexCoord2(0, 0);
+					GL.Vertex2(leftMargin, topMargin);
 
-				GL.TexCoord2(1, 0);
-				GL.Vertex2(screenWidth - rightMargin, topMargin);
+					GL.TexCoord2(1, 0);
+					GL.Vertex2(screenWidth - rightMargin, topMargin);
 
-				GL.TexCoord2(1, 1);
-				GL.Vertex2(screenWidth - rightMargin, screenHeight - bottomMargin);
+					GL.TexCoord2(1, 1);
+					GL.Vertex2(screenWidth - rightMargin, screenHeight - bottomMargin);
 
-				GL.TexCoord2(0, 1);
-				GL.Vertex2(leftMargin, screenHeight - bottomMargin);
-				GL.End();
+					GL.TexCoord2(0, 1);
+					GL.Vertex2(leftMargin, screenHeight - bottomMargin);
+					GL.End();
 
-				GL.Disable(EnableCap.Texture2D);
+					GL.Disable(EnableCap.Texture2D);
+					break;
 			}
 
 			eventHandler = OnBeforeForegroundRender;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1245,7 +1247,7 @@ namespace RetroSharp
 			GL.Disable(EnableCap.Blend);
 
 			eventHandler = OnBeforeCursorRender;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1292,7 +1294,7 @@ namespace RetroSharp
 			}
 
 			eventHandler = OnBeforeSwapBuffer;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1308,7 +1310,7 @@ namespace RetroSharp
 			wnd.SwapBuffers();
 
 			eventHandler = OnRenderDone;
-			if (eventHandler != null)
+			if (!(eventHandler is null))
 			{
 				try
 				{
@@ -1329,7 +1331,7 @@ namespace RetroSharp
 			renderingTimesPosition = (renderingTimesPosition + 1) & 127;
 		}
 
-		private static double[] renderingTimes = new double[128];
+		private static readonly double[] renderingTimes = new double[128];
 		private static int renderingTimesPosition = 0;
 		private static double sumRenderingTime = 0;
 
@@ -1345,11 +1347,11 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_UpdateFrame(object sender, FrameEventArgs e)
+		private static void Wnd_UpdateFrame(object sender, FrameEventArgs e)
 		{
 			lock (openGLTasks)
 			{
-				while (openGLTasks.First != null)
+				while (!(openGLTasks.First is null))
 				{
 					try
 					{
@@ -1366,7 +1368,7 @@ namespace RetroSharp
 			}
 
 			ElapsedTimeEventHandler h = OnUpdateModel;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -1606,7 +1608,7 @@ namespace RetroSharp
 		/// </summary>
 		public static void ClearRaster()
 		{
-			if (raster != null)
+			if (!(raster is null))
 			{
 				int i, x, y;
 
@@ -2097,10 +2099,10 @@ namespace RetroSharp
 
 		#region Keyboard input
 
-		private static void wnd_KeyPress(object sender, KeyPressEventArgs e)
+		private static void Wnd_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			KeyPressedEventHandler h = OnKeyPressed;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -2127,7 +2129,7 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_KeyUp(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
+		private static void Wnd_KeyUp(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
 		{
 			lock (keysPressed)
 			{
@@ -2135,7 +2137,7 @@ namespace RetroSharp
 			}
 
 			KeyEventHandler h = OnKeyUp;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -2150,7 +2152,7 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_KeyDown(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
+		private static void Wnd_KeyDown(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
 		{
 			lock (keysPressed)
 			{
@@ -2158,7 +2160,7 @@ namespace RetroSharp
 			}
 
 			KeyEventHandler h = OnKeyDown;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -2176,24 +2178,24 @@ namespace RetroSharp
 			switch (e.Key)
 			{
 				case OpenTK.Input.Key.Enter:
-					wnd_KeyPress(sender, new KeyPressEventArgs('\r'));
+					Wnd_KeyPress(sender, new KeyPressEventArgs('\r'));
 					break;
 
 				case OpenTK.Input.Key.Escape:
-					wnd_KeyPress(sender, new KeyPressEventArgs((char)27));
+					Wnd_KeyPress(sender, new KeyPressEventArgs((char)27));
 					break;
 
 				case OpenTK.Input.Key.Tab:
-					wnd_KeyPress(sender, new KeyPressEventArgs('\t'));
+					Wnd_KeyPress(sender, new KeyPressEventArgs('\t'));
 					break;
 
 				case OpenTK.Input.Key.BackSpace:
-					wnd_KeyPress(sender, new KeyPressEventArgs('\b'));
+					Wnd_KeyPress(sender, new KeyPressEventArgs('\b'));
 					break;
 
 				case OpenTK.Input.Key.C:
 					if (e.Control)
-						wnd_KeyPress(sender, new KeyPressEventArgs((char)3));
+						Wnd_KeyPress(sender, new KeyPressEventArgs((char)3));
 					break;
 			}
 		}
@@ -2255,7 +2257,7 @@ namespace RetroSharp
 
 				lock (inputBuffer)
 				{
-					if (inputBuffer.First != null)
+					if (!(inputBuffer.First is null))
 						return inputBuffer.First.Value;
 				}
 
@@ -2273,12 +2275,12 @@ namespace RetroSharp
 
 				lock (inputBuffer)
 				{
-					if (inputBuffer.First != null)
+					if (!(inputBuffer.First is null))
 					{
 						Result = inputBuffer.First.Value;
 						inputBuffer.RemoveFirst();
 
-						if (inputBuffer.First == null)
+						if (inputBuffer.First is null)
 							inputBufferNonempty.Reset();
 					}
 					else
@@ -2495,10 +2497,10 @@ namespace RetroSharp
 		/// <exception cref="Exception">If <paramref name="Object"/> is not a 32-bit integer value.</exception>
 		public static int ToInt(object Object)
 		{
-			if (Object is int)
-				return (int)Object;
-			else if (Object is string)
-				return ToInt((string)Object);
+			if (Object is int i)
+				return i;
+			else if (Object is string s)
+				return ToInt(s);
 			else
 				return Convert.ToInt32(Object);
 		}
@@ -2537,10 +2539,10 @@ namespace RetroSharp
 		/// <exception cref="Exception">If <paramref name="Object"/> is not a 64-bit integer value.</exception>
 		public static long ToLong(object Object)
 		{
-			if (Object is int)
-				return (int)Object;
-			else if (Object is string)
-				return ToLong((string)Object);
+			if (Object is int i)
+				return i;
+			else if (Object is string s)
+				return ToLong(s);
 			else
 				return Convert.ToInt64(Object);
 		}
@@ -2579,10 +2581,10 @@ namespace RetroSharp
 		/// <exception cref="Exception">If <paramref name="Object"/> is not a double precision integer value.</exception>
 		public static double ToDouble(object Object)
 		{
-			if (Object is int)
-				return (int)Object;
-			else if (Object is string)
-				return ToDouble((string)Object);
+			if (Object is int i)
+				return i;
+			else if (Object is string s)
+				return ToDouble(s);
 			else
 				return Convert.ToDouble(Object);
 		}
@@ -3244,7 +3246,7 @@ namespace RetroSharp
 			ResourceName = Namespace + "." + ResourceName;
 
 			Stream Stream = Assembly.GetManifestResourceStream(ResourceName);
-			if (Stream == null)
+			if (Stream is null)
 				throw ResourceNotFoundException(ResourceName, Assembly);
 
 			return Stream;
@@ -3340,7 +3342,7 @@ namespace RetroSharp
 
 		private static void CheckAudioInstalled()
 		{
-			if (audioContext == null)
+			if (audioContext is null)
 			{
 				audioContext = new AudioContext();
 				xRam = new XRamExtension();
@@ -3479,8 +3481,8 @@ namespace RetroSharp
 
 		#region Timing
 
-		private static Stopwatch watch = new Stopwatch();
-		private static Stopwatch renderingWatch = new Stopwatch();
+		private static readonly Stopwatch watch = new Stopwatch();
+		private static readonly Stopwatch renderingWatch = new Stopwatch();
 
 		/// <summary>
 		/// Starts timing. Call <see cref="EndTiming"/> to get an very precise estimate on the time elapsed.
@@ -6086,11 +6088,9 @@ namespace RetroSharp
 		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, Color Color, Color BackgroundColor, out bool Collision)
 		{
-			bool b;
-
 			DrawLine(x1, y1, x2, y1, Color, BackgroundColor, out Collision);
 
-			DrawLine(x2, y1, x2, y2, Color, BackgroundColor, out b);
+			DrawLine(x2, y1, x2, y2, Color, BackgroundColor, out bool b);
 			Collision |= b;
 
 			DrawLine(x2, y2, x1, y2, Color, BackgroundColor, out b);
@@ -6147,11 +6147,9 @@ namespace RetroSharp
 		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
-			bool b;
-
 			DrawLine(x1, y1, x2, y1, Colors, BackgroundColor, out Collision);
 
-			DrawLine(x2, y1, x2, y2, Colors, BackgroundColor, out b);
+			DrawLine(x2, y1, x2, y2, Colors, BackgroundColor, out bool b);
 			Collision |= b;
 
 			DrawLine(x2, y2, x1, y2, Colors, BackgroundColor, out b);
@@ -6207,11 +6205,9 @@ namespace RetroSharp
 		/// <param name="Collision">If any of the pixels overwritten by the rectangle is NOT the background color.</param>
 		public static void DrawRectangle(int x1, int y1, int x2, int y2, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
-			bool b;
-
 			DrawLine(x1, y1, x2, y1, ColorAlgorithm, BackgroundColor, out Collision);
 
-			DrawLine(x2, y1, x2, y2, ColorAlgorithm, BackgroundColor, out b);
+			DrawLine(x2, y1, x2, y2, ColorAlgorithm, BackgroundColor, out bool b);
 			Collision |= b;
 
 			DrawLine(x2, y2, x1, y2, ColorAlgorithm, BackgroundColor, out b);
@@ -6276,13 +6272,11 @@ namespace RetroSharp
 			if (!ClipBox(ref x1, ref y1, ref x2, ref y2, rasterClipLeft, rasterClipTop, rasterClipRight, rasterClipBottom))
 				return;
 
-			bool b;
-
 			Collision = false;
 
 			while (y1 <= y2)
 			{
-				DrawScanLine(x1, x2, y1++, Color, BackgroundColor, out b);
+				DrawScanLine(x1, x2, y1++, Color, BackgroundColor, out bool b);
 				Collision |= b;
 			}
 		}
@@ -6341,11 +6335,9 @@ namespace RetroSharp
 			if (!ClipBox(ref x1, ref y1, ref x2, ref y2, rasterClipLeft, rasterClipTop, rasterClipRight, rasterClipBottom))
 				return;
 
-			bool b;
-
 			while (y1 <= y2)
 			{
-				DrawScanLine(x1, x2, y1++, Colors, BackgroundColor, out b);
+				DrawScanLine(x1, x2, y1++, Colors, BackgroundColor, out bool b);
 				Collision |= b;
 			}
 		}
@@ -6403,11 +6395,9 @@ namespace RetroSharp
 			if (!ClipBox(ref x1, ref y1, ref x2, ref y2, rasterClipLeft, rasterClipTop, rasterClipRight, rasterClipBottom))
 				return;
 
-			bool b;
-
 			while (y1 <= y2)
 			{
-				DrawScanLine(x1, x2, y1++, ColorAlgorithm, BackgroundColor, out b);
+				DrawScanLine(x1, x2, y1++, ColorAlgorithm, BackgroundColor, out bool b);
 				Collision |= b;
 			}
 		}
@@ -10307,11 +10297,10 @@ namespace RetroSharp
 				return;
 
 			Point Prev = Points[c - 1];
-			bool Collision2;
 
 			foreach (Point P in Points)
 			{
-				DrawLine(Prev.X, Prev.Y, P.X, P.Y, ColorAlgorithm, BackgroundColor, out Collision2);
+				DrawLine(Prev.X, Prev.Y, P.X, P.Y, ColorAlgorithm, BackgroundColor, out bool Collision2);
 				Collision |= Collision2;
 				Prev = P;
 			}
@@ -10349,18 +10338,16 @@ namespace RetroSharp
 		/// <param name="Color">Color to use.</param>
 		public static void FillPolygon(Point[] Points, Color Color)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y - MinY];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10428,7 +10415,7 @@ namespace RetroSharp
 				if (LastDir != stepy)
 				{
 					List = Edges[y1 - MinY];
-					if (List == null)
+					if (List is null)
 					{
 						List = new LinkedList<int>();
 						Edges[y1 - MinY] = List;
@@ -10446,7 +10433,7 @@ namespace RetroSharp
 					y += stepy;
 
 					List = Edges[y - MinY];
-					if (List == null)
+					if (List is null)
 					{
 						List = new LinkedList<int>();
 						Edges[y - MinY] = List;
@@ -10462,7 +10449,7 @@ namespace RetroSharp
 
 		private static void AddEdge(LinkedList<int> List, int x)
 		{
-			if (List.First == null)
+			if (List.First is null)
 				List.AddLast(x);
 			else
 			{
@@ -10472,10 +10459,10 @@ namespace RetroSharp
 					List.AddFirst(x);
 				else
 				{
-					while (Loop != null && x >= Loop.Value)
+					while (!(Loop is null) && x >= Loop.Value)
 						Loop = Loop.Next;
 
-					if (Loop == null)
+					if (Loop is null)
 						List.AddLast(x);
 					else
 						List.AddBefore(Loop, x);
@@ -10492,20 +10479,17 @@ namespace RetroSharp
 		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
 		public static void FillPolygon(Point[] Points, Color Color, Color BackgroundColor, out bool Collision)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
-			bool Collision2;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			Collision = false;
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10514,7 +10498,7 @@ namespace RetroSharp
 				{
 					if (PrevX.HasValue)
 					{
-						DrawScanLine(PrevX.Value, x, y, Color, BackgroundColor, out Collision2);
+						DrawScanLine(PrevX.Value, x, y, Color, BackgroundColor, out bool Collision2);
 						Collision |= Collision2;
 						PrevX = null;
 					}
@@ -10532,18 +10516,16 @@ namespace RetroSharp
 		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the polygon.</param>
 		public static void FillPolygon(Point[] Points, Color Color, BinaryWriter PreviousColors)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10569,18 +10551,16 @@ namespace RetroSharp
 		/// <see cref="FillPolygon(Point[], Color, BinaryWriter"/>.</param>
 		public static void FillPolygon(Point[] Points, BinaryReader Colors)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10608,20 +10588,17 @@ namespace RetroSharp
 		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
 		public static void FillPolygon(Point[] Points, BinaryReader Colors, Color BackgroundColor, out bool Collision)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
-			bool Collision2;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			Collision = false;
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10630,7 +10607,7 @@ namespace RetroSharp
 				{
 					if (PrevX.HasValue)
 					{
-						DrawScanLine(PrevX.Value, x, y, Colors, BackgroundColor, out Collision2);
+						DrawScanLine(PrevX.Value, x, y, Colors, BackgroundColor, out bool Collision2);
 						Collision |= Collision2;
 						PrevX = null;
 					}
@@ -10649,18 +10626,16 @@ namespace RetroSharp
 		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the polygon.</param>
 		public static void FillPolygon(Point[] Points, BinaryReader Colors, BinaryWriter PreviousColors)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10685,18 +10660,16 @@ namespace RetroSharp
 		/// <param name="ColorAlgorithm">Coloring algorithm to use.</param>
 		public static void FillPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10723,20 +10696,17 @@ namespace RetroSharp
 		/// <param name="Collision">If any of the pixels overwritten by the polygon is NOT the background color.</param>
 		public static void FillPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm, Color BackgroundColor, out bool Collision)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
-			bool Collision2;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			Collision = false;
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10745,7 +10715,7 @@ namespace RetroSharp
 				{
 					if (PrevX.HasValue)
 					{
-						DrawScanLine(PrevX.Value, x, y, ColorAlgorithm, BackgroundColor, out Collision2);
+						DrawScanLine(PrevX.Value, x, y, ColorAlgorithm, BackgroundColor, out bool Collision2);
 						Collision |= Collision2;
 						PrevX = null;
 					}
@@ -10763,18 +10733,16 @@ namespace RetroSharp
 		/// <param name="PreviousColors">Returns an enumerable set of colors representing the colors overwritten when filling the polygon.</param>
 		public static void FillPolygon(Point[] Points, ProceduralColorAlgorithm ColorAlgorithm, BinaryWriter PreviousColors)
 		{
-			LinkedList<int>[] Edges;
 			LinkedList<int> List;
-			int MinY, MaxY;
 			int y;
 			int? PrevX;
 
-			FindEdges(Points, out MinY, out MaxY, out Edges);
+			FindEdges(Points, out int MinY, out int MaxY, out LinkedList<int>[] Edges);
 
 			for (y = MinY; y <= MaxY; y++)
 			{
 				List = Edges[y];
-				if (List == null)
+				if (List is null)
 					continue;
 
 
@@ -10812,7 +10780,7 @@ namespace RetroSharp
 			Queue.AddLast(new Point(x, y));
 			Raster[x, y] = Color;
 
-			while (Queue.First != null)
+			while (!(Queue.First is null))
 			{
 				P = Queue.First.Value;
 				Queue.RemoveFirst();
@@ -10862,7 +10830,7 @@ namespace RetroSharp
 			Queue.AddLast(new Point(x, y));
 			Raster[x, y] = ColorAlgorithm(x, y, Bg);
 
-			while (Queue.First != null)
+			while (!(Queue.First is null))
 			{
 				P = Queue.First.Value;
 				Queue.RemoveFirst();
@@ -11000,14 +10968,14 @@ namespace RetroSharp
 			{
 				if (e.Severity == XmlSeverityType.Error)
 				{
-					if (sb == null)
+					if (sb is null)
 						sb = new StringBuilder();
 
 					sb.AppendLine(e.Message);
 				}
 			}
 
-			if (sb != null)
+			if (!(sb is null))
 				throw new Exception(sb.ToString());
 		}
 
@@ -11034,10 +11002,10 @@ namespace RetroSharp
 			return new Point(X, Y);
 		}
 
-		private static void wnd_MouseUp(object sender, OpenTK.Input.MouseButtonEventArgs e)
+		private static void Wnd_MouseUp(object sender, OpenTK.Input.MouseButtonEventArgs e)
 		{
 			MouseEventHandler h = OnMouseUp;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -11057,10 +11025,10 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_MouseMove(object sender, OpenTK.Input.MouseMoveEventArgs e)
+		private static void Wnd_MouseMove(object sender, OpenTK.Input.MouseMoveEventArgs e)
 		{
 			MouseEventHandler h = OnMouseMove;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -11080,10 +11048,10 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_MouseLeave(object sender, EventArgs e)
+		private static void Wnd_MouseLeave(object sender, EventArgs e)
 		{
 			EventHandler h = OnMouseLeave;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -11097,10 +11065,10 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_MouseEnter(object sender, EventArgs e)
+		private static void Wnd_MouseEnter(object sender, EventArgs e)
 		{
 			EventHandler h = OnMouseEnter;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -11114,10 +11082,10 @@ namespace RetroSharp
 			}
 		}
 
-		private static void wnd_MouseDown(object sender, OpenTK.Input.MouseButtonEventArgs e)
+		private static void Wnd_MouseDown(object sender, OpenTK.Input.MouseButtonEventArgs e)
 		{
 			MouseEventHandler h = OnMouseDown;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{

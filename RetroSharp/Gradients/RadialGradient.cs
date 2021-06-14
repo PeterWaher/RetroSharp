@@ -89,14 +89,14 @@ namespace RetroSharp.Gradients
             ColorStop Stop1 = Loop.Value;
 
             Loop = Loop.Next;
-            while (Loop != null && t > Stop1.Stop)
+            while (!(Loop is null) && t > Stop1.Stop)
             {
                 Stop0 = Stop1;
                 Stop1 = Loop.Value;
                 Loop = Loop.Next;
             }
 
-            if (Stop0 == null)
+            if (Stop0 is null)
                 return Stop1.Color;
 
             if (t > Stop1.Stop)

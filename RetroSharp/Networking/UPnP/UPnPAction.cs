@@ -174,11 +174,11 @@ namespace RetroSharp.Networking.UPnP
 						ResponseXml = null;
 					}
 
-					if (ResponseXml == null)
+					if (ResponseXml is null)
 						throw;
 				}
 
-				if (ResponseXml.DocumentElement == null ||
+				if (ResponseXml.DocumentElement is null ||
 					ResponseXml.DocumentElement.LocalName != "Envelope" ||
 					ResponseXml.DocumentElement.NamespaceURI != "http://schemas.xmlsoap.org/soap/envelope/")
 				{
@@ -186,14 +186,14 @@ namespace RetroSharp.Networking.UPnP
 				}
 
 				XmlElement ResponseBody = GetChildElement(ResponseXml.DocumentElement, "Body", "http://schemas.xmlsoap.org/soap/envelope/");
-				if (ResponseBody == null)
+				if (ResponseBody is null)
 					throw new Exception("Response body not found.");
 
 				XmlElement ActionResponse = GetChildElement(ResponseBody, this.name + "Response", this.parent.Service.ServiceType);
-				if (ActionResponse == null)
+				if (ActionResponse is null)
 				{
 					XmlElement ResponseFault = GetChildElement(ResponseBody, "Fault", "http://schemas.xmlsoap.org/soap/envelope/");
-					if (ResponseFault == null)
+					if (ResponseFault is null)
 						throw new Exception("Unable to parse response.");
 
 					string FaultCode = string.Empty;
@@ -250,7 +250,7 @@ namespace RetroSharp.Networking.UPnP
 				foreach (XmlNode N in ActionResponse.ChildNodes)
 				{
 					E = N as XmlElement;
-					if (E == null)
+					if (E is null)
 						continue;
 
 					if (this.argumentByName.TryGetValue(E.LocalName, out Argument2))
@@ -260,15 +260,15 @@ namespace RetroSharp.Networking.UPnP
 							object Value2 = Variable.XmlStringToValue(E.InnerText);
 							OutputValues[E.LocalName] = Value2;
 
-							if (First == null)
+							if (First is null)
 								First = Value2;
 
-							if (Argument2.ReturnValue && Result == null)
+							if (Argument2.ReturnValue && Result is null)
 								Result = Value2;
 						}
 						else
 						{
-							if (First == null)
+							if (First is null)
 								First = E.InnerXml;
 
 							OutputValues[E.LocalName] = E.InnerXml;
@@ -276,7 +276,7 @@ namespace RetroSharp.Networking.UPnP
 					}
 					else
 					{
-						if (First == null)
+						if (First is null)
 							First = E.InnerXml;
 
 						OutputValues[E.LocalName] = E.InnerXml;
@@ -284,7 +284,7 @@ namespace RetroSharp.Networking.UPnP
 				}
 			}
 
-			if (Result == null)
+			if (Result is null)
 				Result = First;
 
 			return Result;
@@ -297,7 +297,7 @@ namespace RetroSharp.Networking.UPnP
 			foreach (XmlNode N in E.ChildNodes)
 			{
 				E2 = N as XmlElement;
-				if (E2 == null)
+				if (E2 is null)
 					continue;
 
 				if (E2.LocalName == LocalName && E2.NamespaceURI == Namespace)

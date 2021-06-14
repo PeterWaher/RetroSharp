@@ -18,7 +18,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetEthernetLinkStatus == null)
+			if (actionGetEthernetLinkStatus is null)
 				actionGetEthernetLinkStatus = this.service.GetAction("GetEthernetLinkStatus");
 
 			this.actionGetEthernetLinkStatus.Invoke(out OutputValues);

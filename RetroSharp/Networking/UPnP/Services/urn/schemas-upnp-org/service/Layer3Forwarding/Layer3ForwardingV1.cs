@@ -19,7 +19,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionSetDefaultConnectionService == null)
+			if (actionSetDefaultConnectionService is null)
 				actionSetDefaultConnectionService = this.service.GetAction("SetDefaultConnectionService");
 
 			this.actionSetDefaultConnectionService.Invoke(out OutputValues,
@@ -30,7 +30,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionGetDefaultConnectionService == null)
+			if (actionGetDefaultConnectionService is null)
 				actionGetDefaultConnectionService = this.service.GetAction("GetDefaultConnectionService");
 
 			this.actionGetDefaultConnectionService.Invoke(out OutputValues);

@@ -23,10 +23,10 @@ namespace RetroSharp.Networking.P2P
 	{
 		private const int BufferSize = 65536;
 
-		private byte[] incomingBuffer = new byte[BufferSize];
+		private readonly byte[] incomingBuffer = new byte[BufferSize];
 		private byte[] packetBuffer = null;
-		private LinkedList<byte[]> outgoingPackets = new LinkedList<byte[]>();
-		private PeerToPeerNetwork network;
+		private readonly LinkedList<byte[]> outgoingPackets = new LinkedList<byte[]>();
+		private readonly PeerToPeerNetwork network;
 		private IPEndPoint remoteEndpoint;
 		private TcpClient tcpConnection;
 		private NetworkStream stream;
@@ -88,13 +88,13 @@ namespace RetroSharp.Networking.P2P
 		/// </summary>
 		public void Dispose()
 		{
-			if (this.idleTimer != null)
+			if (!(this.idleTimer is null))
 			{
 				this.idleTimer.Dispose();
 				this.idleTimer = null;
 			}
 
-			if (this.tcpConnection != null)
+			if (!(this.tcpConnection is null))
 			{
 				this.stream.Dispose();
 				this.stream = null;
@@ -182,7 +182,7 @@ namespace RetroSharp.Networking.P2P
 					this.stream.EndWrite(ar);
 
 					BinaryEventHandler h = this.OnSent;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -195,7 +195,7 @@ namespace RetroSharp.Networking.P2P
 						}
 					}
 
-					if (this.outgoingPackets.First != null)
+					if (!(this.outgoingPackets.First is null))
 					{
 						byte[] Packet = this.outgoingPackets.First.Value;
 						this.outgoingPackets.RemoveFirst();
@@ -269,7 +269,7 @@ namespace RetroSharp.Networking.P2P
 		}
 
 		private int nrHistoricPackets = 0;
-		private LinkedList<byte[]> historicPackets = new LinkedList<byte[]>();
+		private readonly LinkedList<byte[]> historicPackets = new LinkedList<byte[]>();
 
 		/// <summary>
 		/// Event raised when a packet has been sent.
@@ -321,7 +321,7 @@ namespace RetroSharp.Networking.P2P
 								if (this.packetPos >= this.packetSize)
 								{
 									h = this.OnReceived;
-									if (h != null)
+									if (!(h is null))
 									{
 										try
 										{
@@ -366,7 +366,7 @@ namespace RetroSharp.Networking.P2P
 				this.outgoingPackets.Clear();
 
 				EventHandler h = this.OnClosed;
-				if (h != null)
+				if (!(h is null))
 				{
 					try
 					{
@@ -395,7 +395,7 @@ namespace RetroSharp.Networking.P2P
 			set { this.stateObject = value; }
 		}
 
-		internal void UdpDatagramReceived(PeerToPeerNetwork Sender, UdpDatagramEventArgs e)
+		internal void UdpDatagramReceived(PeerToPeerNetwork _, UdpDatagramEventArgs e)
 		{
 			LinkedList<KeyValuePair<ushort, byte[]>> LostPackets = null;
 			byte[] FirstPacket = null;
@@ -438,14 +438,14 @@ namespace RetroSharp.Networking.P2P
 
 					if ((short)(PacketNr - this.lastReceivedPacket) > 0)
 					{
-						if (FirstPacket == null)
+						if (FirstPacket is null)
 						{
 							FirstPacket = Packet;
 							FirstPacketNr = PacketNr;
 						}
 						else
 						{
-							if (LostPackets == null)
+							if (LostPackets is null)
 								LostPackets = new LinkedList<KeyValuePair<ushort, byte[]>>();
 
 							LostPackets.AddFirst(new KeyValuePair<ushort, byte[]>(PacketNr, Packet));	// Reverse order
@@ -453,14 +453,14 @@ namespace RetroSharp.Networking.P2P
 					}
 				}
 
-				if (FirstPacket != null)
+				if (!(FirstPacket is null))
 					this.lastReceivedPacket = FirstPacketNr;
 			}
 
 			BinaryEventHandler h = this.OnReceived;
-			if (h != null)
+			if (!(h is null))
 			{
-				if (LostPackets != null)
+				if (!(LostPackets is null))
 				{
 					foreach (KeyValuePair<ushort, byte[]> P in LostPackets)
 					{
@@ -476,7 +476,7 @@ namespace RetroSharp.Networking.P2P
 					}
 				}
 
-				if (FirstPacket != null)
+				if (!(FirstPacket is null))
 				{
 					try
 					{
@@ -492,7 +492,7 @@ namespace RetroSharp.Networking.P2P
 		}
 
 		private ushort lastReceivedPacket = 0;
-		private object udpReceiveLock = new object();
+		private readonly object udpReceiveLock = new object();
 
 		internal void StartIdleTimer()
 		{

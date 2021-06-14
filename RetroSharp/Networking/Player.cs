@@ -15,7 +15,7 @@ namespace RetroSharp.Networking
 		private Guid playerId;
 		private IPEndPoint publicEndpoint;
 		private IPEndPoint localEndpoint;
-		private Dictionary<string, string> playerMetaInfo;
+		private readonly Dictionary<string, string> playerMetaInfo;
 		private PeerConnection connection = null;
 
 		internal Player(Guid PlayerId, IPEndPoint PublicEndpoint, IPEndPoint LocalEndpoint, params KeyValuePair<string, string>[] PlayerMetaInfo)
@@ -111,9 +111,7 @@ namespace RetroSharp.Networking
 		{
 			get
 			{
-				string Value;
-
-				if (this.playerMetaInfo.TryGetValue(Key, out Value))
+				if (this.playerMetaInfo.TryGetValue(Key, out string Value))
 					return Value;
 				else
 					return string.Empty;
@@ -138,7 +136,7 @@ namespace RetroSharp.Networking
 
 			foreach (KeyValuePair<string, string> P in this.playerMetaInfo)
 			{
-				if (sb == null)
+				if (sb is null)
 				{
 					sb = new StringBuilder(this.publicEndpoint.ToString());
 					sb.Append(":");
@@ -151,7 +149,7 @@ namespace RetroSharp.Networking
 				sb.Append(P.Value);
 			}
 
-			if (sb == null)
+			if (sb is null)
 				return base.ToString();
 			else
 				return sb.ToString();

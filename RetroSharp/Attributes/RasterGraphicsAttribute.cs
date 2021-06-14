@@ -11,9 +11,9 @@ namespace RetroSharp
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class RasterGraphicsAttribute : RetroAttribute
     {
-        private int width;
-        private int height;
-        private Color backgroundColor = C64Colors.Black;
+        private readonly int width;
+        private readonly int height;
+        private readonly Color backgroundColor = C64Colors.Black;
 
         /// <summary>
         /// Defines the number of pixels available in a raster graphics-based screen.

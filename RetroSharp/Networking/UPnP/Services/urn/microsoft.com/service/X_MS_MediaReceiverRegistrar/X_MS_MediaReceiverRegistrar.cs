@@ -20,7 +20,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionIsAuthorized == null)
+			if (actionIsAuthorized is null)
 				actionIsAuthorized = this.service.GetAction("IsAuthorized");
 
 			this.actionIsAuthorized.Invoke(out OutputValues,
@@ -33,7 +33,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionRegisterDevice == null)
+			if (actionRegisterDevice is null)
 				actionRegisterDevice = this.service.GetAction("RegisterDevice");
 
 			this.actionRegisterDevice.Invoke(out OutputValues,
@@ -46,7 +46,7 @@ namespace RetroSharp.Networking.UPnP.Services
 		{
 			Dictionary<string, object> OutputValues = new Dictionary<string, object>();
 			
-			if (actionIsValidated == null)
+			if (actionIsValidated is null)
 				actionIsValidated = this.service.GetAction("IsValidated");
 
 			this.actionIsValidated.Invoke(out OutputValues,

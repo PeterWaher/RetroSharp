@@ -83,9 +83,9 @@ namespace RetroSharp.Networking.P2P
 		private ManualResetEvent ready = new ManualResetEvent(false);
 		private ManualResetEvent error = new ManualResetEvent(false);
 		private Exception exception = null;
-		private string applicationName;
-		private int desiredPort;
-		private int backlog;
+		private readonly string applicationName;
+		private readonly int desiredPort;
+		private readonly int backlog;
 		private bool tcpMappingAdded = false;
 		private bool udpMappingAdded = false;
 
@@ -157,13 +157,13 @@ namespace RetroSharp.Networking.P2P
 					this.exception = ex;
 					this.State = PeerToPeerNetworkState.Error;
 
-					if (this.tcpListener != null)
+					if (!(this.tcpListener is null))
 					{
 						this.tcpListener.Stop();
 						this.tcpListener = null;
 					}
 
-					if (this.udpClient != null)
+					if (!(this.udpClient is null))
 					{
 						this.udpClient.Close();
 						this.udpClient = null;
@@ -218,7 +218,7 @@ namespace RetroSharp.Networking.P2P
 			try
 			{
 				this.upnpClient = new UPnPClient();
-				this.upnpClient.OnDeviceFound += new UPnPDeviceLocationEventHandler(upnpClient_OnDeviceFound);
+				this.upnpClient.OnDeviceFound += new UPnPDeviceLocationEventHandler(UpnpClient_OnDeviceFound);
 
 				this.State = PeerToPeerNetworkState.SearchingForGateway;
 
@@ -232,7 +232,7 @@ namespace RetroSharp.Networking.P2P
 			}
 		}
 
-		private void upnpClient_OnDeviceFound(UPnPClient Sender, DeviceLocationEventArgs e)
+		private void UpnpClient_OnDeviceFound(UPnPClient Sender, DeviceLocationEventArgs e)
 		{
 			try
 			{
@@ -257,13 +257,13 @@ namespace RetroSharp.Networking.P2P
 		{
 			try
 			{
-				if (e.DeviceDescriptionDocument != null)
+				if (!(e.DeviceDescriptionDocument is null))
 				{
 					UPnPService Service = e.DeviceDescriptionDocument.GetService("urn:schemas-upnp-org:service:WANIPConnection:1");
-					if (Service == null)
+					if (Service is null)
 					{
 						Service = e.DeviceDescriptionDocument.GetService("urn:schemas-upnp-org:service:WANIPConnection:2");
-						if (Service == null)
+						if (Service is null)
 							return;
 					}
 
@@ -284,21 +284,12 @@ namespace RetroSharp.Networking.P2P
 				DeviceLocationEventArgs e2 = (DeviceLocationEventArgs)e.State;
 				Dictionary<ushort, bool> TcpPortMapped = new Dictionary<ushort, bool>();
 				Dictionary<ushort, bool> UdpPortMapped = new Dictionary<ushort, bool>();
-				string NewExternalIPAddress;
 				ushort PortMappingIndex;
-				string NewRemoteHost;
-				ushort NewExternalPort;
-				string NewProtocol;
-				ushort NewInternalPort;
-				string NewInternalClient;
-				bool NewEnabled;
-				string NewPortMappingDescription;
-				uint NewLeaseDuration;
 
 				this.serviceWANIPConnectionV1 = new WANIPConnectionV1(e.ServiceDescriptionDocument);
 				this.State = PeerToPeerNetworkState.RegisteringApplicationInGateway;
 
-				this.serviceWANIPConnectionV1.GetExternalIPAddress(out NewExternalIPAddress);
+				this.serviceWANIPConnectionV1.GetExternalIPAddress(out string NewExternalIPAddress);
 				this.externalAddress = IPAddress.Parse(NewExternalIPAddress);
 
 				PortMappingIndex = 0;
@@ -307,9 +298,9 @@ namespace RetroSharp.Networking.P2P
 				{
 					while (true)
 					{
-						this.serviceWANIPConnectionV1.GetGenericPortMappingEntry(PortMappingIndex, out NewRemoteHost,
-							out NewExternalPort, out NewProtocol, out NewInternalPort, out NewInternalClient,
-							out NewEnabled, out NewPortMappingDescription, out NewLeaseDuration);
+						this.serviceWANIPConnectionV1.GetGenericPortMappingEntry(PortMappingIndex, out string NewRemoteHost,
+							out ushort NewExternalPort, out string NewProtocol, out ushort NewInternalPort, out string NewInternalClient,
+							out bool NewEnabled, out string NewPortMappingDescription, out uint NewLeaseDuration);
 
 						if (NewPortMappingDescription == this.applicationName && NewInternalClient == e2.LocalEndPoint.Address.ToString())
 							this.serviceWANIPConnectionV1.DeletePortMapping(NewRemoteHost, NewExternalPort, NewProtocol);
@@ -368,7 +359,7 @@ namespace RetroSharp.Networking.P2P
 						}
 					}
 				}
-				while (this.tcpListener == null);
+				while (this.tcpListener is null);
 
 				this.localEndpoint = new IPEndPoint(this.localAddress, LocalPort);
 
@@ -393,7 +384,7 @@ namespace RetroSharp.Networking.P2P
 
 		private void EndAcceptTcpClient(IAsyncResult ar)
 		{
-			if (this.tcpListener != null)
+			if (!(this.tcpListener is null))
 			{
 				try
 				{
@@ -422,7 +413,7 @@ namespace RetroSharp.Networking.P2P
 		protected virtual void PeerConnected(PeerConnection Connection)
 		{
 			PeerConnectedEventHandler h = this.OnPeerConnected;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -473,7 +464,7 @@ namespace RetroSharp.Networking.P2P
 					}
 
 					PeerToPeerNetworkStateChangeEventHandler h = this.OnStateChange;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -568,7 +559,7 @@ namespace RetroSharp.Networking.P2P
 		{
 			this.State = PeerToPeerNetworkState.Closed;
 
-			if (this.tcpListener != null)
+			if (!(this.tcpListener is null))
 			{
 				this.tcpListener.Stop();
 				this.tcpListener = null;
@@ -602,25 +593,25 @@ namespace RetroSharp.Networking.P2P
 
 			this.serviceWANIPConnectionV1 = null;
 
-			if (this.upnpClient != null)
+			if (!(this.upnpClient is null))
 			{
 				this.upnpClient.Dispose();
 				this.upnpClient = null;
 			}
 
-			if (this.ipAddressesFound != null)
+			if (!(this.ipAddressesFound is null))
 			{
 				this.ipAddressesFound.Clear();
 				this.ipAddressesFound = null;
 			}
 
-			if (this.ready != null)
+			if (!(this.ready is null))
 			{
 				this.ready.Close();
 				this.ready = null;
 			}
 
-			if (this.error != null)
+			if (!(this.error is null))
 			{
 				this.error.Close();
 				this.error = null;
@@ -645,14 +636,9 @@ namespace RetroSharp.Networking.P2P
 			{
 				if (IPAddress.Equals(RemoteEndPoint.Address, this.externalAddress))
 				{
-					ushort InternalPort;
-					string InternalClient;
-					string PortMappingDescription;
-					uint LeaseDuration;
-					bool Enabled;
-
 					this.serviceWANIPConnectionV1.GetSpecificPortMappingEntry(string.Empty, (ushort)RemoteEndPoint.Port, "TCP",
-						out InternalPort, out InternalClient, out Enabled, out PortMappingDescription, out LeaseDuration);
+						out ushort InternalPort, out string InternalClient, out bool Enabled, out string PortMappingDescription, 
+						out uint LeaseDuration);
 
 					RemoteEndPoint2 = new IPEndPoint(IPAddress.Parse(InternalClient), InternalPort);
 					Client.Connect(RemoteEndPoint2);
@@ -680,15 +666,15 @@ namespace RetroSharp.Networking.P2P
 		{
 			try
 			{
-				if (this.udpClient != null)
+				if (!(this.udpClient is null))
 				{
 					IPEndPoint RemoteEndpoint = null;
 
 					byte[] Data = this.udpClient.EndReceive(ar, ref RemoteEndpoint);
-					if (RemoteEndpoint != null && Data != null)
+					if (!(RemoteEndpoint is null) && !(Data is null))
 					{
 						UdpDatagramEvent h = this.OnUdpDatagramReceived;
-						if (h != null)
+						if (!(h is null))
 						{
 							try
 							{
@@ -746,20 +732,20 @@ namespace RetroSharp.Networking.P2P
 		}
 
 		private bool isWriting = false;
-		private LinkedList<KeyValuePair<IPEndPoint, byte[]>> writeQueue = new LinkedList<KeyValuePair<IPEndPoint, byte[]>>();
+		private readonly LinkedList<KeyValuePair<IPEndPoint, byte[]>> writeQueue = new LinkedList<KeyValuePair<IPEndPoint, byte[]>>();
 
 		private void EndSend(IAsyncResult ar)
 		{
 			try
 			{
-				if (this.udpClient != null)
+				if (!(this.udpClient is null))
 				{
 					UdpDatagramEventArgs e = (UdpDatagramEventArgs)ar.AsyncState;
 					this.udpClient.EndSend(ar);
 
 					lock (this.writeQueue)
 					{
-						if (this.writeQueue.First != null)
+						if (!(this.writeQueue.First is null))
 						{
 							KeyValuePair<IPEndPoint, byte[]> Rec = this.writeQueue.First.Value;
 							this.writeQueue.RemoveFirst();
@@ -771,7 +757,7 @@ namespace RetroSharp.Networking.P2P
 					}
 
 					UdpDatagramEvent h = this.OnUdpDatagramSent;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{

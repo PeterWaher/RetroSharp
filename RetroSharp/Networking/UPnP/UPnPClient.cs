@@ -133,12 +133,12 @@ namespace RetroSharp.Networking.UPnP
 				string Header = Encoding.ASCII.GetString(Packet);
 				UPnPHeaders Headers = new UPnPHeaders(Header);
 
-				if (RemoteIP != null && Headers.Direction == HttpDirection.Response && Headers.HttpVersion >= 1.0 && Headers.ResponseCode == 200)
+				if (!(RemoteIP is null) && Headers.Direction == HttpDirection.Response && Headers.HttpVersion >= 1.0 && Headers.ResponseCode == 200)
 				{
 					if (!string.IsNullOrEmpty(Headers.Location))
 					{
 						UPnPDeviceLocationEventHandler h = this.OnDeviceFound;
-						if (h != null)
+						if (!(h is null))
 						{
 							DeviceLocation DeviceLocation = new DeviceLocation(this, Headers.SearchTarget, Headers.Server, Headers.Location,
 								Headers.UniqueServiceName, Headers);
@@ -176,7 +176,7 @@ namespace RetroSharp.Networking.UPnP
 			{
 				case "M-SEARCH":
 					NotificationEventHandler h = this.OnSearch;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -191,7 +191,7 @@ namespace RetroSharp.Networking.UPnP
 
 				case "NOTIFY":
 					h = this.OnNotification;
-					if (h != null)
+					if (!(h is null))
 					{
 						try
 						{
@@ -226,7 +226,7 @@ namespace RetroSharp.Networking.UPnP
 				string Header = Encoding.ASCII.GetString(Packet);
 				UPnPHeaders Headers = new UPnPHeaders(Header);
 
-				if (RemoteIP != null && Headers.Direction == HttpDirection.Request && Headers.HttpVersion >= 1.0)
+				if (!(RemoteIP is null) && Headers.Direction == HttpDirection.Request && Headers.HttpVersion >= 1.0)
 					this.HandleIncoming(UdpClient, RemoteIP, Headers);
 
 				UdpClient.BeginReceive(this.EndReceiveOutgoing, UdpClient);
@@ -306,7 +306,7 @@ namespace RetroSharp.Networking.UPnP
 		private void RaiseOnError(Exception ex)
 		{
 			UPnPExceptionEventHandler h = this.OnError;
-			if (h != null)
+			if (!(h is null))
 			{
 				try
 				{
@@ -395,7 +395,7 @@ namespace RetroSharp.Networking.UPnP
 			if (!Done.WaitOne(Timeout))
 				throw new TimeoutException("Timeout.");
 
-			if (e.Exception != null)
+			if (!(e.Exception is null))
 				throw e.Exception;
 
 			return e.DeviceDescriptionDocument;
@@ -423,7 +423,7 @@ namespace RetroSharp.Networking.UPnP
 			object State = P[2];
 			DeviceDescriptionEventArgs e2;
 
-			if (e.Error != null)
+			if (!(e.Error is null))
 				e2 = new DeviceDescriptionEventArgs(e.Error, this, State);
 			else
 			{
@@ -443,7 +443,7 @@ namespace RetroSharp.Networking.UPnP
 				finally
 				{
 					WebClient Client = sender as WebClient;
-					if (Client != null)
+					if (!(Client is null))
 						Client.Dispose();
 				}
 			}
@@ -495,7 +495,7 @@ namespace RetroSharp.Networking.UPnP
 			if (!Done.WaitOne(Timeout))
 				throw new TimeoutException("Timeout.");
 
-			if (e.Exception != null)
+			if (!(e.Exception is null))
 				throw e.Exception;
 
 			return e.ServiceDescriptionDocument;
@@ -522,7 +522,7 @@ namespace RetroSharp.Networking.UPnP
 			object State = P[2];
 			ServiceDescriptionEventArgs e2;
 
-			if (e.Error != null)
+			if (!(e.Error is null))
 				e2 = new ServiceDescriptionEventArgs(e.Error, this, State);
 			else
 			{
@@ -542,7 +542,7 @@ namespace RetroSharp.Networking.UPnP
 				finally
 				{
 					WebClient Client = sender as WebClient;
-					if (Client != null)
+					if (!(Client is null))
 						Client.Dispose();
 				}
 			}

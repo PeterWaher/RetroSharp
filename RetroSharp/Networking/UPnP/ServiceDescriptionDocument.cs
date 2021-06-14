@@ -26,7 +26,7 @@ namespace RetroSharp.Networking.UPnP
 			this.xml = Xml;
 			this.service = Service;
 
-			if (Xml.DocumentElement != null && Xml.DocumentElement.LocalName == "scpd" &&
+			if (!(Xml.DocumentElement is null) && Xml.DocumentElement.LocalName == "scpd" &&
 				Xml.DocumentElement.NamespaceURI == "urn:schemas-upnp-org:service-1-0")
 			{
 				foreach (XmlNode N in Xml.DocumentElement.ChildNodes)
@@ -171,7 +171,7 @@ namespace RetroSharp.Networking.UPnP
 		public object Invoke(string ActionName, out Dictionary<string, object> OutputValues, params KeyValuePair<string, object>[] InputValues)
 		{
 			UPnPAction Action = this.GetAction(ActionName);
-			if (Action == null)
+			if (Action is null)
 				throw new ArgumentException("Action not found: " + ActionName, "ActionName");
 
 			return Action.Invoke(out OutputValues, InputValues);
@@ -188,7 +188,7 @@ namespace RetroSharp.Networking.UPnP
 		public object Invoke(string ActionName, Dictionary<string, object> InputValues, out Dictionary<string, object> OutputValues)
 		{
 			UPnPAction Action = this.GetAction(ActionName);
-			if (Action == null)
+			if (Action is null)
 				throw new ArgumentException("Action not found: " + ActionName, "ActionName");
 
 			return Action.Invoke(InputValues, out OutputValues);
