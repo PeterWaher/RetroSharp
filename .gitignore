@@ -21,6 +21,7 @@ obj/
 # User files
 *.suo
 *.csproj.user
+.vs
 
 # Windows shortcuts
 *.lnk
